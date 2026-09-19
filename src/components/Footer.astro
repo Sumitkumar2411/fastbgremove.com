@@ -8,14 +8,8 @@ const currentYear = new Date().getFullYear();
       <!-- Col 1: Brand & Isolation Tag -->
       <div class="space-y-4">
         <a href="/" class="flex items-center gap-2.5 group">
-          <img
-            src="/logo.png"
-            alt="fastbgremove.com Elephant Logo"
-            width="24"
-            height="24"
-            class="h-6 w-6 rounded-full object-cover shadow-xs border border-zinc-200 dark:border-zinc-700 transition-transform group-hover:scale-105 shrink-0"
-          />
-          <span class="font-bold text-base tracking-tight text-[#26251e] dark:text-white">fastbgremove.com</span>
+          <img src="/logo.png" alt="fastbgremove.com logo" class="w-8 h-8 rounded-full object-contain shrink-0" />
+          <span class="font-bold text-lg text-zinc-900 dark:text-white tracking-tight">fastbgremove.com</span>
         </a>
         <p class="text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
           100% in-browser, zero-server image background removal. Privacy by isolation.
@@ -122,9 +116,11 @@ const currentYear = new Date().getFullYear();
       <p class="font-medium text-[#26251e] dark:text-[#ededed] text-center sm:text-left">
         © 2026 fastbgremove.com. Free in-browser utility. No accounts, zero tracking.
       </p>
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-xs text-zinc-600 dark:text-zinc-400">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 shadow-sm text-xs font-medium text-zinc-700 dark:text-zinc-300">
         <span>Dedicated to the Nation</span>
-        <span>🇮🇳</span>
+        <span class="inline-flex items-center justify-center shrink-0" title="India 🇮🇳">
+          <img src="/india-badge.svg" alt="🇮🇳" class="w-4 h-4 rounded-full object-cover shadow-xs" width="16" height="16" />
+        </span>
         <span class="text-zinc-400 dark:text-zinc-600">•</span>
         <span>For Every Creator</span>
       </div>
