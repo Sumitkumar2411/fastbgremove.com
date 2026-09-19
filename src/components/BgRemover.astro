@@ -771,7 +771,7 @@ const {
       downloadHdBtn.classList.add('opacity-75');
 
       const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
-      const filename = `${originalName}-fastbg-hd.png`;
+      const filename = `${originalName}-fastbgremove-hd.png`;
 
       const finalBlob = await createHdExportBlob(cutoutBlob, currentBgColor);
       triggerDownload(finalBlob, filename);

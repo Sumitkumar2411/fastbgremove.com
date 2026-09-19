@@ -1,7 +1,7 @@
-# Design System - Fast BG Remove (NVIDIA Precision)
+# Design System - fastbgremove.com (NVIDIA Precision)
 
 ## 1. Visual Theme & Atmosphere
-Fast BG Remove pairs NVIDIA's engineering-grade, high-performance computing aesthetic with a lightning-fast client-side image utility. The system operates on a dual-mode surface architecture:
+fastbgremove.com pairs NVIDIA's engineering-grade, high-performance computing aesthetic with a lightning-fast client-side image utility. The system operates on a dual-mode surface architecture:
 - **Night Mode (NVIDIA Dark)**: Deep charcoal/black canvas (`#0A0A0B`) with hairline dark borders (`#232326` / `#2E2E32`), elevated card surfaces (`#121214`), and vibrant NVIDIA Green (`#76B900`) accents.
 - **Day Mode (NVIDIA Light)**: Clean white canvas (`#FFFFFF`), elevated card surfaces (`#F7F7F7` / `#FFFFFF`), border divider hairline (`#E5E5E5`), and deep black (`#000000` / `#1A1A1A`) typography.
 
@@ -60,7 +60,7 @@ Fast BG Remove pairs NVIDIA's engineering-grade, high-performance computing aest
   - Zero Vite / debug overlay artifacts
 - **Persistent Header**:
   - Height: `64px` (`h-16`)
-  - Brand logo from `/public/logo.svg` (`h-7 w-auto`) beside "FastBG"
+  - Brand logo from `/public/logo.svg` (`h-7 w-auto`) beside "fastbgremove.com"
   - Crisp Day/Night theme toggle (Sun/Moon)
 
 ## 5. Single-Viewport Discipline
