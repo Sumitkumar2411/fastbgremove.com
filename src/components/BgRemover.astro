@@ -644,18 +644,13 @@ const {
       customBgPreviewImg.src = '';
       customBgPreviewImg.style.transform = 'none';
     }
-    if (splitCustomBgImg) {
-      splitCustomBgImg.classList.add('hidden');
-      splitCustomBgImg.src = '';
-      splitCustomBgImg.style.transform = 'none';
-    }
     if (customBgInput) customBgInput.value = '';
   }
 
   function applyBgToElements(color: string) {
     const isTrans = color === 'transparent' && !customBgImageObj;
     const isWhite = color.toUpperCase() === '#FFFFFF';
-    const isBlue = color.toUpperCase() === '#0055A5';
+    const isBlue = color.toUpperCase() === '#0055A5' || color.toUpperCase() === '#2563EB';
     const isCustomImg = !!customBgImageObj;
 
     // Update buttons
@@ -669,86 +664,90 @@ const {
       }
     });
 
-    if (isCustomImg) {
+    if (isCustomImg && bgBtnCustomImage) {
       bgBtnCustomImage.classList.add(...activeClasses);
       bgBtnCustomImage.classList.remove(...inactiveClasses);
-    } else if (isTrans) {
+    } else if (isTrans && bgBtnTransparent) {
       bgBtnTransparent.classList.add(...activeClasses);
       bgBtnTransparent.classList.remove(...inactiveClasses);
-    } else if (isWhite) {
+    } else if (isWhite && bgBtnWhite) {
       bgBtnWhite.classList.add(...activeClasses);
       bgBtnWhite.classList.remove(...inactiveClasses);
-    } else if (isBlue) {
+    } else if (isBlue && bgBtnBlue) {
       bgBtnBlue.classList.add(...activeClasses);
       bgBtnBlue.classList.remove(...inactiveClasses);
     }
 
     // Blur slider visibility: visible when custom backdrop or solid color is active, hidden when transparent
     if (isTrans) {
-      blurControlWrapper.classList.add('hidden');
-      blurControlWrapper.classList.remove('flex');
+      if (blurControlWrapper) {
+        blurControlWrapper.classList.add('hidden');
+        blurControlWrapper.classList.remove('flex');
+      }
       currentBlur = 0;
-      backdropBlurSlider.value = '0';
-      blurValueLabel.textContent = '0px';
+      if (backdropBlurSlider) backdropBlurSlider.value = '0';
+      if (blurValueLabel) blurValueLabel.textContent = '0px';
       if (stageBgLayer) stageBgLayer.style.filter = 'none';
-      if (splitBgLayer) splitBgLayer.style.filter = 'none';
       if (customBgPreviewImg) customBgPreviewImg.style.transform = 'none';
-      if (splitCustomBgImg) splitCustomBgImg.style.transform = 'none';
     } else {
-      blurControlWrapper.classList.remove('hidden');
-      blurControlWrapper.classList.add('flex');
+      if (blurControlWrapper) {
+        blurControlWrapper.classList.remove('hidden');
+        blurControlWrapper.classList.add('flex');
+      }
     }
 
     // Apply to preview backdrop layers
-    if (isCustomImg) {
-      stageBgLayer.style.backgroundColor = 'transparent';
-      if (splitBgLayer) splitBgLayer.style.backgroundColor = 'transparent';
-    } else if (isTrans) {
-      stageBgLayer.style.backgroundColor = 'transparent';
-      if (splitBgLayer) splitBgLayer.style.backgroundColor = 'transparent';
-    } else {
-      stageBgLayer.style.backgroundColor = color;
-      if (splitBgLayer) splitBgLayer.style.backgroundColor = color;
-      customColorSwatch.style.backgroundColor = color;
+    if (stageBgLayer) {
+      if (isCustomImg) {
+        stageBgLayer.style.backgroundColor = 'transparent';
+        stageBgLayer.classList.remove('bg-checkerboard');
+      } else if (isTrans) {
+        stageBgLayer.style.backgroundColor = 'transparent';
+        stageBgLayer.classList.add('bg-checkerboard');
+      } else {
+        stageBgLayer.style.backgroundColor = color;
+        stageBgLayer.classList.remove('bg-checkerboard');
+        if (customColorSwatch) customColorSwatch.style.backgroundColor = color;
+      }
     }
   }
 
   // Backdrop blur slider input
-  backdropBlurSlider.addEventListener('input', () => {
-    currentBlur = parseInt(backdropBlurSlider.value, 10) || 0;
-    blurValueLabel.textContent = `${currentBlur}px`;
-    const filterVal = currentBlur > 0 ? `blur(${currentBlur}px)` : 'none';
-    if (stageBgLayer) stageBgLayer.style.filter = filterVal;
-    if (splitBgLayer) splitBgLayer.style.filter = filterVal;
-    if (customBgPreviewImg) customBgPreviewImg.style.transform = currentBlur > 0 ? 'scale(1.08)' : 'none';
-    if (splitCustomBgImg) splitCustomBgImg.style.transform = currentBlur > 0 ? 'scale(1.08)' : 'none';
-  });
+  if (backdropBlurSlider) {
+    backdropBlurSlider.addEventListener('input', () => {
+      currentBlur = parseInt(backdropBlurSlider.value, 10) || 0;
+      if (blurValueLabel) blurValueLabel.textContent = `${currentBlur}px`;
+      const filterVal = currentBlur > 0 ? `blur(${currentBlur}px)` : 'none';
+      if (stageBgLayer) stageBgLayer.style.filter = filterVal;
+      if (customBgPreviewImg) customBgPreviewImg.style.transform = currentBlur > 0 ? 'scale(1.08)' : 'none';
+    });
+  }
 
   // Custom background image file upload
-  bgBtnCustomImage.addEventListener('click', () => {
-    customBgInput.click();
-  });
+  if (bgBtnCustomImage && customBgInput) {
+    bgBtnCustomImage.addEventListener('click', () => {
+      customBgInput.click();
+    });
 
-  customBgInput.addEventListener('change', () => {
-    if (customBgInput.files && customBgInput.files[0]) {
-      const file = customBgInput.files[0];
-      if (customBgObjectUrl) URL.revokeObjectURL(customBgObjectUrl);
-      customBgObjectUrl = URL.createObjectURL(file);
+    customBgInput.addEventListener('change', () => {
+      if (customBgInput.files && customBgInput.files[0]) {
+        const file = customBgInput.files[0];
+        if (customBgObjectUrl) URL.revokeObjectURL(customBgObjectUrl);
+        customBgObjectUrl = URL.createObjectURL(file);
 
-      const img = new Image();
-      img.onload = () => {
-        customBgImageObj = img;
-        customBgPreviewImg.src = customBgObjectUrl!;
-        customBgPreviewImg.classList.remove('hidden');
-        if (splitCustomBgImg) {
-          splitCustomBgImg.src = customBgObjectUrl!;
-          splitCustomBgImg.classList.remove('hidden');
-        }
-        applyBgToElements(currentBgColor);
-      };
-      img.src = customBgObjectUrl;
-    }
-  });
+        const img = new Image();
+        img.onload = () => {
+          customBgImageObj = img;
+          if (customBgPreviewImg) {
+            customBgPreviewImg.src = customBgObjectUrl!;
+            customBgPreviewImg.classList.remove('hidden');
+          }
+          applyBgToElements(currentBgColor);
+        };
+        img.src = customBgObjectUrl;
+      }
+    });
+  }
 
   function showToast(text: string) {
     if (!pasteToast) return;
@@ -824,36 +823,44 @@ const {
     switchView('upload');
   }
 
-  uploadAnotherBtn.addEventListener('click', resetAll);
-  cancelProcessingBtn.addEventListener('click', resetAll);
+  if (uploadAnotherBtn) uploadAnotherBtn.addEventListener('click', resetAll);
+  if (cancelProcessingBtn) cancelProcessingBtn.addEventListener('click', resetAll);
 
   // Background toggle clicks
-  bgBtnTransparent.addEventListener('click', () => {
-    currentBgColor = 'transparent';
-    clearCustomBg();
-    applyBgToElements(currentBgColor);
-  });
+  if (bgBtnTransparent) {
+    bgBtnTransparent.addEventListener('click', () => {
+      currentBgColor = 'transparent';
+      clearCustomBg();
+      applyBgToElements(currentBgColor);
+    });
+  }
 
-  bgBtnWhite.addEventListener('click', () => {
-    currentBgColor = '#FFFFFF';
-    clearCustomBg();
-    applyBgToElements(currentBgColor);
-  });
+  if (bgBtnWhite) {
+    bgBtnWhite.addEventListener('click', () => {
+      currentBgColor = '#FFFFFF';
+      clearCustomBg();
+      applyBgToElements(currentBgColor);
+    });
+  }
 
-  bgBtnBlue.addEventListener('click', () => {
-    currentBgColor = '#2563EB';
-    clearCustomBg();
-    applyBgToElements(currentBgColor);
-  });
+  if (bgBtnBlue) {
+    bgBtnBlue.addEventListener('click', () => {
+      currentBgColor = '#2563EB';
+      clearCustomBg();
+      applyBgToElements(currentBgColor);
+    });
+  }
 
-  customColorPicker.addEventListener('input', (e) => {
-    const val = (e.target as HTMLInputElement).value;
-    currentBgColor = val;
-    clearCustomBg();
-    applyBgToElements(currentBgColor);
-  });
+  if (customColorPicker) {
+    customColorPicker.addEventListener('input', (e) => {
+      const val = (e.target as HTMLInputElement).value;
+      currentBgColor = val;
+      clearCustomBg();
+      applyBgToElements(currentBgColor);
+    });
+  }
 
-  // 60FPS Interactive Before/After Split Slider Drag Logic
+  // 60FPS Interactive Before/After Split Slider Drag Logic (Pointer Events API)
   let isDraggingSlider = false;
   let pendingSliderPos: number | null = null;
   let rafId: number | null = null;
@@ -875,35 +882,44 @@ const {
     }
   }
 
-  function onSliderDragStart(e: MouseEvent | TouchEvent) {
+  function onPointerDown(e: PointerEvent) {
     isDraggingSlider = true;
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    updateSliderFromClientX(clientX);
+    try {
+      (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
+    } catch (_) {}
+    updateSliderFromClientX(e.clientX);
   }
 
-  function onSliderDragMove(e: MouseEvent | TouchEvent) {
+  function onPointerMove(e: PointerEvent) {
     if (!isDraggingSlider) return;
-    if ('touches' in e && e.cancelable) {
-      e.preventDefault();
-    }
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    updateSliderFromClientX(clientX);
+    updateSliderFromClientX(e.clientX);
   }
 
-  function onSliderDragEnd() {
-    isDraggingSlider = false;
+  function onPointerUp(e: PointerEvent) {
+    if (isDraggingSlider) {
+      isDraggingSlider = false;
+      try {
+        (e.currentTarget as HTMLElement)?.releasePointerCapture?.(e.pointerId);
+      } catch (_) {}
+    }
   }
 
   if (stageBox) {
-    stageBox.addEventListener('mousedown', onSliderDragStart);
-    stageBox.addEventListener('touchstart', onSliderDragStart, { passive: true });
+    stageBox.addEventListener('pointerdown', onPointerDown);
+    stageBox.addEventListener('pointermove', onPointerMove);
+    stageBox.addEventListener('pointerup', onPointerUp);
+    stageBox.addEventListener('pointercancel', onPointerUp);
   }
 
-  window.addEventListener('mousemove', onSliderDragMove);
-  window.addEventListener('touchmove', onSliderDragMove, { passive: false });
-  window.addEventListener('mouseup', onSliderDragEnd);
-  window.addEventListener('touchend', onSliderDragEnd);
-  window.addEventListener('touchcancel', onSliderDragEnd);
+  window.addEventListener('pointermove', (e: PointerEvent) => {
+    if (isDraggingSlider) updateSliderFromClientX(e.clientX);
+  });
+  window.addEventListener('pointerup', () => {
+    if (isDraggingSlider) isDraggingSlider = false;
+  });
+  window.addEventListener('pointercancel', () => {
+    if (isDraggingSlider) isDraggingSlider = false;
+  });
 
   if (resetSliderBtn) {
     resetSliderBtn.addEventListener('click', (e) => {
@@ -1007,47 +1023,51 @@ const {
     }
   }
 
-  dropZone.addEventListener('click', () => fileInput.click());
-  dropZone.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      fileInput.click();
-    }
-  });
-
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files && fileInput.files[0]) {
-      processImage(fileInput.files[0]);
-    }
-  });
-
-  ['dragenter', 'dragover'].forEach(eventName => {
-    dropZone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dropZone.classList.add('border-[#f54e00]', 'bg-[#f54e00]/5', 'dark:bg-[#f54e00]/10');
-    }, false);
-  });
-
-  ['dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dropZone.classList.remove('border-[#f54e00]', 'bg-[#f54e00]/5', 'dark:bg-[#f54e00]/10');
-    }, false);
-  });
-
-  dropZone.addEventListener('drop', (e) => {
-    const dt = e.dataTransfer;
-    if (dt && dt.files && dt.files[0]) {
-      const file = dt.files[0];
-      if (file.type.startsWith('image/')) {
-        processImage(file);
-      } else {
-        showError('Please drop a valid image (PNG, JPG, or WebP).');
+  if (dropZone && fileInput) {
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fileInput.click();
       }
-    }
-  });
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('border-[#f54e00]', 'bg-[#f54e00]/5', 'dark:bg-[#f54e00]/10');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('border-[#f54e00]', 'bg-[#f54e00]/5', 'dark:bg-[#f54e00]/10');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if (dt && dt.files && dt.files[0]) {
+        const file = dt.files[0];
+        if (file.type.startsWith('image/')) {
+          processImage(file);
+        } else {
+          showError('Please drop a valid image (PNG, JPG, or WebP).');
+        }
+      }
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files && fileInput.files[0]) {
+        processImage(fileInput.files[0]);
+      }
+    });
+  }
 
   window.addEventListener('paste', (e) => {
     const clipboardData = e.clipboardData;
@@ -1074,8 +1094,8 @@ const {
 
       try {
         switchView('processing');
-        processingTitle.textContent = 'Loading sample image...';
-        progressBarFill.style.width = '10%';
+        if (processingTitle) processingTitle.textContent = 'Loading sample image...';
+        if (progressBarFill) progressBarFill.style.width = '10%';
 
         const response = await fetch(sampleUrl);
         if (!response.ok) throw new Error('Could not load sample');
@@ -1089,103 +1109,109 @@ const {
   });
 
   // Primary Export: Download Full HD PNG
-  downloadHdBtn.addEventListener('click', async () => {
-    if (!cutoutBlob) return;
-    try {
-      downloadHdBtn.disabled = true;
-      downloadHdBtn.classList.add('opacity-75');
+  if (downloadHdBtn) {
+    downloadHdBtn.addEventListener('click', async () => {
+      if (!cutoutBlob) return;
+      try {
+        downloadHdBtn.disabled = true;
+        downloadHdBtn.classList.add('opacity-75');
 
-      const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
-      const filename = `${originalName}-fastbgremove-hd.png`;
+        const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
+        const filename = `${originalName}-fastbgremove-hd.png`;
 
-      const exportOpts: ExportOptions = {
-        ratio: currentRatio,
-        backgroundColor: currentBgColor,
-        customBgImage: customBgImageObj,
-        blur: currentBlur
-      };
+        const exportOpts: ExportOptions = {
+          ratio: currentRatio,
+          backgroundColor: currentBgColor,
+          customBgImage: customBgImageObj,
+          blur: currentBlur
+        };
 
-      const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
-      triggerDownload(finalBlob, filename);
-      showToast('Download started');
-    } catch (err) {
-      console.error('Export download error:', err);
-      showError('Failed to export HD PNG.');
-    } finally {
-      downloadHdBtn.disabled = false;
-      downloadHdBtn.classList.remove('opacity-75');
-    }
-  });
+        const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
+        triggerDownload(finalBlob, filename);
+        showToast('Download started');
+      } catch (err) {
+        console.error('Export download error:', err);
+        showError('Failed to export HD PNG.');
+      } finally {
+        downloadHdBtn.disabled = false;
+        downloadHdBtn.classList.remove('opacity-75');
+      }
+    });
+  }
 
   // Secondary Export: Export Compressed JPG (Binary Search)
-  exportJpgBtn.addEventListener('click', async () => {
-    if (!cutoutBlob) return;
-    try {
-      exportJpgBtn.disabled = true;
-      const originalBtnText = exportJpgText.textContent;
-      exportJpgText.textContent = 'Optimizing...';
+  if (exportJpgBtn) {
+    exportJpgBtn.addEventListener('click', async () => {
+      if (!cutoutBlob) return;
+      try {
+        exportJpgBtn.disabled = true;
+        const originalBtnText = exportJpgText ? exportJpgText.textContent : 'Export JPG';
+        if (exportJpgText) exportJpgText.textContent = 'Optimizing...';
 
-      const preset = (jpgPresetSelect.value as JpgCompressionPreset) || '100kb';
-      const exportOpts: ExportOptions = {
-        ratio: currentRatio,
-        backgroundColor: currentBgColor,
-        customBgImage: customBgImageObj,
-        blur: currentBlur
-      };
+        const preset = ((jpgPresetSelect ? jpgPresetSelect.value : '100kb') as JpgCompressionPreset) || '100kb';
+        const exportOpts: ExportOptions = {
+          ratio: currentRatio,
+          backgroundColor: currentBgColor,
+          customBgImage: customBgImageObj,
+          blur: currentBlur
+        };
 
-      const finalBlob = await createCompressedJpgBlob(cutoutBlob, preset, exportOpts);
-      const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
-      const filename = `${originalName}-fastbgremove-${preset}.jpg`;
+        const finalBlob = await createCompressedJpgBlob(cutoutBlob, preset, exportOpts);
+        const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
+        const filename = `${originalName}-fastbgremove-${preset}.jpg`;
 
-      triggerDownload(finalBlob, filename);
-      const sizeKb = (finalBlob.size / 1024).toFixed(1);
-      showToast(`JPG downloaded (${sizeKb} KB)`);
-      exportJpgText.textContent = originalBtnText;
-    } catch (err) {
-      console.error('JPG export error:', err);
-      showError('Failed to export compressed JPG.');
-      exportJpgText.textContent = 'Export JPG';
-    } finally {
-      exportJpgBtn.disabled = false;
-    }
-  });
+        triggerDownload(finalBlob, filename);
+        const sizeKb = (finalBlob.size / 1024).toFixed(1);
+        showToast(`JPG downloaded (${sizeKb} KB)`);
+        if (exportJpgText) exportJpgText.textContent = originalBtnText;
+      } catch (err) {
+        console.error('JPG export error:', err);
+        showError('Failed to export compressed JPG.');
+        if (exportJpgText) exportJpgText.textContent = 'Export JPG';
+      } finally {
+        exportJpgBtn.disabled = false;
+      }
+    });
+  }
 
   // Copy to Clipboard
-  copyClipboardBtn.addEventListener('click', async () => {
-    if (!cutoutBlob) return;
-    try {
-      copyClipboardBtn.disabled = true;
-      const originalText = copyBtnText.textContent;
-      copyBtnText.textContent = 'Copying...';
+  if (copyClipboardBtn) {
+    copyClipboardBtn.addEventListener('click', async () => {
+      if (!cutoutBlob) return;
+      try {
+        copyClipboardBtn.disabled = true;
+        const originalText = copyBtnText ? copyBtnText.textContent : 'Copy PNG';
+        if (copyBtnText) copyBtnText.textContent = 'Copying...';
 
-      const exportOpts: ExportOptions = {
-        ratio: currentRatio,
-        backgroundColor: currentBgColor,
-        customBgImage: customBgImageObj,
-        blur: currentBlur
-      };
+        const exportOpts: ExportOptions = {
+          ratio: currentRatio,
+          backgroundColor: currentBgColor,
+          customBgImage: customBgImageObj,
+          blur: currentBlur
+        };
 
-      const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
-      const success = await copyImageToClipboard(finalBlob);
+        const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
+        const success = await copyImageToClipboard(finalBlob);
 
-      if (success) {
-        copyBtnText.textContent = 'Copied!';
-        showToast('Cutout copied to clipboard');
-        setTimeout(() => {
-          copyBtnText.textContent = originalText;
-          copyClipboardBtn.disabled = false;
-        }, 2000);
-      } else {
-        copyBtnText.textContent = 'Failed';
-        showError('Clipboard copy is not supported in this browser.');
-        setTimeout(() => {
-          copyBtnText.textContent = originalText;
-          copyClipboardBtn.disabled = false;
-        }, 2000);
+        if (success) {
+          if (copyBtnText) copyBtnText.textContent = 'Copied!';
+          showToast('Cutout copied to clipboard');
+          setTimeout(() => {
+            if (copyBtnText) copyBtnText.textContent = originalText;
+            copyClipboardBtn.disabled = false;
+          }, 2000);
+        } else {
+          if (copyBtnText) copyBtnText.textContent = 'Failed';
+          showError('Clipboard copy is not supported in this browser.');
+          setTimeout(() => {
+            if (copyBtnText) copyBtnText.textContent = originalText;
+            copyClipboardBtn.disabled = false;
+          }, 2000);
+        }
+      } catch (err) {
+        console.error('Clipboard copy error:', err);
+        copyClipboardBtn.disabled = false;
       }
-    } catch (err) {
-      console.error('Clipboard copy error:', err);
-      copyClipboardBtn.disabled = false;
-    }
-  });
+    });
+  }
 </script>

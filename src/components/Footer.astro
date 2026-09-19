@@ -122,9 +122,12 @@ const currentYear = new Date().getFullYear();
         </p>
       </div>
       <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 font-mono text-[11px] text-[#807d72] dark:text-[#a09c92]">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#f54e00]/10 border border-[#f54e00]/20 text-[#d04200] dark:text-[#f54e00] font-sans font-semibold text-xs">
-          🇮🇳 Crafted with pride in India • Dedicated to the Nation
-        </span>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#efeee8] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs">
+          <img src="/india-badge.svg" alt="India Flag" class="w-5 h-5 inline-block mr-1 rounded-full shadow-xs object-cover" />
+          <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400 font-sans">
+            Dedicated to the Nation • Crafted with pride in India
+          </span>
+        </div>
         <span class="hidden sm:inline">•</span>
         <span>WebAssembly Neural Engine</span>
       </div>
