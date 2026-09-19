@@ -457,6 +457,7 @@ const {
   import {
     createHdExportBlob,
     createCompressedJpgBlob,
+    refineAlphaMask,
     triggerDownload,
     copyImageToClipboard,
     type CanvasRatio,
@@ -968,11 +969,11 @@ const {
       processingTitle.textContent = 'Segmenting foreground...';
       processingSubtitle.textContent = 'Calculating pixel contours in browser RAM...';
 
-      const resultBlob = await removeBackground(file, {
+      const rawBlob = await removeBackground(file, {
         progress: (key: string, current: number, total: number) => {
           if (isCancelled) return;
           if (total > 0) {
-            const pct = Math.min(95, Math.round((current / total) * 100));
+            const pct = Math.min(94, Math.round((current / total) * 100));
             progressBarFill.style.width = `${Math.max(35, pct)}%`;
           }
           if (key.includes('fetch')) {
@@ -988,6 +989,14 @@ const {
           type: 'foreground'
         }
       });
+
+      if (isCancelled) return;
+
+      progressBarFill.style.width = '97%';
+      processingTitle.textContent = 'Refining alpha contours & edge feathering...';
+      processingSubtitle.textContent = 'Clamping mask thresholds and applying 1px bilateral cleanup...';
+
+      const resultBlob = await refineAlphaMask(rawBlob);
 
       if (isCancelled) return;
 

@@ -8,7 +8,13 @@ const currentYear = new Date().getFullYear();
       <!-- Col 1: Brand & Isolation Tag -->
       <div class="space-y-4">
         <a href="/" class="flex items-center gap-2.5 group">
-          <img src="/logo.svg" alt="fastbgremove.com Logo" class="h-6 w-auto object-contain transition-transform group-hover:scale-105" />
+          <img
+            src="/logo.png"
+            alt="fastbgremove.com Elephant Logo"
+            width="24"
+            height="24"
+            class="h-6 w-6 rounded-full object-cover shadow-xs border border-zinc-200 dark:border-zinc-700 transition-transform group-hover:scale-105 shrink-0"
+          />
           <span class="font-bold text-base tracking-tight text-[#26251e] dark:text-white">fastbgremove.com</span>
         </a>
         <p class="text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
@@ -111,25 +117,16 @@ const currentYear = new Date().getFullYear();
       </div>
     </div>
 
-    <!-- Bottom Bar: Disclaimer & Indian Flag Signature -->
-    <div class="pt-8 border-t border-[#e6e5e0] dark:border-[#2e2e33] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#807d72] dark:text-[#706e68]">
-      <div class="space-y-1 text-center md:text-left">
-        <p class="font-medium text-[#26251e] dark:text-[#ededed]">
-          © 2026 fastbgremove.com. 100% In-Browser Privacy Protection.
-        </p>
-        <p class="text-[11px] text-[#807d72]/80 dark:text-[#706e68]/80 max-w-xl">
-          Disclaimer: fastbgremove.com is an independent utility not affiliated with third-party trademark holders.
-        </p>
-      </div>
-      <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 font-mono text-[11px] text-[#807d72] dark:text-[#a09c92]">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#efeee8] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs">
-          <img src="/india-badge.svg" alt="India Flag" class="w-5 h-5 inline-block mr-1 rounded-full shadow-xs object-cover" />
-          <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400 font-sans">
-            Dedicated to the Nation • Crafted with pride in India
-          </span>
-        </div>
-        <span class="hidden sm:inline">•</span>
-        <span>WebAssembly Neural Engine</span>
+    <!-- Bottom Bar: Exact SetImgKB Matching Format -->
+    <div class="pt-8 border-t border-[#e6e5e0] dark:border-[#2e2e33] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#807d72] dark:text-[#706e68]">
+      <p class="font-medium text-[#26251e] dark:text-[#ededed] text-center sm:text-left">
+        © 2026 fastbgremove.com. Free in-browser utility. No accounts, zero tracking.
+      </p>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-xs text-zinc-600 dark:text-zinc-400">
+        <span>Dedicated to the Nation</span>
+        <span>🇮🇳</span>
+        <span class="text-zinc-400 dark:text-zinc-600">•</span>
+        <span>For Every Creator</span>
       </div>
     </div>
   </div>
