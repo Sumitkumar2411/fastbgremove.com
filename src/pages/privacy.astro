@@ -4,68 +4,85 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout
   title="Privacy Architecture & Zero-Data Guarantee – fastbgremove.com"
-  description="Learn about our 100% client-side privacy architecture. We never collect, transmit, or store your photos."
+  description="Learn about our 100% client-side privacy architecture. 0 bytes of image data ever leave your browser RAM."
   canonicalPath="/privacy"
 >
-  <div class="max-w-3xl mx-auto py-8 sm:py-12 space-y-8">
-    <div class="space-y-2">
-      <div class="inline-flex items-center gap-2 text-xs font-mono text-[#76B900] bg-[#76B900]/10 px-3 py-1 rounded-[2px] border border-[#76B900]/30 font-semibold">
-        <span>🔒</span> PRIVACY ARCHITECTURE
+  <div class="max-w-3xl mx-auto py-8 sm:py-12 space-y-10">
+    <div class="space-y-3">
+      <div class="inline-flex items-center gap-2 text-xs font-mono text-[#f54e00] bg-[#f54e00]/10 px-3 py-1 rounded-md border border-[#f54e00]/20 font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#f54e00]"></span>
+        <span>ZERO-SERVER PRIVACY GUARANTEE</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
-        Privacy by Architecture: Zero Server Uploads
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-[#26251e] dark:text-white">
+        Privacy by Architecture: Zero Uploads
       </h1>
-      <p class="text-xs sm:text-sm text-zinc-500 dark:text-[#A7A7A7]">
-        Last updated: September 2026
+      <p class="text-xs sm:text-sm text-[#807d72] dark:text-[#706e68]">
+        Policy Effective: 2026 • Verified Client-Side Isolation
       </p>
     </div>
 
-    <div class="prose prose-invert max-w-none text-xs sm:text-sm text-zinc-600 dark:text-[#A7A7A7] space-y-6">
-      <section class="space-y-3 p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs relative">
-        <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
-        <h2 class="text-base font-semibold text-zinc-900 dark:text-white">1. The Zero-Upload Guarantee</h2>
+    <div class="space-y-6 text-sm sm:text-base text-[#5a5852] dark:text-[#a09c92]">
+      <!-- 1. The Zero-Upload Guarantee -->
+      <section class="space-y-3 p-6 sm:p-7 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs">
+        <h2 class="text-base sm:text-lg font-bold text-[#26251e] dark:text-white">1. The Zero-Upload Technical Guarantee</h2>
         <p class="leading-relaxed">
-          At fastbgremove.com, privacy is not just a policy—it is a technical guarantee enforced by code architecture. When you drop, paste, or select an image on this website, <strong class="text-zinc-900 dark:text-white">the image is processed entirely inside your local web browser</strong> using WebAssembly and ONNX Runtime.
+          At fastbgremove.com, privacy is not a discretionary promise—it is an immutable mathematical guarantee enforced by browser isolation. When you select, drag-and-drop, or paste an image onto fastbgremove.com:
         </p>
+        <div class="p-3.5 rounded-md bg-[#f7f7f4] dark:bg-[#121212] border border-[#e6e5e0] dark:border-[#2e2e33] text-xs font-mono text-[#26251e] dark:text-[#ededed]">
+          <strong>Exact Transmitted Payload:</strong> 0 Bytes (Zero image packets leave browser RAM)
+        </div>
         <p class="leading-relaxed">
-          Your image pixels are never converted to HTTP requests, never sent to external APIs, and never written to remote disks or cloud buckets.
+          All pixel buffers, color values, and alpha transparency masks are evaluated locally inside your computer or mobile device's WebAssembly sandbox. We operate zero cloud image processing infrastructure.
         </p>
       </section>
 
-      <section class="space-y-3 p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs relative">
-        <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
-        <h2 class="text-base font-semibold text-zinc-900 dark:text-white">2. Technical Verification (How to Inspect)</h2>
+      <!-- 2. Technical Verification (How to Inspect) -->
+      <section class="space-y-3 p-6 sm:p-7 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs">
+        <h2 class="text-base sm:text-lg font-bold text-[#26251e] dark:text-white">2. Independent Verification (DevTools Audit)</h2>
         <p class="leading-relaxed">
-          You do not need to take our word for it. You can independently verify that zero image data is transmitted:
+          You can inspect and verify our claims at any time using your web browser's built-in developer tools:
         </p>
-        <ol class="list-decimal list-inside space-y-1.5 pl-2">
-          <li>Open your browser Developer Tools (F12 or right-click &gt; Inspect).</li>
-          <li>Click on the <strong>Network</strong> tab and filter by <strong>Fetch/XHR</strong>.</li>
-          <li>Drop an image into fastbgremove.com and let it process.</li>
-          <li>Observe that no network payloads containing image buffers or data URLs are sent anywhere.</li>
+        <ol class="list-decimal list-inside space-y-2 pl-2 text-xs sm:text-sm">
+          <li>Press <kbd class="px-2 py-0.5 rounded-md bg-[#efeee8] dark:bg-[#242428] border border-[#cfcdc4] dark:border-[#3e3e44] font-mono text-[11px]">F12</kbd> or right-click anywhere and choose <strong>Inspect</strong>.</li>
+          <li>Navigate to the <strong>Network</strong> tab and filter by <strong>Fetch / XHR</strong>.</li>
+          <li>Drop an image into the workspace and initiate background removal.</li>
+          <li>Observe that no POST, PUT, or binary multipart requests containing your image are generated.</li>
         </ol>
       </section>
 
-      <section class="space-y-3 p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs relative">
-        <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
-        <h2 class="text-base font-semibold text-zinc-900 dark:text-white">3. Compliance with Privacy Regulations</h2>
+      <!-- 3. Regulatory Compliance -->
+      <section class="space-y-3 p-6 sm:p-7 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs">
+        <h2 class="text-base sm:text-lg font-bold text-[#26251e] dark:text-white">3. Regulatory & Corporate Compliance</h2>
         <p class="leading-relaxed">
-          Because fastbgremove.com does not collect, process, or store personal data or biometric photographs on any server infrastructure:
+          Because fastbgremove.com does not collect, receive, or store personal biometric photos or documents:
         </p>
-        <ul class="list-disc list-inside space-y-1.5 pl-2">
-          <li><strong class="text-zinc-900 dark:text-white">GDPR & UK GDPR:</strong> Compliant by design (data localization to user's hardware).</li>
-          <li><strong class="text-zinc-900 dark:text-white">HIPAA:</strong> Safe for medical documentation and patient records.</li>
-          <li><strong class="text-zinc-900 dark:text-white">NDAs & Corporate Security:</strong> Safe for proprietary prototypes, executive signatures, and internal identity photos.</li>
+        <ul class="list-disc list-inside space-y-1.5 pl-2 text-xs sm:text-sm">
+          <li><strong class="text-[#26251e] dark:text-white">GDPR & UK GDPR:</strong> Inherently compliant through complete data localization to the user's hardware.</li>
+          <li><strong class="text-[#26251e] dark:text-white">HIPAA & Medical Documents:</strong> Safe for patient identification cards, medical photos, and pathology records.</li>
+          <li><strong class="text-[#26251e] dark:text-white">Corporate Confidentiality (NDAs):</strong> Safe for unreleased product prototypes, internal executive portraits, and legal signatures.</li>
         </ul>
       </section>
 
-      <section class="space-y-3 p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs relative">
-        <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
-        <h2 class="text-base font-semibold text-zinc-900 dark:text-white">4. Local Browser Caching</h2>
+      <!-- 4. Local Model Weights Caching -->
+      <section class="space-y-3 p-6 sm:p-7 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs">
+        <h2 class="text-base sm:text-lg font-bold text-[#26251e] dark:text-white">4. Local Browser Caching</h2>
         <p class="leading-relaxed">
-          The first time you process an image, your browser will download the compiled WebAssembly model weights (~20MB). These files are stored in your browser's local cache so that future background removals happen instantly, even when completely offline.
+          The machine learning segmentation model weights (~20MB) are downloaded on initial load and stored in your browser's persistent cache. Future background removal tasks execute with zero network delay and function completely offline.
         </p>
       </section>
+
+      <!-- Return to Workspace -->
+      <div class="pt-2 text-center">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-[#f54e00] hover:bg-[#d04200] active:bg-[#b03800] text-white font-medium text-sm transition-all shadow-xs"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Return to Workspace</span>
+        </a>
+      </div>
     </div>
   </div>
 </BaseLayout>

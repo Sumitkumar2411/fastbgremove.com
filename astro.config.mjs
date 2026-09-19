@@ -1,10 +1,12 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
   site: 'https://fastbgremove.com',
+  integrations: [sitemap()],
   devToolbar: {
     enabled: false
   },

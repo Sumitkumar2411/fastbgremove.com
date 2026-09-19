@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contact Support & Desk – fastbgremove.com"
+  description="Get in touch with the fastbgremove.com engineering desk for technical support, feedback, or bug reports."
+  canonicalPath="/contact"
+>
+  <div class="max-w-3xl mx-auto py-8 sm:py-12 space-y-10">
+    <!-- Header -->
+    <div class="space-y-3">
+      <div class="inline-flex items-center gap-2 text-xs font-mono text-[#f54e00] bg-[#f54e00]/10 px-3 py-1 rounded-md border border-[#f54e00]/20 font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#f54e00]"></span>
+        <span>ENGINEERING DESK</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-[#26251e] dark:text-white">
+        Contact & Support
+      </h1>
+      <p class="text-base text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
+        Need assistance with edge cases, have feedback on segmentation quality, or wish to report a bug? We are here to help.
+      </p>
+    </div>
+
+    <!-- Contact Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <!-- Direct Email Card -->
+      <div class="p-6 sm:p-7 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs flex flex-col justify-between space-y-4">
+        <div class="space-y-2">
+          <div class="w-10 h-10 rounded-md bg-[#f54e00]/10 border border-[#f54e00]/20 flex items-center justify-center text-[#f54e00]">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <h2 class="text-base font-bold text-[#26251e] dark:text-white">Direct Email Desk</h2>
+          <p class="text-xs sm:text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
+            Send inquiries, bug reports, and partnership questions directly to our engineering mailbox:
+          </p>
+        </div>
+        <div>
+          <a
+            href="mailto:support@fastbgremove.com"
+            class="inline-flex items-center gap-2 font-mono text-sm font-semibold text-[#f54e00] hover:text-[#d04200] transition-colors underline decoration-1 underline-offset-4"
+          >
+            <span>support@fastbgremove.com</span>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <p class="text-[11px] text-[#807d72] dark:text-[#706e68] mt-2">
+            Average response time: Within 24-48 business hours.
+          </p>
+        </div>
+      </div>
+
+      <!-- Bug Report Guidelines Card -->
+      <div class="p-6 sm:p-7 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs flex flex-col justify-between space-y-4">
+        <div class="space-y-2">
+          <div class="w-10 h-10 rounded-md bg-[#f54e00]/10 border border-[#f54e00]/20 flex items-center justify-center text-[#f54e00]">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h2 class="text-base font-bold text-[#26251e] dark:text-white">Reporting Segmentation Bugs</h2>
+          <p class="text-xs sm:text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
+            If a specific photo fails or has edge artifacts, please provide:
+          </p>
+        </div>
+        <ul class="text-xs text-[#807d72] dark:text-[#a09c92] space-y-1 font-mono">
+          <li>• Browser name & version (e.g. Chrome 128)</li>
+          <li>• Device OS (macOS, Windows, iOS, Android)</li>
+          <li>• File format (PNG, JPG, WebP) and resolution</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Troubleshooting FAQ Desk -->
+    <div class="p-6 sm:p-7 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-4">
+      <h3 class="text-base font-bold text-[#26251e] dark:text-white">Frequently Asked Support Topics</h3>
+      <div class="space-y-3 text-xs sm:text-sm text-[#5a5852] dark:text-[#a09c92]">
+        <div>
+          <h4 class="font-semibold text-[#26251e] dark:text-white">Why does the first image take slightly longer to process?</h4>
+          <p class="mt-0.5 leading-relaxed">
+            The first time you use fastbgremove.com, your browser downloads the WebAssembly machine learning model weights (~20MB). Once downloaded, the browser caches them locally, and subsequent background removals process rapidly in just 1-2 seconds.
+          </p>
+        </div>
+        <div class="pt-2 border-t border-[#e6e5e0] dark:border-[#2e2e33]">
+          <h4 class="font-semibold text-[#26251e] dark:text-white">Does fastbgremove.com keep a copy of my photo?</h4>
+          <p class="mt-0.5 leading-relaxed">
+            No. 0 bytes of your image data are ever transmitted to any server. Your image stays exclusively in your local machine's RAM.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Return to Workspace -->
+    <div class="pt-2 text-center">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-[#f54e00] hover:bg-[#d04200] active:bg-[#b03800] text-white font-medium text-sm transition-all shadow-xs"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>Return to Workspace</span>
+      </a>
+    </div>
+  </div>
+</BaseLayout>

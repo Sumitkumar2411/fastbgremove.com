@@ -75,12 +75,12 @@ const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStr
 
     <!-- Favicon & Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#76B900" />
+    <meta name="theme-color" content="#f54e00" />
 
-    <!-- Fonts: Geist & Geist Mono -->
+    <!-- Fonts: Geist, Geist Mono & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
     <!-- OpenGraph / Facebook -->
     <meta property="og:type" content={ogType} />
@@ -100,7 +100,7 @@ const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStr
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
   </head>
-  <body class="bg-white dark:bg-[#0A0A0B] text-zinc-900 dark:text-white antialiased flex flex-col min-h-screen selection:bg-[#76B900]/30 selection:text-zinc-900">
+  <body class="bg-[#f7f7f4] dark:bg-[#121212] text-[#26251e] dark:text-[#ededed] antialiased flex flex-col min-h-screen selection:bg-[#f54e00]/20 selection:text-[#d04200]">
     <Header />
     <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-2 sm:py-4">
       <slot />

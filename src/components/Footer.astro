@@ -2,73 +2,127 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="w-full border-t border-zinc-200 dark:border-[#232326] bg-white dark:bg-[#0A0A0B] mt-24 sm:mt-32 transition-colors">
-  <div class="max-w-7xl mx-auto px-6 sm:px-8 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-      <!-- Col 1: Brand info -->
-      <div class="md:col-span-2 space-y-3">
-        <div class="flex items-center gap-2.5">
-          <img src="/logo.svg" alt="fastbgremove.com Logo" class="h-6 w-auto object-contain" />
-          <span class="font-bold text-base tracking-tight text-zinc-900 dark:text-white">fastbgremove.com</span>
-        </div>
-        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed max-w-md">
-          High-performance, 100% in-browser background removal. All neural segmentation models run directly on your device via WebAssembly. Your photos are never uploaded or stored on any server.
+<footer class="w-full border-t border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#121212] mt-24 sm:mt-32 transition-colors">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8 py-14 sm:py-16">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-12">
+      <!-- Col 1: Brand & Isolation Tag -->
+      <div class="space-y-4">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <img src="/logo.svg" alt="fastbgremove.com Logo" class="h-6 w-auto object-contain transition-transform group-hover:scale-105" />
+          <span class="font-bold text-base tracking-tight text-[#26251e] dark:text-white">fastbgremove.com</span>
+        </a>
+        <p class="text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
+          100% in-browser, zero-server image background removal. Privacy by isolation.
         </p>
+        <div class="pt-1">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#f54e00]/10 text-[#d04200] dark:text-[#f54e00] border border-[#f54e00]/20 font-mono">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#f54e00]"></span>
+            <span>Client-Side WASM Isolation</span>
+          </span>
+        </div>
       </div>
 
-      <!-- Col 2: Utilities -->
-      <div class="space-y-3">
-        <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Tools</h4>
-        <ul class="space-y-2 text-sm text-zinc-500 dark:text-[#A7A7A7]">
+      <!-- Col 2: Core Utilities -->
+      <div class="space-y-3.5">
+        <h4 class="text-sm font-semibold text-[#26251e] dark:text-white tracking-tight">Core Utilities</h4>
+        <ul class="space-y-2.5 text-sm text-[#5a5852] dark:text-[#a09c92]">
           <li>
-            <a href="/passport-photo-white-background" class="hover:text-[#76B900] dark:hover:text-white transition-colors">
-              Passport Photo Background
+            <a href="/passport-photo-white-background" class="hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors">
+              Passport Photo Background Maker
             </a>
           </li>
           <li>
-            <a href="/transparent-signature-maker" class="hover:text-[#76B900] dark:hover:text-white transition-colors">
-              Signature Maker
+            <a href="/transparent-signature-maker" class="hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors">
+              Transparent Signature Maker
             </a>
           </li>
           <li>
-            <a href="/remove-bg-alternative" class="hover:text-[#76B900] dark:hover:text-white transition-colors">
-              Free Remove.bg Alternative
+            <a href="/remove-bg-alternative" class="hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors">
+              Remove.bg Migration Alternative
             </a>
           </li>
         </ul>
       </div>
 
-      <!-- Col 3: Legal & Trust -->
-      <div class="space-y-3">
-        <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Privacy & Legal</h4>
-        <ul class="space-y-2 text-sm text-zinc-500 dark:text-[#A7A7A7]">
+      <!-- Col 3: Ecosystem / Media Utilities -->
+      <div class="space-y-3.5">
+        <h4 class="text-sm font-semibold text-[#26251e] dark:text-white tracking-tight">Ecosystem Utilities</h4>
+        <ul class="space-y-2.5 text-sm text-[#5a5852] dark:text-[#a09c92]">
           <li>
-            <a href="/privacy" class="hover:text-[#76B900] dark:hover:text-white transition-colors">
-              Privacy Guarantee
+            <a
+              href="https://setimgkb.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors group"
+            >
+              <span>SetImgKB</span>
+              <span class="text-xs text-[#807d72] dark:text-[#706e68]">(Image Compressor)</span>
+              <svg class="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
             </a>
           </li>
           <li>
-            <a href="/terms" class="hover:text-[#76B900] dark:hover:text-white transition-colors">
+            <a
+              href="https://aitubekit.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors group"
+            >
+              <span>AI TubeKit</span>
+              <span class="text-xs text-[#807d72] dark:text-[#706e68]">(Video SEO Suite)</span>
+              <svg class="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Legal & Support -->
+      <div class="space-y-3.5">
+        <h4 class="text-sm font-semibold text-[#26251e] dark:text-white tracking-tight">Legal & Support</h4>
+        <ul class="space-y-2.5 text-sm text-[#5a5852] dark:text-[#a09c92]">
+          <li>
+            <a href="/about" class="hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors">
+              About Us
+            </a>
+          </li>
+          <li>
+            <a href="/contact" class="hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors">
+              Contact Support
+            </a>
+          </li>
+          <li>
+            <a href="/privacy" class="hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors">
+              Privacy Policy
+            </a>
+          </li>
+          <li>
+            <a href="/terms" class="hover:text-[#d04200] dark:hover:text-[#f54e00] transition-colors">
               Terms of Service
             </a>
-          </li>
-          <li>
-            <span class="text-[#76B900] font-semibold flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-[1px] bg-[#76B900]"></span>
-              <span>100% Client-Side Private</span>
-            </span>
           </li>
         </ul>
       </div>
     </div>
 
-    <!-- Bottom line -->
-    <div class="pt-8 border-t border-zinc-200 dark:border-[#232326] flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500 dark:text-[#757575]">
-      <p>© {currentYear} fastbgremove.com. Free Full HD background remover without watermarks.</p>
-      <div class="flex items-center gap-4 text-xs font-medium text-zinc-400 dark:text-[#5E5E5E]">
+    <!-- Bottom Bar: Disclaimer & Copyright -->
+    <div class="pt-8 border-t border-[#e6e5e0] dark:border-[#2e2e33] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#807d72] dark:text-[#706e68]">
+      <div class="space-y-1 text-center md:text-left">
+        <p>© 2026 fastbgremove.com. All rights reserved.</p>
+        <p class="text-[11px] text-[#807d72]/80 dark:text-[#706e68]/80 max-w-xl">
+          Disclaimer: fastbgremove.com is an independent utility not affiliated with third-party trademark holders.
+        </p>
+      </div>
+      <div class="flex items-center gap-3 font-mono text-[11px] text-[#807d72] dark:text-[#706e68]">
         <span>WebAssembly Neural Engine</span>
         <span>•</span>
-        <span>Zero Cloud Latency</span>
+        <span>Zero Server Uploads</span>
       </div>
     </div>
   </div>

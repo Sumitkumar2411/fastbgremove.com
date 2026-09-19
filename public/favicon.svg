@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="2" fill="#0A0A0B"/>
-  <rect x="0.5" y="0.5" width="31" height="31" rx="1.5" stroke="#232326"/>
-  <!-- Nvidia Precision Accent Corner -->
-  <rect x="2" y="2" width="6" height="6" fill="#76B900" />
-  <!-- Diagonal Background Laser Cutout Vector -->
-  <path d="M7 25L25 7" stroke="#76B900" stroke-width="2.2" stroke-linecap="square" />
+  <rect width="32" height="32" rx="6" fill="#121212"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="5.5" stroke="#2a2a2e"/>
+  <!-- Cursor Active Corner Dot -->
+  <circle cx="6" cy="6" r="2" fill="#d04200" />
+  <!-- Dynamic Precision Cut Line -->
+  <path d="M6 26L26 6" stroke="#f54e00" stroke-width="2.2" stroke-linecap="round" />
   <!-- Foreground Isolated Subject Silhouette -->
-  <path d="M8 23L16 15L23 22L20 25H10L8 23Z" fill="#76B900" />
-  <circle cx="13" cy="11" r="2.5" fill="#FFFFFF" />
-  <!-- Transparency Matrix Dots -->
-  <rect x="20" y="12" width="3" height="3" fill="#FFFFFF" fill-opacity="0.4" />
-  <rect x="23" y="15" width="3" height="3" fill="#76B900" />
-  <rect x="20" y="18" width="3" height="3" fill="#FFFFFF" fill-opacity="0.4" />
-  <rect x="23" y="21" width="3" height="3" fill="#76B900" />
+  <path d="M7 23L15 15L22 22L19 25H9L7 23Z" fill="#f54e00" />
+  <circle cx="12.5" cy="11" r="2.2" fill="#ffffff" />
+  <!-- Alpha Transparency Grid Cells -->
+  <rect x="19" y="11" width="3.5" height="3.5" rx="1" fill="#ffffff" fill-opacity="0.4" />
+  <rect x="23.5" y="15.5" width="3.5" height="3.5" rx="1" fill="#f54e00" />
+  <rect x="19" y="15.5" width="3.5" height="3.5" rx="1" fill="#ffffff" fill-opacity="0.4" />
+  <rect x="23.5" y="20" width="3.5" height="3.5" rx="1" fill="#d04200" />
 </svg>

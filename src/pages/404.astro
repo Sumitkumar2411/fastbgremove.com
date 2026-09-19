@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="404 – Page Not Found | fastbgremove.com"
+  description="The requested page could not be found. Return to fastbgremove.com workspace for 100% private in-browser background removal."
+>
+  <div class="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 py-16">
+    <div class="space-y-6 max-w-lg">
+      <!-- 404 Monospace Badge -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#f54e00]/10 border border-[#f54e00]/20 text-xs font-mono font-semibold text-[#d04200] dark:text-[#f54e00]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#f54e00]"></span>
+        <span>ERROR 404 • ROUTE_NOT_FOUND</span>
+      </div>
+
+      <div class="space-y-2">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[#26251e] dark:text-white">
+          Page Not Found
+        </h1>
+        <p class="text-sm sm:text-base text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
+          The file or route you are attempting to access does not exist or has been relocated.
+        </p>
+      </div>
+
+      <!-- Workspace Return CTA Button -->
+      <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/"
+          class="w-full sm:w-auto h-11 px-6 rounded-md bg-[#f54e00] hover:bg-[#d04200] active:bg-[#b03800] text-white text-sm font-medium transition-all flex items-center justify-center gap-2 shadow-xs"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Back to Workspace</span>
+        </a>
+      </div>
+
+      <!-- Quick Nav Alternatives -->
+      <div class="pt-8 border-t border-[#e6e5e0] dark:border-[#2e2e33]">
+        <p class="text-xs font-medium text-[#807d72] dark:text-[#706e68] mb-3 uppercase tracking-wider">
+          Popular In-Browser Tools
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-2 text-xs">
+          <a
+            href="/passport-photo-white-background"
+            class="px-3 py-1.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] hover:border-[#f54e00] transition-colors"
+          >
+            Passport Photo Maker
+          </a>
+          <a
+            href="/transparent-signature-maker"
+            class="px-3 py-1.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] hover:border-[#f54e00] transition-colors"
+          >
+            Signature Isolator
+          </a>
+          <a
+            href="/remove-bg-alternative"
+            class="px-3 py-1.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] hover:border-[#f54e00] transition-colors"
+          >
+            vs Remove.bg
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
