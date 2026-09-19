@@ -13,7 +13,7 @@ const {
 ---
 
 <section class="w-full flex flex-col items-center justify-center pt-2 sm:pt-4 pb-6" data-default-bg={defaultBg}>
-  <!-- Desktop Hero Heading (Clean & Bold Nvidia Typography) -->
+  <!-- Desktop Hero Heading (Clean & Bold Cursor Typography) -->
   <div class="text-center max-w-3xl mx-auto mb-6 sm:mb-8 space-y-2">
     <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
       {heading}
@@ -138,7 +138,7 @@ const {
     </div>
 
     <!-- STATE 3: RESULT VIEW (LARGE IMMERSIVE PREVIEW) -->
-    <div id="result-view" class="hidden flex flex-col space-y-4">
+    <div id="result-view" class="hidden flex flex-col space-y-3">
       <!-- Toolbar Header: Tactile Desktop Controls -->
       <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#e6e5e0] dark:border-[#2e2e33]">
         <!-- Left: Image Resolution Badge -->
@@ -150,8 +150,8 @@ const {
           <span id="meta-size-badge" class="text-xs font-medium text-[#807d72] dark:text-[#a09c92] font-mono hidden sm:inline-block"></span>
         </div>
 
-        <!-- Right: Background Color Controls & Mode Toggles -->
-        <div class="flex flex-wrap items-center gap-2.5">
+        <!-- Right: Background Color Controls, Custom Image & Blur Slider -->
+        <div class="flex flex-wrap items-center gap-2">
           <!-- Background Color Segmented Pill -->
           <div class="flex items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs">
             <!-- Transparent Toggle -->
@@ -159,10 +159,10 @@ const {
               id="bg-btn-transparent"
               type="button"
               title="Transparent Alpha Background"
-              class="bg-color-btn active py-2 px-3.5 rounded-md text-sm font-medium flex items-center gap-2 transition-all text-[#26251e] dark:text-white bg-white dark:bg-[#242428] shadow-xs cursor-pointer"
+              class="bg-color-btn active py-1.5 px-3 rounded-md text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all text-[#d04200] dark:text-[#f54e00] bg-white dark:bg-[#242428] shadow-xs cursor-pointer border border-[#f54e00]/20"
               data-bg="transparent"
             >
-              <div class="w-4 h-4 rounded-sm bg-checkerboard-dense border border-zinc-300 dark:border-zinc-600"></div>
+              <div class="w-3.5 h-3.5 rounded-sm bg-checkerboard-dense border border-zinc-300 dark:border-zinc-600"></div>
               <span>Transparent</span>
             </button>
 
@@ -171,10 +171,10 @@ const {
               id="bg-btn-white"
               type="button"
               title="Pure White (#FFFFFF)"
-              class="bg-color-btn py-2 px-3.5 rounded-md text-sm font-medium flex items-center gap-2 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-white cursor-pointer"
+              class="bg-color-btn py-1.5 px-3 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
               data-bg="#FFFFFF"
             >
-              <div class="w-4 h-4 rounded-sm bg-white border border-zinc-300"></div>
+              <div class="w-3.5 h-3.5 rounded-sm bg-white border border-zinc-300"></div>
               <span>White</span>
             </button>
 
@@ -183,40 +183,54 @@ const {
               id="bg-btn-blue"
               type="button"
               title="Passport Blue (#0055A5)"
-              class="bg-color-btn py-2 px-3.5 rounded-md text-sm font-medium flex items-center gap-2 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-white cursor-pointer"
+              class="bg-color-btn py-1.5 px-3 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
               data-bg="#0055A5"
             >
-              <div class="w-4 h-4 rounded-sm bg-[#0055A5] border border-blue-400/40"></div>
+              <div class="w-3.5 h-3.5 rounded-sm bg-[#0055A5] border border-blue-400/40"></div>
               <span>Passport Blue</span>
             </button>
 
             <!-- Custom Color Picker -->
             <label
-              title="Custom Color"
-              class="relative flex items-center gap-2 py-2 px-3 rounded-md text-sm font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-white cursor-pointer"
+              title="Custom Hex Color"
+              class="relative flex items-center gap-1.5 py-1.5 px-2.5 rounded-md text-xs sm:text-sm font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
             >
               <input type="color" id="custom-color-picker" value="#000000" class="sr-only" />
-              <div id="custom-color-swatch" class="w-4 h-4 rounded-sm border border-zinc-300 dark:border-zinc-600 bg-black"></div>
-              <span>Custom</span>
+              <div id="custom-color-swatch" class="w-3.5 h-3.5 rounded-sm border border-zinc-300 dark:border-zinc-600 bg-black"></div>
+              <span>Color</span>
             </label>
+
+            <!-- [+] Custom BG Image File Input -->
+            <button
+              id="bg-btn-custom-image"
+              type="button"
+              title="Upload Custom Backdrop Image"
+              class="bg-color-btn py-1.5 px-2.5 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
+            >
+              <svg class="w-3.5 h-3.5 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>[+] Custom BG</span>
+            </button>
+            <input type="file" id="custom-bg-input" accept="image/png, image/jpeg, image/webp" class="hidden" />
           </div>
 
-          <!-- View Mode Toggle: Layered vs Side-by-Side -->
-          <div class="flex items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs">
-            <button
-              id="mode-layered-btn"
-              type="button"
-              class="py-2 px-3.5 rounded-md bg-white dark:bg-[#242428] text-[#26251e] dark:text-white font-medium text-sm shadow-xs cursor-pointer"
-            >
-              Layered
-            </button>
-            <button
-              id="mode-split-btn"
-              type="button"
-              class="py-2 px-3.5 rounded-md text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-white text-sm font-medium cursor-pointer"
-            >
-              Side-by-Side
-            </button>
+          <!-- Discrete Backdrop Blur Range Slider (Visible when custom backdrop or solid color is active) -->
+          <div id="blur-control-wrapper" class="hidden items-center gap-2 px-3 py-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] shadow-xs text-xs font-mono">
+            <span class="text-[#5a5852] dark:text-[#a09c92]">Blur:</span>
+            <input
+              type="range"
+              id="backdrop-blur-slider"
+              min="0"
+              max="20"
+              value="0"
+              step="1"
+              class="w-18 sm:w-20 h-1.5 accent-[#f54e00] cursor-pointer"
+              title="Adjust backdrop blur (0-20px)"
+            />
+            <span id="blur-value-label" class="w-7 text-right font-semibold text-[#26251e] dark:text-white">0px</span>
           </div>
 
           <!-- Hold for Original Compare Button -->
@@ -224,13 +238,54 @@ const {
             id="compare-btn"
             type="button"
             title="Press and hold to view original image"
-            class="py-2 px-3.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] hover:border-[#f54e00] active:bg-[#efeee8] dark:active:bg-[#242428] select-none transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+            class="py-1.5 px-3 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] hover:border-[#f54e00] active:bg-[#efeee8] dark:active:bg-[#242428] select-none transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <svg class="w-4 h-4 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-3.5 h-3.5 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
             <span>Hold for Original</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CANVAS RATIO CONTROLS (Segmented Toolbar) -->
+      <div class="flex flex-wrap items-center justify-between gap-2.5 pt-0.5 pb-0.5">
+        <div class="flex items-center gap-1.5 text-xs font-mono text-[#807d72] dark:text-[#a09c92]">
+          <svg class="w-3.5 h-3.5 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          </svg>
+          <span>Canvas Ratio:</span>
+        </div>
+
+        <div id="ratio-selector" class="flex items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs text-xs font-mono">
+          <button
+            type="button"
+            data-ratio="original"
+            class="ratio-btn active py-1.5 px-3 rounded-md font-semibold text-[#d04200] dark:text-[#f54e00] bg-white dark:bg-[#242428] shadow-xs cursor-pointer transition-all border border-[#f54e00]/20"
+          >
+            Original
+          </button>
+          <button
+            type="button"
+            data-ratio="1:1"
+            class="ratio-btn py-1.5 px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent"
+          >
+            1:1 (Shopify/Amazon)
+          </button>
+          <button
+            type="button"
+            data-ratio="16:9"
+            class="ratio-btn py-1.5 px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent"
+          >
+            16:9 (YouTube)
+          </button>
+          <button
+            type="button"
+            data-ratio="passport"
+            class="ratio-btn py-1.5 px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent"
+          >
+            Passport (3.5x4.5cm)
           </button>
         </div>
       </div>
@@ -242,16 +297,29 @@ const {
       >
         <!-- LAYERED VIEW STAGE -->
         <div id="layered-stage" class="w-full h-full relative flex items-center justify-center">
-          <img
-            id="preview-cutout-img"
-            alt="Cutout preview"
-            class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 transition-opacity duration-100 drop-shadow-md"
-          />
-          <img
-            id="preview-original-img"
-            alt="Original uploaded image"
-            class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain absolute inset-0 m-auto z-10 opacity-0 pointer-events-none transition-opacity duration-100"
-          />
+          <!-- Bounding Stage Box for Ratio Containment -->
+          <div
+            id="stage-box"
+            class="relative flex items-center justify-center transition-all overflow-hidden rounded-md max-h-[440px] sm:max-h-[480px] max-w-full"
+          >
+            <!-- Background Layer (Solid Color or Custom Backdrop with Blur Filter) -->
+            <div id="stage-bg-layer" class="absolute inset-0 z-0 transition-all overflow-hidden pointer-events-none">
+              <img id="custom-bg-preview-img" alt="Custom backdrop" class="hidden w-full h-full object-cover transition-all" />
+            </div>
+
+            <!-- Foreground Cutout Layer Centered with Contain Fit -->
+            <img
+              id="preview-cutout-img"
+              alt="Cutout preview"
+              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 transition-opacity duration-100 drop-shadow-md"
+            />
+            <!-- Original Image for Hold-for-Compare -->
+            <img
+              id="preview-original-img"
+              alt="Original uploaded image"
+              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain absolute inset-0 m-auto z-20 opacity-0 pointer-events-none transition-opacity duration-100"
+            />
+          </div>
         </div>
 
         <!-- SPLIT (SIDE-BY-SIDE) STAGE (Initially hidden) -->
@@ -264,12 +332,15 @@ const {
               class="max-h-[400px] w-auto max-w-full object-contain"
             />
           </div>
-          <div id="split-cutout-box" class="relative flex flex-col items-center justify-center p-4 bg-checkerboard transition-colors">
-            <span class="absolute top-3 left-3 text-xs font-mono font-semibold text-[#f54e00] bg-white dark:bg-[#1c1c1f] px-2 py-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs">CUTOUT</span>
+          <div id="split-cutout-box" class="relative flex flex-col items-center justify-center p-4 bg-checkerboard transition-colors overflow-hidden">
+            <span class="absolute top-3 left-3 text-xs font-mono font-semibold text-[#f54e00] bg-white dark:bg-[#1c1c1f] px-2 py-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs z-20">CUTOUT</span>
+            <div id="split-bg-layer" class="absolute inset-0 z-0 transition-all overflow-hidden pointer-events-none">
+              <img id="split-custom-bg-img" alt="Split backdrop preview" class="hidden w-full h-full object-cover transition-all" />
+            </div>
             <img
               id="split-cutout-img"
               alt="Cutout side preview"
-              class="max-h-[400px] w-auto max-w-full object-contain"
+              class="max-h-[400px] w-auto max-w-full object-contain relative z-10"
             />
           </div>
         </div>
@@ -291,13 +362,13 @@ const {
           <span>Select New Image</span>
         </button>
 
-        <!-- Right: Copy & Primary Download HD -->
-        <div class="w-full sm:w-auto flex items-center gap-3">
+        <!-- Right: Copy, Compressed JPG & Primary Download Full HD PNG -->
+        <div class="w-full sm:w-auto flex flex-wrap items-center gap-2.5">
           <!-- Copy to Clipboard Button -->
           <button
             id="copy-clipboard-btn"
             type="button"
-            class="flex-1 sm:flex-none h-11 px-5 rounded-md bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            class="flex-1 sm:flex-none h-11 px-4 rounded-md bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             title="Copy cutout image to clipboard"
           >
             <svg class="w-4 h-4 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -307,11 +378,37 @@ const {
             <span id="copy-btn-text">Copy PNG</span>
           </button>
 
+          <!-- DUAL EXPORT TRIGGER: Compressed JPG with discrete target selector -->
+          <div class="flex items-center shadow-xs">
+            <select
+              id="jpg-preset-select"
+              aria-label="JPG compression target"
+              class="h-11 pl-3 pr-2 rounded-l-md border border-r-0 border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#1c1c1f] text-xs font-mono font-medium text-[#26251e] dark:text-[#ededed] cursor-pointer focus:outline-none focus:border-[#f54e00]"
+            >
+              <option value="50kb">Under 50 KB</option>
+              <option value="100kb" selected>Under 100 KB</option>
+              <option value="max">Max Quality</option>
+            </select>
+            <button
+              id="export-jpg-btn"
+              type="button"
+              class="h-11 px-4 rounded-r-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] hover:border-[#f54e00] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              title="Export compressed JPG strictly below target threshold"
+            >
+              <svg class="w-4 h-4 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span id="export-jpg-text">Export JPG</span>
+            </button>
+          </div>
+
           <!-- Primary Hero Button: Download Full HD PNG (Cursor Orange CTA) -->
           <button
             id="download-hd-btn"
             type="button"
-            class="flex-2 sm:flex-none h-11 px-8 rounded-md bg-[#f54e00] hover:bg-[#d04200] active:bg-[#b03800] text-white text-base font-medium transition-all flex items-center justify-center gap-2.5 shadow-xs hover:shadow cursor-pointer active:scale-[0.99]"
+            class="flex-2 sm:flex-none h-11 px-7 rounded-md bg-[#f54e00] hover:bg-[#d04200] active:bg-[#b03800] text-white text-base font-medium transition-all flex items-center justify-center gap-2.5 shadow-xs hover:shadow cursor-pointer active:scale-[0.99]"
           >
             <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -339,7 +436,15 @@ const {
 </section>
 
 <script>
-  import { createHdExportBlob, triggerDownload, copyImageToClipboard } from '../lib/canvasExport';
+  import {
+    createHdExportBlob,
+    createCompressedJpgBlob,
+    triggerDownload,
+    copyImageToClipboard,
+    type CanvasRatio,
+    type JpgCompressionPreset,
+    type ExportOptions
+  } from '../lib/canvasExport';
 
   // Global state
   let currentFile: File | Blob | null = null;
@@ -347,10 +452,13 @@ const {
   let cutoutBlob: Blob | null = null;
   let cutoutUrl: string | null = null;
   let currentBgColor: string = 'transparent';
+  let customBgImageObj: HTMLImageElement | null = null;
+  let customBgObjectUrl: string | null = null;
+  let currentBlur: number = 0;
+  let currentRatio: CanvasRatio = 'original';
   let imageNaturalWidth: number = 0;
   let imageNaturalHeight: number = 0;
   let isCancelled: boolean = false;
-  let viewMode: 'layered' | 'split' = 'layered';
 
   // DOM Elements
   const sectionRoot = document.querySelector('section[data-default-bg]') as HTMLElement;
@@ -374,8 +482,12 @@ const {
 
   const previewContainer = document.getElementById('preview-container') as HTMLElement;
   const layeredStage = document.getElementById('layered-stage') as HTMLElement;
-  const splitStage = document.getElementById('split-stage') as HTMLElement;
+  const stageBox = document.getElementById('stage-box') as HTMLElement;
+  const stageBgLayer = document.getElementById('stage-bg-layer') as HTMLElement;
+  const customBgPreviewImg = document.getElementById('custom-bg-preview-img') as HTMLImageElement;
   const splitCutoutBox = document.getElementById('split-cutout-box') as HTMLElement;
+  const splitBgLayer = document.getElementById('split-bg-layer') as HTMLElement;
+  const splitCustomBgImg = document.getElementById('split-custom-bg-img') as HTMLImageElement;
 
   const previewCutoutImg = document.getElementById('preview-cutout-img') as HTMLImageElement;
   const previewOriginalImg = document.getElementById('preview-original-img') as HTMLImageElement;
@@ -390,15 +502,23 @@ const {
   const bgBtnBlue = document.getElementById('bg-btn-blue') as HTMLButtonElement;
   const customColorPicker = document.getElementById('custom-color-picker') as HTMLInputElement;
   const customColorSwatch = document.getElementById('custom-color-swatch') as HTMLElement;
+  const bgBtnCustomImage = document.getElementById('bg-btn-custom-image') as HTMLButtonElement;
+  const customBgInput = document.getElementById('custom-bg-input') as HTMLInputElement;
 
-  const modeLayeredBtn = document.getElementById('mode-layered-btn') as HTMLButtonElement;
-  const modeSplitBtn = document.getElementById('mode-split-btn') as HTMLButtonElement;
+  const blurControlWrapper = document.getElementById('blur-control-wrapper') as HTMLElement;
+  const backdropBlurSlider = document.getElementById('backdrop-blur-slider') as HTMLInputElement;
+  const blurValueLabel = document.getElementById('blur-value-label') as HTMLElement;
+
+  const ratioButtons = document.querySelectorAll('.ratio-btn');
   const compareBtn = document.getElementById('compare-btn') as HTMLButtonElement;
 
   const uploadAnotherBtn = document.getElementById('upload-another-btn') as HTMLButtonElement;
   const copyClipboardBtn = document.getElementById('copy-clipboard-btn') as HTMLButtonElement;
   const copyBtnText = document.getElementById('copy-btn-text') as HTMLElement;
   const downloadHdBtn = document.getElementById('download-hd-btn') as HTMLButtonElement;
+  const exportJpgBtn = document.getElementById('export-jpg-btn') as HTMLButtonElement;
+  const exportJpgText = document.getElementById('export-jpg-text') as HTMLElement;
+  const jpgPresetSelect = document.getElementById('jpg-preset-select') as HTMLInputElement;
 
   // Setup initial color mode based on page prop
   if (initialDefaultBg === 'white') {
@@ -409,21 +529,137 @@ const {
     currentBgColor = 'transparent';
   }
 
-  function applyBgToElements(color: string) {
-    const isTrans = color === 'transparent';
-    const isWhite = color.toUpperCase() === '#FFFFFF';
-    const isBlue = color.toUpperCase() === '#0055A5';
+  function updateResolutionBadge() {
+    if (!metaResBadge) return;
+    if (currentRatio === 'original') {
+      if (imageNaturalWidth && imageNaturalHeight) {
+        metaResBadge.textContent = `${imageNaturalWidth} × ${imageNaturalHeight} PX HD`;
+      } else {
+        metaResBadge.textContent = 'FULL RESOLUTION HD';
+      }
+    } else if (currentRatio === '1:1') {
+      const side = Math.max(imageNaturalWidth, imageNaturalHeight);
+      metaResBadge.textContent = `1:1 • ${side} × ${side} PX HD`;
+    } else if (currentRatio === '16:9') {
+      metaResBadge.textContent = '16:9 (YOUTUBE) HD';
+    } else if (currentRatio === 'passport') {
+      metaResBadge.textContent = 'PASSPORT 3.5×4.5 CM';
+    }
+  }
 
-    // Update buttons
-    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#26251e]', 'dark:text-white', 'shadow-xs'];
-    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]'];
+  function setCanvasRatio(ratio: CanvasRatio) {
+    currentRatio = ratio;
+    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#d04200]', 'dark:text-[#f54e00]', 'font-semibold', 'shadow-xs', 'border-[#f54e00]/20'];
+    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
 
-    [bgBtnTransparent, bgBtnWhite, bgBtnBlue].forEach(b => {
-      b.classList.remove(...activeClasses);
-      b.classList.add(...inactiveClasses);
+    ratioButtons.forEach(btn => {
+      if (btn.getAttribute('data-ratio') === ratio) {
+        btn.classList.add(...activeClasses);
+        btn.classList.remove(...inactiveClasses);
+      } else {
+        btn.classList.remove(...activeClasses);
+        btn.classList.add(...inactiveClasses);
+      }
     });
 
-    if (isTrans) {
+    if (!stageBox) return;
+
+    if (ratio === 'original') {
+      stageBox.style.aspectRatio = '';
+      stageBox.style.width = 'auto';
+      stageBox.style.height = 'auto';
+      stageBox.classList.remove('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
+      previewCutoutImg.style.width = 'auto';
+      previewCutoutImg.style.height = 'auto';
+      if (previewOriginalImg) {
+        previewOriginalImg.style.width = 'auto';
+        previewOriginalImg.style.height = 'auto';
+      }
+    } else if (ratio === '1:1') {
+      stageBox.style.aspectRatio = '1 / 1';
+      stageBox.style.width = 'min(100%, 460px)';
+      stageBox.style.height = 'min(100%, 460px)';
+      stageBox.classList.add('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
+      previewCutoutImg.style.width = '100%';
+      previewCutoutImg.style.height = '100%';
+      if (previewOriginalImg) {
+        previewOriginalImg.style.width = '100%';
+        previewOriginalImg.style.height = '100%';
+      }
+    } else if (ratio === '16:9') {
+      stageBox.style.aspectRatio = '16 / 9';
+      stageBox.style.width = 'min(100%, 680px)';
+      stageBox.style.height = 'auto';
+      stageBox.classList.add('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
+      previewCutoutImg.style.width = '100%';
+      previewCutoutImg.style.height = '100%';
+      if (previewOriginalImg) {
+        previewOriginalImg.style.width = '100%';
+        previewOriginalImg.style.height = '100%';
+      }
+    } else if (ratio === 'passport') {
+      stageBox.style.aspectRatio = '3.5 / 4.5';
+      stageBox.style.width = 'min(100%, 350px)';
+      stageBox.style.height = 'min(100%, 450px)';
+      stageBox.classList.add('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
+      previewCutoutImg.style.width = '100%';
+      previewCutoutImg.style.height = '100%';
+      if (previewOriginalImg) {
+        previewOriginalImg.style.width = '100%';
+        previewOriginalImg.style.height = '100%';
+      }
+    }
+
+    updateResolutionBadge();
+  }
+
+  ratioButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const r = btn.getAttribute('data-ratio') as CanvasRatio;
+      if (r) setCanvasRatio(r);
+    });
+  });
+
+  function clearCustomBg() {
+    customBgImageObj = null;
+    if (customBgObjectUrl) {
+      URL.revokeObjectURL(customBgObjectUrl);
+      customBgObjectUrl = null;
+    }
+    if (customBgPreviewImg) {
+      customBgPreviewImg.classList.add('hidden');
+      customBgPreviewImg.src = '';
+      customBgPreviewImg.style.transform = 'none';
+    }
+    if (splitCustomBgImg) {
+      splitCustomBgImg.classList.add('hidden');
+      splitCustomBgImg.src = '';
+      splitCustomBgImg.style.transform = 'none';
+    }
+    if (customBgInput) customBgInput.value = '';
+  }
+
+  function applyBgToElements(color: string) {
+    const isTrans = color === 'transparent' && !customBgImageObj;
+    const isWhite = color.toUpperCase() === '#FFFFFF';
+    const isBlue = color.toUpperCase() === '#0055A5';
+    const isCustomImg = !!customBgImageObj;
+
+    // Update buttons
+    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#d04200]', 'dark:text-[#f54e00]', 'font-semibold', 'shadow-xs', 'border-[#f54e00]/20'];
+    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
+
+    [bgBtnTransparent, bgBtnWhite, bgBtnBlue, bgBtnCustomImage].forEach(b => {
+      if (b) {
+        b.classList.remove(...activeClasses);
+        b.classList.add(...inactiveClasses);
+      }
+    });
+
+    if (isCustomImg) {
+      bgBtnCustomImage.classList.add(...activeClasses);
+      bgBtnCustomImage.classList.remove(...inactiveClasses);
+    } else if (isTrans) {
       bgBtnTransparent.classList.add(...activeClasses);
       bgBtnTransparent.classList.remove(...inactiveClasses);
     } else if (isWhite) {
@@ -434,51 +670,72 @@ const {
       bgBtnBlue.classList.remove(...inactiveClasses);
     }
 
-    // Apply background to preview containers
+    // Blur slider visibility: visible when custom backdrop or solid color is active, hidden when transparent
     if (isTrans) {
-      previewContainer.className = 'w-full relative min-h-[440px] sm:min-h-[500px] rounded-lg border border-[#e6e5e0] dark:border-[#2e2e33] flex items-center justify-center overflow-hidden bg-checkerboard transition-colors select-none p-4';
-      previewContainer.style.backgroundColor = '';
-      if (splitCutoutBox) {
-        splitCutoutBox.className = 'relative flex flex-col items-center justify-center p-4 bg-checkerboard transition-colors';
-        splitCutoutBox.style.backgroundColor = '';
-      }
+      blurControlWrapper.classList.add('hidden');
+      blurControlWrapper.classList.remove('flex');
+      currentBlur = 0;
+      backdropBlurSlider.value = '0';
+      blurValueLabel.textContent = '0px';
+      if (stageBgLayer) stageBgLayer.style.filter = 'none';
+      if (splitBgLayer) splitBgLayer.style.filter = 'none';
+      if (customBgPreviewImg) customBgPreviewImg.style.transform = 'none';
+      if (splitCustomBgImg) splitCustomBgImg.style.transform = 'none';
     } else {
-      previewContainer.className = 'w-full relative min-h-[440px] sm:min-h-[500px] rounded-lg border border-[#e6e5e0] dark:border-[#2e2e33] flex items-center justify-center overflow-hidden transition-colors select-none p-4';
-      previewContainer.style.backgroundColor = color;
-      if (splitCutoutBox) {
-        splitCutoutBox.className = 'relative flex flex-col items-center justify-center p-4 transition-colors';
-        splitCutoutBox.style.backgroundColor = color;
-      }
+      blurControlWrapper.classList.remove('hidden');
+      blurControlWrapper.classList.add('flex');
+    }
+
+    // Apply to preview backdrop layers
+    if (isCustomImg) {
+      stageBgLayer.style.backgroundColor = 'transparent';
+      if (splitBgLayer) splitBgLayer.style.backgroundColor = 'transparent';
+    } else if (isTrans) {
+      stageBgLayer.style.backgroundColor = 'transparent';
+      if (splitBgLayer) splitBgLayer.style.backgroundColor = 'transparent';
+    } else {
+      stageBgLayer.style.backgroundColor = color;
+      if (splitBgLayer) splitBgLayer.style.backgroundColor = color;
       customColorSwatch.style.backgroundColor = color;
     }
   }
 
-  function setViewMode(mode: 'layered' | 'split') {
-    viewMode = mode;
-    const activeClasses = ['bg-white', 'dark:bg-[#242428]', 'text-[#26251e]', 'dark:text-white', 'shadow-xs'];
-    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]'];
+  // Backdrop blur slider input
+  backdropBlurSlider.addEventListener('input', () => {
+    currentBlur = parseInt(backdropBlurSlider.value, 10) || 0;
+    blurValueLabel.textContent = `${currentBlur}px`;
+    const filterVal = currentBlur > 0 ? `blur(${currentBlur}px)` : 'none';
+    if (stageBgLayer) stageBgLayer.style.filter = filterVal;
+    if (splitBgLayer) splitBgLayer.style.filter = filterVal;
+    if (customBgPreviewImg) customBgPreviewImg.style.transform = currentBlur > 0 ? 'scale(1.08)' : 'none';
+    if (splitCustomBgImg) splitCustomBgImg.style.transform = currentBlur > 0 ? 'scale(1.08)' : 'none';
+  });
 
-    if (mode === 'layered') {
-      modeLayeredBtn.classList.add(...activeClasses);
-      modeLayeredBtn.classList.remove(...inactiveClasses);
-      modeSplitBtn.classList.remove(...activeClasses);
-      modeSplitBtn.classList.add(...inactiveClasses);
-      layeredStage.classList.remove('hidden');
-      splitStage.classList.add('hidden');
-      compareBtn.classList.remove('hidden');
-    } else {
-      modeSplitBtn.classList.add(...activeClasses);
-      modeSplitBtn.classList.remove(...inactiveClasses);
-      modeLayeredBtn.classList.remove(...activeClasses);
-      modeLayeredBtn.classList.add(...inactiveClasses);
-      layeredStage.classList.add('hidden');
-      splitStage.classList.remove('hidden');
-      compareBtn.classList.add('hidden');
+  // Custom background image file upload
+  bgBtnCustomImage.addEventListener('click', () => {
+    customBgInput.click();
+  });
+
+  customBgInput.addEventListener('change', () => {
+    if (customBgInput.files && customBgInput.files[0]) {
+      const file = customBgInput.files[0];
+      if (customBgObjectUrl) URL.revokeObjectURL(customBgObjectUrl);
+      customBgObjectUrl = URL.createObjectURL(file);
+
+      const img = new Image();
+      img.onload = () => {
+        customBgImageObj = img;
+        customBgPreviewImg.src = customBgObjectUrl!;
+        customBgPreviewImg.classList.remove('hidden');
+        if (splitCustomBgImg) {
+          splitCustomBgImg.src = customBgObjectUrl!;
+          splitCustomBgImg.classList.remove('hidden');
+        }
+        applyBgToElements(currentBgColor);
+      };
+      img.src = customBgObjectUrl;
     }
-  }
-
-  modeLayeredBtn.addEventListener('click', () => setViewMode('layered'));
-  modeSplitBtn.addEventListener('click', () => setViewMode('split'));
+  });
 
   function showToast(text: string) {
     if (!pasteToast) return;
@@ -526,6 +783,13 @@ const {
   function resetAll() {
     isCancelled = true;
     currentFile = null;
+    clearCustomBg();
+    currentBlur = 0;
+    backdropBlurSlider.value = '0';
+    blurValueLabel.textContent = '0px';
+    currentRatio = 'original';
+    setCanvasRatio('original');
+
     if (originalImageUrl) {
       URL.revokeObjectURL(originalImageUrl);
       originalImageUrl = null;
@@ -545,22 +809,26 @@ const {
   // Background toggle clicks
   bgBtnTransparent.addEventListener('click', () => {
     currentBgColor = 'transparent';
+    clearCustomBg();
     applyBgToElements(currentBgColor);
   });
 
   bgBtnWhite.addEventListener('click', () => {
     currentBgColor = '#FFFFFF';
+    clearCustomBg();
     applyBgToElements(currentBgColor);
   });
 
   bgBtnBlue.addEventListener('click', () => {
     currentBgColor = '#0055A5';
+    clearCustomBg();
     applyBgToElements(currentBgColor);
   });
 
   customColorPicker.addEventListener('input', (e) => {
     const val = (e.target as HTMLInputElement).value;
     currentBgColor = val;
+    clearCustomBg();
     applyBgToElements(currentBgColor);
   });
 
@@ -657,11 +925,7 @@ const {
       previewCutoutImg.src = cutoutUrl;
       splitCutoutImg.src = cutoutUrl;
 
-      if (imageNaturalWidth && imageNaturalHeight) {
-        metaResBadge.textContent = `${imageNaturalWidth} × ${imageNaturalHeight} PX HD`;
-      } else {
-        metaResBadge.textContent = 'FULL RESOLUTION HD';
-      }
+      updateResolutionBadge();
 
       const mbSize = (resultBlob.size / (1024 * 1024)).toFixed(2);
       metaSizeBadge.textContent = `${mbSize} MB PNG`;
@@ -764,6 +1028,7 @@ const {
     });
   });
 
+  // Primary Export: Download Full HD PNG
   downloadHdBtn.addEventListener('click', async () => {
     if (!cutoutBlob) return;
     try {
@@ -773,7 +1038,14 @@ const {
       const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
       const filename = `${originalName}-fastbgremove-hd.png`;
 
-      const finalBlob = await createHdExportBlob(cutoutBlob, currentBgColor);
+      const exportOpts: ExportOptions = {
+        ratio: currentRatio,
+        backgroundColor: currentBgColor,
+        customBgImage: customBgImageObj,
+        blur: currentBlur
+      };
+
+      const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
       triggerDownload(finalBlob, filename);
       showToast('Download started');
     } catch (err) {
@@ -785,6 +1057,40 @@ const {
     }
   });
 
+  // Secondary Export: Export Compressed JPG (Binary Search)
+  exportJpgBtn.addEventListener('click', async () => {
+    if (!cutoutBlob) return;
+    try {
+      exportJpgBtn.disabled = true;
+      const originalBtnText = exportJpgText.textContent;
+      exportJpgText.textContent = 'Optimizing...';
+
+      const preset = (jpgPresetSelect.value as JpgCompressionPreset) || '100kb';
+      const exportOpts: ExportOptions = {
+        ratio: currentRatio,
+        backgroundColor: currentBgColor,
+        customBgImage: customBgImageObj,
+        blur: currentBlur
+      };
+
+      const finalBlob = await createCompressedJpgBlob(cutoutBlob, preset, exportOpts);
+      const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
+      const filename = `${originalName}-fastbgremove-${preset}.jpg`;
+
+      triggerDownload(finalBlob, filename);
+      const sizeKb = (finalBlob.size / 1024).toFixed(1);
+      showToast(`JPG downloaded (${sizeKb} KB)`);
+      exportJpgText.textContent = originalBtnText;
+    } catch (err) {
+      console.error('JPG export error:', err);
+      showError('Failed to export compressed JPG.');
+      exportJpgText.textContent = 'Export JPG';
+    } finally {
+      exportJpgBtn.disabled = false;
+    }
+  });
+
+  // Copy to Clipboard
   copyClipboardBtn.addEventListener('click', async () => {
     if (!cutoutBlob) return;
     try {
@@ -792,7 +1098,14 @@ const {
       const originalText = copyBtnText.textContent;
       copyBtnText.textContent = 'Copying...';
 
-      const finalBlob = await createHdExportBlob(cutoutBlob, currentBgColor);
+      const exportOpts: ExportOptions = {
+        ratio: currentRatio,
+        backgroundColor: currentBgColor,
+        customBgImage: customBgImageObj,
+        blur: currentBlur
+      };
+
+      const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
       const success = await copyImageToClipboard(finalBlob);
 
       if (success) {
