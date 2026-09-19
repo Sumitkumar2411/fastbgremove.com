@@ -994,9 +994,9 @@ const {
 
       progressBarFill.style.width = '97%';
       processingTitle.textContent = 'Refining alpha contours & edge feathering...';
-      processingSubtitle.textContent = 'Clamping mask thresholds and applying 1px bilateral cleanup...';
+      processingSubtitle.textContent = 'Applying PhotoRoom-grade trimap thresholding & perimeter erosion...';
 
-      const resultBlob = await refineAlphaMask(rawBlob);
+      const resultBlob = await refineAlphaMask(rawBlob, file);
 
       if (isCancelled) return;
 
