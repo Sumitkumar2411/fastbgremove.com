@@ -15,15 +15,15 @@ const currentPath = Astro.url.pathname;
     </a>
 
     <!-- Navigation Links & Theme Switcher -->
-    <div class="flex items-center gap-3 sm:gap-6">
-      <nav class="flex items-center gap-1 sm:gap-2">
+    <div class="flex items-center gap-2 sm:gap-4">
+      <nav class="flex items-center gap-1.5 sm:gap-2">
         <a
           href="/passport-photo-white-background"
           class:list={[
-            "text-sm font-medium px-3 py-1.5 rounded-md transition-colors",
+            "inline-flex items-center px-4 py-1.5 text-xs font-medium rounded-full border shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98]",
             currentPath === "/passport-photo-white-background"
-              ? "bg-[#f54e00]/10 text-[#d04200] dark:text-[#f54e00] font-semibold"
-              : "text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-[#ededed] hover:bg-[#efeee8] dark:hover:bg-[#1c1c1f]"
+              ? "bg-orange-50/80 dark:bg-orange-950/30 text-[#d04200] dark:text-[#f54e00] border-[#d04200]/50 dark:border-[#f54e00]/50 font-semibold ring-1 ring-[#d04200]/20"
+              : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
           ]}
         >
           Passport Photo
@@ -31,10 +31,10 @@ const currentPath = Astro.url.pathname;
         <a
           href="/transparent-signature-maker"
           class:list={[
-            "text-sm font-medium px-3 py-1.5 rounded-md transition-colors",
+            "inline-flex items-center px-4 py-1.5 text-xs font-medium rounded-full border shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98]",
             currentPath === "/transparent-signature-maker"
-              ? "bg-[#f54e00]/10 text-[#d04200] dark:text-[#f54e00] font-semibold"
-              : "text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-[#ededed] hover:bg-[#efeee8] dark:hover:bg-[#1c1c1f]"
+              ? "bg-orange-50/80 dark:bg-orange-950/30 text-[#d04200] dark:text-[#f54e00] border-[#d04200]/50 dark:border-[#f54e00]/50 font-semibold ring-1 ring-[#d04200]/20"
+              : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
           ]}
         >
           Signature Maker
@@ -42,10 +42,10 @@ const currentPath = Astro.url.pathname;
         <a
           href="/remove-bg-alternative"
           class:list={[
-            "text-sm font-medium px-3 py-1.5 rounded-md transition-colors hidden md:block",
+            "hidden md:inline-flex items-center px-4 py-1.5 text-xs font-medium rounded-full border shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98]",
             currentPath === "/remove-bg-alternative"
-              ? "bg-[#f54e00]/10 text-[#d04200] dark:text-[#f54e00] font-semibold"
-              : "text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-[#ededed] hover:bg-[#efeee8] dark:hover:bg-[#1c1c1f]"
+              ? "bg-orange-50/80 dark:bg-orange-950/30 text-[#d04200] dark:text-[#f54e00] border-[#d04200]/50 dark:border-[#f54e00]/50 font-semibold ring-1 ring-[#d04200]/20"
+              : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
           ]}
         >
           vs Remove.bg
@@ -57,7 +57,7 @@ const currentPath = Astro.url.pathname;
         id="theme-toggle-btn"
         type="button"
         aria-label="Toggle Light or Dark theme"
-        class="w-9 h-9 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-[#26251e] dark:text-[#ededed] hover:border-[#cfcdc4] dark:hover:border-[#3e3e44] flex items-center justify-center transition-all cursor-pointer shadow-xs"
+        class="w-8 h-8 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-[#26251e] dark:text-[#ededed] hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center justify-center transition-all active:scale-[0.95] cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] shrink-0"
       >
         <!-- Sun Icon (in dark mode) -->
         <svg class="w-4.5 h-4.5 hidden dark:block text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

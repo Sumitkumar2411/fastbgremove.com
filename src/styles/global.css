@@ -57,48 +57,48 @@
   }
 }
 
-/* Dark Mode Checkerboard (Refined for Cursor Dark Canvas) */
-.dark .bg-checkerboard {
-  background-color: #141417;
+/* PhotoRoom-Style High-Contrast Checkerboard */
+.bg-checkerboard {
+  background-color: #e5e5e5;
   background-image: 
-    linear-gradient(45deg, #1f1f24 25%, transparent 25%), 
-    linear-gradient(-45deg, #1f1f24 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #1f1f24 75%), 
-    linear-gradient(-45deg, transparent 75%, #1f1f24 75%);
-  background-size: 16px 16px;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    linear-gradient(45deg, #cfcfcf 25%, transparent 25%), 
+    linear-gradient(-45deg, #cfcfcf 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #cfcfcf 75%), 
+    linear-gradient(-45deg, transparent 75%, #cfcfcf 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
-.dark .bg-checkerboard-dense {
-  background-color: #161619;
+.bg-checkerboard-dense {
+  background-color: #e5e5e5;
   background-image: 
-    linear-gradient(45deg, #222228 25%, transparent 25%), 
-    linear-gradient(-45deg, #222228 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #222228 75%), 
-    linear-gradient(-45deg, transparent 75%, #222228 75%);
+    linear-gradient(45deg, #cfcfcf 25%, transparent 25%), 
+    linear-gradient(-45deg, #cfcfcf 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #cfcfcf 75%), 
+    linear-gradient(-45deg, transparent 75%, #cfcfcf 75%);
   background-size: 10px 10px;
   background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
 }
 
-/* Light Mode Checkerboard */
-.bg-checkerboard {
-  background-color: #e6e5e0;
+/* Dark Mode: #1f1f1f and #2a2a2a for squares */
+.dark .bg-checkerboard {
+  background-color: #1f1f1f;
   background-image: 
-    linear-gradient(45deg, #f7f7f4 25%, transparent 25%), 
-    linear-gradient(-45deg, #f7f7f4 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #f7f7f4 75%), 
-    linear-gradient(-45deg, transparent 75%, #f7f7f4 75%);
-  background-size: 16px 16px;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    linear-gradient(45deg, #2a2a2a 25%, transparent 25%), 
+    linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #2a2a2a 75%), 
+    linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
-.bg-checkerboard-dense {
-  background-color: #e6e5e0;
+.dark .bg-checkerboard-dense {
+  background-color: #1f1f1f;
   background-image: 
-    linear-gradient(45deg, #ffffff 25%, transparent 25%), 
-    linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #ffffff 75%), 
-    linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+    linear-gradient(45deg, #2a2a2a 25%, transparent 25%), 
+    linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #2a2a2a 75%), 
+    linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
   background-size: 10px 10px;
   background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
 }
