@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BgRemover from '../components/BgRemover.astro';
+import ComparisonTable from '../components/ComparisonTable.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+
+const alternativeFaqs = [
+  {
+    question: "What is the best 100% free remove.bg alternative?",
+    answer: "FastBG is the top free alternative to remove.bg. As remove.bg prepares for its standalone service closure and restricts free users to blurry 0.25MP previews, FastBG offers an unthrottled, in-browser WebAssembly solution that produces full-resolution HD PNG cutouts with zero watermarks, zero subscriptions, and no credit meters."
+  },
+  {
+    question: "How to migrate from remove.bg to FastBG without losing quality?",
+    answer: "Migrating to FastBG is instant and frictionless. There is no account to create, no API key to configure, and no credit pack to purchase. Simply open FastBG, drag your image or paste with Ctrl+V, and export the native camera resolution HD PNG without any compression."
+  },
+  {
+    question: "Why does remove.bg charge for HD while FastBG is completely free?",
+    answer: "Remove.bg processes images on costly enterprise cloud GPU clusters, which incurs substantial server hosting bills for every image processed. FastBG executes neural segmentation directly inside your browser using WebAssembly. Because the computation happens on your device's hardware, we have zero server compute costs per image, allowing us to keep FastBG 100% free forever."
+  },
+  {
+    question: "Does FastBG compress or degrade image quality?",
+    answer: "No. The pipeline outputs lossless PNG files with an 8-bit alpha transparency channel matching the exact original pixel dimensions of your uploaded photo (up to 4K+)."
+  }
+];
+
+const alternativeFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": alternativeFaqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+};
+---
+
+<BaseLayout
+  title="Best 100% Free Remove.bg Alternative – Full HD PNG Without Credits | FastBG"
+  description="Looking for a free remove.bg alternative? As remove.bg faces standalone closure, migrate to FastBG for free full-resolution HD PNG export with zero credits and 100% privacy."
+  canonicalPath="/remove-bg-alternative"
+  structuredData={alternativeFaqSchema}
+>
+  <!-- HERO WORKSPACE -->
+  <BgRemover
+    heading="The 100% Free Remove.bg Alternative"
+    subheading="Eliminate 0.25MP preview limits and credit paywalls. FastBG outputs native camera resolution PNGs directly in your browser."
+    defaultBg="transparent"
+  />
+
+  <!-- MIGRATION BANNER -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326]">
+    <div class="p-8 rounded-[2px] bg-zinc-50 dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
+      <div class="absolute -top-[1px] -left-[1px] w-3 h-3 bg-[#76B900]"></div>
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-[#76B900] uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-[1px] bg-[#76B900]"></span>
+          Migration Guide: Remove.bg Transition
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white">
+          Ready for the Remove.bg Standalone Shutdown?
+        </h2>
+        <p class="text-sm text-zinc-600 dark:text-[#A7A7A7] max-w-2xl leading-relaxed">
+          Remove.bg has increasingly locked high-resolution downloads behind aggressive credit paywalls ($0.20–$1.99/photo). FastBG provides an open, privacy-first alternative running 100% client-side via WebAssembly—no sign-up, no subscriptions, and unlimited free HD downloads.
+        </p>
+      </div>
+
+      <a
+        href="#drop-zone"
+        class="h-11 px-6 rounded-[2px] bg-[#76B900] hover:bg-[#5A8D00] text-black text-sm font-bold whitespace-nowrap shrink-0 shadow-sm transition-all flex items-center justify-center cursor-pointer"
+      >
+        Try FastBG Free
+      </a>
+    </div>
+  </section>
+
+  <!-- Three Core Differentiators -->
+  <section class="mt-16 sm:mt-24 pt-12 border-t border-zinc-200 dark:border-[#232326]">
+    <div class="max-w-2xl mx-auto text-center mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        Core Architectural Advantages
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-500 dark:text-[#A7A7A7] mt-2">
+        How local WebAssembly delivers a faster, cleaner, and completely free experience.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-3 relative">
+        <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
+        <div class="w-11 h-11 rounded-[2px] bg-[#76B900]/10 border border-[#76B900]/30 flex items-center justify-center text-[#76B900] font-bold text-sm">HD</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Native Pixel Dimensions</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Remove.bg charges for full HD downloads. FastBG outputs original 4K+ dimensions with lossless alpha channels for free.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-3 relative">
+        <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
+        <div class="w-11 h-11 rounded-[2px] bg-[#76B900]/10 border border-[#76B900]/30 flex items-center justify-center text-[#76B900]">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Zero Server Upload</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Cloud utilities upload photos onto remote servers. FastBG isolates all processing inside your browser RAM.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-3 relative">
+        <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
+        <div class="w-11 h-11 rounded-[2px] bg-[#76B900]/10 border border-[#76B900]/30 flex items-center justify-center text-[#76B900]">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <line x1="19" y1="8" x2="19" y2="14"/>
+            <line x1="22" y1="11" x2="16" y2="11"/>
+          </svg>
+        </div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Zero Accounts or Modals</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          No sign-up prompts, credit countdowns, or marketing emails. Drag an image, process locally, download immediately.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Side-by-Side Comparison Table -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326]">
+    <div class="max-w-2xl mx-auto text-center mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        Feature Comparison Matrix
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-500 dark:text-zinc-400 mt-2">
+        See how FastBG compares side-by-side with Remove.bg.
+      </p>
+    </div>
+
+    <ComparisonTable />
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-zinc-800 max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        Comparison FAQs
+      </h2>
+    </div>
+
+    <FaqAccordion items={alternativeFaqs} />
+  </section>
+</BaseLayout>

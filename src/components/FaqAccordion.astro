@@ -1,0 +1,33 @@
+---
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  items: FaqItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="space-y-3 w-full">
+  {items.map((item, index) => (
+    <details
+      class="group rounded-[2px] border border-zinc-200 dark:border-[#232326] bg-white dark:bg-[#121214] p-5 sm:p-6 transition-all duration-150 open:border-[#76B900]/50 shadow-xs relative"
+      open={index === 0 ? true : undefined}
+    >
+      <summary class="flex cursor-pointer items-center justify-between font-bold text-base sm:text-lg text-zinc-900 dark:text-white group-hover:text-[#76B900] dark:group-hover:text-[#76B900] transition-colors list-none select-none">
+        <span class="pr-4">{item.question}</span>
+        <span class="ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-[2px] bg-zinc-100 dark:bg-[#1A1A1D] text-zinc-500 dark:text-[#A7A7A7] group-open:rotate-180 group-open:text-[#76B900] dark:group-open:text-[#76B900] transition-transform duration-200">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </summary>
+      <div class="mt-4 text-sm sm:text-base text-zinc-600 dark:text-[#A7A7A7] leading-relaxed border-t border-zinc-100 dark:border-[#232326] pt-4 font-sans">
+        {item.answer}
+      </div>
+    </details>
+  ))}
+</div>

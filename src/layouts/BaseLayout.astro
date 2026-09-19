@@ -1,0 +1,110 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: string;
+  structuredData?: Record<string, any> | Record<string, any>[];
+}
+
+const {
+  title = "Fast BG Remove – Client-Side HD Background Remover",
+  description = "Remove image backgrounds in your browser. 100% private, zero server uploads, free full-resolution HD PNG export with no watermarks and no sign-up.",
+  canonicalPath = "",
+  ogType = "website",
+  structuredData
+} = Astro.props;
+
+const canonicalUrl = new URL(canonicalPath, "https://fastbgremove.com").href;
+
+const defaultStructuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Fast BG Remove",
+    "url": "https://fastbgremove.com",
+    "description": "100% client-side in-browser background remover tool providing free, full-resolution HD PNG cutouts with zero server uploads.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All (Web Browser)",
+    "browserRequirements": "Requires WebAssembly & HTML5 Canvas support",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "100% client-side WebAssembly processing",
+      "Zero server image uploads (total privacy)",
+      "Full original resolution HD PNG export",
+      "No watermarks",
+      "No account or sign-up required",
+      "Passport photo background presets (White, Passport Blue)",
+      "Transparent signature maker"
+    ]
+  }
+];
+
+const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStructuredData, ...structuredData] : [...defaultStructuredData, structuredData]) : defaultStructuredData;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Anti-FOUC Theme Initialization Script -->
+    <script is:inline>
+      (function() {
+        const storedTheme = typeof localStorage !== 'undefined' && localStorage.getItem('theme');
+        const theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#76B900" />
+
+    <!-- Fonts: Geist & Geist Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- OpenGraph / Facebook -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Fast BG Remove" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Structured Data -->
+    {schemas.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+  </head>
+  <body class="bg-white dark:bg-[#0A0A0B] text-zinc-900 dark:text-white antialiased flex flex-col min-h-screen selection:bg-[#76B900]/30 selection:text-zinc-900">
+    <Header />
+    <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-2 sm:py-4">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

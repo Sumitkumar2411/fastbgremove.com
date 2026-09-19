@@ -1,0 +1,78 @@
+---
+const features = [
+  {
+    feature: "Full Resolution HD Export",
+    fastbg: "100% Free (Native Camera Resolution)",
+    removebg: "0.25 Megapixels (Paid credits for HD)",
+    cloud: "Paid API per megapixel"
+  },
+  {
+    feature: "Image Privacy & Data Storage",
+    fastbg: "Zero Server Uploads (100% In-Browser RAM)",
+    removebg: "Uploaded to remote servers",
+    cloud: "Stored on 3rd-party cloud buckets"
+  },
+  {
+    feature: "Sign-up & Account Required",
+    fastbg: "No Account / No Sign-up",
+    removebg: "Account required for credits",
+    cloud: "API keys, billing, credit card"
+  },
+  {
+    feature: "Watermarks or Compression",
+    fastbg: "Zero Watermarks Ever",
+    removebg: "Credit paywalls & subscriptions",
+    cloud: "Usage tiers & overages"
+  },
+  {
+    feature: "Processing Pipeline",
+    fastbg: "Client-side WebAssembly + ONNX",
+    removebg: "Remote server queue",
+    cloud: "Serverless REST endpoints"
+  },
+  {
+    feature: "Air-Gapped / Offline Capable",
+    fastbg: "Yes (Runs fully in browser cache)",
+    removebg: "No (Requires remote connection)",
+    cloud: "No (Requires remote connection)"
+  }
+];
+---
+
+<div class="w-full overflow-x-auto rounded-[2px] border border-zinc-200 dark:border-[#232326] bg-white dark:bg-[#121214] shadow-xs relative">
+  <!-- Nvidia Corner Accent -->
+  <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900] z-10 pointer-events-none"></div>
+
+  <table class="w-full text-left text-xs sm:text-sm border-collapse font-sans">
+    <thead>
+      <tr class="border-b border-zinc-200 dark:border-[#232326] bg-zinc-50 dark:bg-[#1A1A1D]">
+        <th class="p-3.5 sm:p-4 font-semibold text-zinc-900 dark:text-zinc-200">Feature / Specification</th>
+        <th class="p-3.5 sm:p-4 font-bold text-zinc-900 dark:text-white bg-[#76B900]/10 dark:bg-[#76B900]/15 border-x border-zinc-200 dark:border-[#232326]">
+          <div class="flex items-center gap-1.5 font-mono text-xs">
+            <span>Fast BG Remove</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-[#76B900] text-black font-bold uppercase">WASM</span>
+          </div>
+        </th>
+        <th class="p-3.5 sm:p-4 font-medium text-zinc-500 dark:text-[#A7A7A7]">Remove.bg</th>
+        <th class="p-3.5 sm:p-4 font-medium text-zinc-500 dark:text-[#A7A7A7]">Cloud APIs</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-zinc-200 dark:divide-[#232326]">
+      {features.map((item) => (
+        <tr class="hover:bg-zinc-50/70 dark:hover:bg-[#1A1A1D]/50 transition-colors">
+          <td class="p-3.5 sm:p-4 font-medium text-zinc-900 dark:text-zinc-200">{item.feature}</td>
+          <td class="p-3.5 sm:p-4 text-zinc-900 dark:text-white bg-[#76B900]/5 dark:bg-[#76B900]/10 border-x border-zinc-200 dark:border-[#232326] font-medium">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-[#76B900] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>{item.fastbg}</span>
+            </div>
+          </td>
+          <td class="p-3.5 sm:p-4 text-zinc-500 dark:text-[#A7A7A7]">{item.removebg}</td>
+          <td class="p-3.5 sm:p-4 text-zinc-500 dark:text-[#A7A7A7]">{item.cloud}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

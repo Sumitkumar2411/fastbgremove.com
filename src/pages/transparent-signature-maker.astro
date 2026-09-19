@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BgRemover from '../components/BgRemover.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+
+const useCases = [
+  {
+    title: "PDF Documents & Contracts",
+    desc: "Insert clean transparent PNG signatures into Adobe Acrobat, Preview, or DocuSign agreements without ugly grey background boxes."
+  },
+  {
+    title: "Office Documents",
+    desc: "Position transparent signature assets cleanly over signature lines in Microsoft Word, Google Docs, and spreadsheets."
+  },
+  {
+    title: "Company Stamps & Seals",
+    desc: "Isolate ink seals, notarization crests, and circular rubber stamps with transparent backgrounds."
+  },
+  {
+    title: "Invoices & Receipts",
+    desc: "Authenticate digital invoices and billing paperwork directly without physical printing and scanning cycles."
+  }
+];
+
+const faqs = [
+  {
+    question: "Why is client-side processing crucial for digital signatures?",
+    answer: "Your signature is your legal identity. Uploading signatures to cloud servers introduces identity theft and unauthorized vectorization risks. FastBG executes neural segmentation entirely in your local browser memory; zero data is transmitted over the internet."
+  },
+  {
+    question: "What ink colors and pen types work best?",
+    answer: "Dark blue ink, black ink, fountain pen ink, and felt-tip pens work with high accuracy. The neural network isolates the ink stroke boundaries and feathers the edges for clean overlay."
+  },
+  {
+    question: "How do I photograph a paper signature for transparent export?",
+    answer: "Sign on a clean sheet of unlined white paper. Hold your camera directly parallel to the paper in bright, even lighting to eliminate phone shadows, then drop the image into FastBG."
+  }
+];
+
+const signatureFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+};
+---
+
+<BaseLayout
+  title="Transparent Signature Maker – In-Browser Ink Extractor | FastBG"
+  description="Convert paper handwritten signatures into transparent PNGs for PDF, Word, and Google Docs. 100% private in-browser WebAssembly."
+  canonicalPath="/transparent-signature-maker"
+  structuredData={signatureFaqSchema}
+>
+  <BgRemover
+    heading="Transparent Signature Maker"
+    subheading="Extract handwritten signatures and company stamps into transparent HD PNGs for digital documents. 100% private and processed locally on your device."
+    defaultBg="transparent"
+  />
+
+  <!-- Security Verification Banner -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-zinc-800">
+    <div class="p-8 rounded-2xl bg-white dark:bg-[#111118] border border-zinc-200 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-[#149e61] uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-[#149e61]"></span>
+          Signature Data Quarantine
+        </div>
+        <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Protected by Browser Memory Isolation</h2>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400 max-w-xl leading-relaxed">
+          Signatures are processed strictly in local browser RAM. Unlike cloud conversion APIs, your raw signature strokes never touch any server or cloud bucket.
+        </p>
+      </div>
+
+      <div class="px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-xs font-bold text-[#149e61] whitespace-nowrap shrink-0">
+        Zero Cloud Uploads
+      </div>
+    </div>
+  </section>
+
+  <!-- Capture Protocol -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326]">
+    <div class="max-w-2xl mx-auto text-center mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        How to Capture a Clean Signature
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-500 dark:text-[#A7A7A7] mt-2">
+        Follow these 4 simple steps to produce vectorized-grade transparent signatures.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">1</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Blank White Paper</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Use smooth, blank white printer paper. Avoid lined or ruled paper to prevent background bleed.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">2</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Dark Blue or Black Ink</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Sign with dark blue or black ink. Blue ink preserves realistic, authentic handwriting nuances.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">3</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Top-Down Photo</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Capture directly overhead in even daylight. Avoid casting phone shadows across the ink strokes.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">4</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Export HD PNG</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Drop the photo above, click Download Full HD PNG, and insert the transparent signature into your document.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Applications -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326]">
+    <div class="max-w-2xl mx-auto text-center mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        Document Integration Use Cases
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {useCases.map(uc => (
+        <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+          <div class="absolute -top-[1px] -left-[1px] w-2 h-2 bg-[#76B900]"></div>
+          <h3 class="text-base font-bold text-zinc-900 dark:text-white">{uc.title}</h3>
+          <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">{uc.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326] max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        Signature Maker FAQs
+      </h2>
+    </div>
+
+    <FaqAccordion items={faqs} />
+  </section>
+</BaseLayout>

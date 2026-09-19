@@ -1,0 +1,185 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BgRemover from '../components/BgRemover.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+
+const passportSpecs = [
+  {
+    country: "United States (US)",
+    dimensions: "2 × 2 in (51 × 51 mm)",
+    digital: "600 × 600 px min",
+    bgRequirement: "Pure White (#FFFFFF)",
+    notes: "No glasses, neutral expression, centered face"
+  },
+  {
+    country: "Schengen Visa (EU)",
+    dimensions: "35 × 45 mm",
+    digital: "827 × 1063 px @ 600 DPI",
+    bgRequirement: "Light Grey or White",
+    notes: "Face covers 70-80% of total height"
+  },
+  {
+    country: "United Kingdom (UK)",
+    dimensions: "35 × 45 mm",
+    digital: "600 × 750 px min",
+    bgRequirement: "Light Grey or Cream",
+    notes: "No background shadows behind head"
+  },
+  {
+    country: "India (Passport/OCI)",
+    dimensions: "2 × 2 in (51 × 51 mm)",
+    digital: "600 × 600 px min",
+    bgRequirement: "Pure White Background",
+    notes: "Full frontal view, ears visible"
+  },
+  {
+    country: "Malaysia & Consular Standards",
+    dimensions: "35 × 50 mm",
+    digital: "600 × 850 px min",
+    bgRequirement: "Passport Blue (#0055A5)",
+    notes: "Solid blue background requirement"
+  }
+];
+
+const faqs = [
+  {
+    question: "Does this tool automatically create a plain white background for passport photos?",
+    answer: "Yes. Simply drop your headshot or portrait into FastBG. The background is removed instantly, and the Pure White (#FFFFFF) preset is selected by default."
+  },
+  {
+    question: "Will the exported photo maintain full 300+ DPI print resolution?",
+    answer: "Yes. We never downsample or compress your photo. If your camera took a 12-megapixel photo, your exported white background photo will remain at full 12MP resolution, satisfying all official passport printing standards."
+  },
+  {
+    question: "Can I use Passport Blue (#0055A5) for countries requiring blue backgrounds?",
+    answer: "Yes. Consular requirements for countries like Malaysia require a blue background. You can select the Passport Blue (#0055A5) button with one click."
+  },
+  {
+    question: "Are my passport photos private and secure?",
+    answer: "100% private. Government IDs and biometric headshots are sensitive personal data. FastBG executes entirely inside your browser; your face is never uploaded to any remote server."
+  }
+];
+
+const passportFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+};
+---
+
+<BaseLayout
+  title="Passport Photo White Background Maker – Free Online HD Tool | FastBG"
+  description="Convert your selfie or portrait into an official passport photo with a clean white (#FFFFFF) or passport blue (#0055A5) background. 100% private, free, and in-browser."
+  canonicalPath="/passport-photo-white-background"
+  structuredData={passportFaqSchema}
+>
+  <BgRemover
+    heading="Passport Photo Background Maker"
+    subheading="Create official passport and visa photos with a clean White (#FFFFFF) or Passport Blue (#0055A5) background. 100% free with full HD export."
+    defaultBg="white"
+  />
+
+  <!-- Official Passport Photo Specifications Table -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326]">
+    <div class="max-w-2xl mx-auto text-center mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        Official Passport Photo Background Requirements
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-500 dark:text-[#A7A7A7] mt-2">
+        Guidelines for popular passport and visa applications worldwide.
+      </p>
+    </div>
+
+    <div class="w-full overflow-x-auto rounded-[2px] border border-zinc-200 dark:border-[#232326] bg-white dark:bg-[#121214] shadow-xs relative">
+      <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 bg-[#76B900]"></div>
+      <table class="w-full text-left text-sm border-collapse font-sans">
+        <thead>
+          <tr class="border-b border-zinc-200 dark:border-[#232326] bg-zinc-50 dark:bg-[#1A1A1D]">
+            <th class="p-4 font-semibold text-zinc-900 dark:text-white">Country / Jurisdiction</th>
+            <th class="p-4 font-semibold text-zinc-900 dark:text-white">Physical Size</th>
+            <th class="p-4 font-semibold text-zinc-900 dark:text-white">Digital Min</th>
+            <th class="p-4 font-bold text-zinc-900 dark:text-white bg-[#76B900]/10 dark:bg-[#76B900]/15 border-x border-zinc-200 dark:border-[#232326]">Required Background</th>
+            <th class="p-4 font-semibold text-zinc-600 dark:text-[#A7A7A7]">Rules</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-200 dark:divide-[#232326]">
+          {passportSpecs.map((spec) => (
+            <tr class="hover:bg-zinc-50/70 dark:hover:bg-[#1A1A1D]/50 transition-colors">
+              <td class="p-4 font-semibold text-zinc-900 dark:text-zinc-200">{spec.country}</td>
+              <td class="p-4 text-zinc-600 dark:text-zinc-400">{spec.dimensions}</td>
+              <td class="p-4 text-zinc-600 dark:text-zinc-400">{spec.digital}</td>
+              <td class="p-4 text-zinc-900 dark:text-zinc-200 bg-[#76B900]/5 dark:bg-[#76B900]/10 border-x border-zinc-200 dark:border-[#232326] font-medium">
+                {spec.bgRequirement}
+              </td>
+              <td class="p-4 text-sm text-zinc-500 dark:text-[#A7A7A7]">{spec.notes}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Best Practices for Passport Photos at Home -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326]">
+    <div class="max-w-2xl mx-auto text-center mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        How to Take a Valid Passport Photo at Home
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-500 dark:text-[#A7A7A7] mt-2">
+        Follow these 4 simple guidelines for guaranteed consular acceptance.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">1</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Straight Face Angle</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Position your camera directly at eye level. Both ears and shoulders must be visible without head tilt.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">2</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Neutral Expression</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Keep your mouth closed and eyes fully open with a relaxed, natural facial expression.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">3</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Even Lighting</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Face a natural light source to prevent shadows from falling behind your head or under your eyes.
+        </p>
+      </div>
+
+      <div class="p-6 rounded-[2px] bg-white dark:bg-[#121214] border border-zinc-200 dark:border-[#232326] shadow-xs space-y-2 relative">
+        <div class="w-8 h-8 rounded-[2px] bg-[#76B900]/10 text-[#76B900] font-bold text-sm flex items-center justify-center">4</div>
+        <h3 class="text-base font-bold text-zinc-900 dark:text-white">Remove Glasses</h3>
+        <p class="text-sm text-zinc-500 dark:text-[#A7A7A7] leading-relaxed">
+          Remove eyeglasses to eliminate lens reflections and glare for automated airport biometric scanners.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="mt-24 sm:mt-32 pt-16 border-t border-zinc-200 dark:border-[#232326] max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        Passport Photo FAQs
+      </h2>
+    </div>
+
+    <FaqAccordion items={faqs} />
+  </section>
+</BaseLayout>

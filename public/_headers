@@ -1,0 +1,13 @@
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: credentialless
+  Access-Control-Allow-Origin: *
+  X-Content-Type-Options: nosniff
+
+/*.wasm
+  Content-Type: application/wasm
+  Cross-Origin-Resource-Policy: cross-origin
+
+/*.bin
+  Content-Type: application/octet-stream
+  Cross-Origin-Resource-Policy: cross-origin

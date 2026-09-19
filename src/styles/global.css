@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-nvidia-green: #76b900;
+  --color-nvidia-green-dark: #5a8d00;
+  --color-nvidia-green-pressed: #4b7500;
+  --color-nvidia-dark: #0a0a0b;
+  --color-nvidia-surface-dark: #121214;
+  --color-nvidia-pill-dark: #1a1a1d;
+  --color-nvidia-border-dark: #232326;
+  --color-nvidia-border-hover: #36363b;
+}
+
+@layer base {
+  :root {
+    --bg-canvas: #ffffff;
+    --bg-card: #ffffff;
+    --bg-elevated: #f4f4f5;
+    --border-subtle: #e5e5e5;
+    --border-strong: #cccccc;
+    --text-primary: #000000;
+    --text-secondary: #5e5e5e;
+    --text-muted: #898989;
+    --nvidia-green: #76b900;
+    --nvidia-green-dark: #5a8d00;
+    --passport-blue: #0055A5;
+  }
+
+  .dark {
+    --bg-canvas: #0a0a0b;
+    --bg-card: #121214;
+    --bg-elevated: #1a1a1d;
+    --border-subtle: #232326;
+    --border-strong: #36363b;
+    --text-primary: #ffffff;
+    --text-secondary: #a7a7a7;
+    --text-muted: #757575;
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.015em;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  code, kbd, samp, pre {
+    font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Dark Mode Checkerboard (Refined for #0A0A0B Canvas) */
+.dark .bg-checkerboard {
+  background-color: #0d0d0f;
+  background-image: 
+    linear-gradient(45deg, #18181c 25%, transparent 25%), 
+    linear-gradient(-45deg, #18181c 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #18181c 75%), 
+    linear-gradient(-45deg, transparent 75%, #18181c 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.dark .bg-checkerboard-dense {
+  background-color: #0e0e11;
+  background-image: 
+    linear-gradient(45deg, #1c1c22 25%, transparent 25%), 
+    linear-gradient(-45deg, #1c1c22 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #1c1c22 75%), 
+    linear-gradient(-45deg, transparent 75%, #1c1c22 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+}
+
+/* Light Mode Checkerboard */
+.bg-checkerboard {
+  background-color: #e5e5e5;
+  background-image: 
+    linear-gradient(45deg, #f7f7f7 25%, transparent 25%), 
+    linear-gradient(-45deg, #f7f7f7 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #f7f7f7 75%), 
+    linear-gradient(-45deg, transparent 75%, #f7f7f7 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.bg-checkerboard-dense {
+  background-color: #e5e5e5;
+  background-image: 
+    linear-gradient(45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ffffff 75%), 
+    linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  border-radius: 2px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #232326;
+}
