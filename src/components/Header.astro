@@ -5,8 +5,12 @@ const currentPath = Astro.url.pathname;
 <header class="sticky top-0 z-50 w-full border-b border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4]/90 dark:bg-[#121212]/90 backdrop-blur-md transition-colors">
   <div class="max-w-7xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between">
     <!-- Brand Logo & Wordmark -->
-    <a href="/" class="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d04200] rounded-md">
-      <img src="/logo.png" alt="fastbgremove.com logo" class="w-8 h-8 rounded-full object-contain shrink-0" />
+    <a href="/" class="flex items-center gap-2.5">
+      <img 
+        src="/logo.png" 
+        alt="fastbgremove.com" 
+        class="w-8 h-8 rounded-full object-cover shrink-0 border border-zinc-200 dark:border-zinc-800 shadow-sm" 
+      />
       <span class="font-bold text-lg text-zinc-900 dark:text-white tracking-tight">fastbgremove.com</span>
     </a>
 
