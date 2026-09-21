@@ -3,11 +3,55 @@
   Cross-Origin-Embedder-Policy: credentialless
   Access-Control-Allow-Origin: *
   X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
 
+# WASM and Neural Model Binaries (Immutable)
 /*.wasm
   Content-Type: application/wasm
   Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=31536000, immutable
 
 /*.bin
   Content-Type: application/octet-stream
   Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=31536000, immutable
+
+# Astro Hashed Client Bundles (Immutable)
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static Assets & Images (Long-term Caching)
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/samples/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Crawler Real-time Discovery (No Cache for Crawlers)
+/robots.txt
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sitemap-index.xml
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sitemap-0.xml
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sitemap.xml
+  Cache-Control: no-cache, no-store, must-revalidate
