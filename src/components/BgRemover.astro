@@ -24,7 +24,7 @@ const {
   </div>
 
   <!-- Main Workspace (Cursor Editor Grade Card with 8px/12px Geometry) -->
-  <div id="workspace-card" class="w-full max-w-5xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] rounded-lg shadow-xs p-5 sm:p-7 relative transition-all">
+  <div id="workspace-card" class="w-full max-w-5xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] rounded-lg shadow-xs p-3.5 sm:p-7 relative transition-all">
     <!-- Active Accent Corner Dot -->
     <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 rounded-tl-lg bg-[#f54e00] z-20 pointer-events-none"></div>
 
@@ -35,7 +35,7 @@ const {
         tabindex="0"
         role="button"
         aria-label="Upload image for background removal"
-        class="w-full min-h-[440px] sm:min-h-[480px] border-2 border-dashed border-[#cfcdc4] dark:border-[#2e2e33] hover:border-[#f54e00] dark:hover:border-[#f54e00] hover:bg-[#efeee8]/50 dark:hover:bg-[#1c1c1f] focus:border-[#d04200] focus:outline-none rounded-lg p-8 sm:p-14 flex flex-col items-center justify-center text-center cursor-pointer transition-all group shadow-xs relative"
+        class="w-full min-h-[220px] sm:min-h-[340px] md:min-h-[440px] border-2 border-dashed border-[#cfcdc4] dark:border-[#2e2e33] hover:border-[#f54e00] dark:hover:border-[#f54e00] hover:bg-[#efeee8]/50 dark:hover:bg-[#1c1c1f] focus:border-[#d04200] focus:outline-none rounded-lg p-4 sm:p-8 md:p-14 flex flex-col items-center justify-center text-center cursor-pointer transition-all group shadow-xs relative"
       >
         <input type="file" id="file-input" accept="image/png, image/jpeg, image/webp" class="hidden" />
 
@@ -65,42 +65,42 @@ const {
       </div>
 
       <!-- Sample Cards Row (Clickable 8px Thumbnail Cards) -->
-      <div class="mt-6 flex flex-wrap items-center justify-center gap-3.5">
-        <span class="text-sm font-medium text-[#5a5852] dark:text-[#a09c92]">Try with a sample:</span>
+      <div class="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3.5">
+        <span class="text-xs sm:text-sm font-medium text-[#5a5852] dark:text-[#a09c92] w-full text-center sm:w-auto">Try with a sample:</span>
 
         <button
           type="button"
           data-sample="/samples/portrait.jpg"
-          class="sample-btn flex items-center gap-3 p-2 pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
+          class="sample-btn flex items-center gap-2 sm:gap-3 p-1.5 pr-3 sm:p-2 sm:pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
         >
-          <img src="/samples/portrait.jpg" alt="Portrait photo background removal sample" class="w-10 h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
+          <img src="/samples/portrait.jpg" alt="Portrait photo background removal sample" class="w-8 h-8 sm:w-10 sm:h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
           <div class="text-left">
-            <div class="text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Portrait</div>
-            <div class="text-xs text-[#807d72] dark:text-[#a09c92]">Headshot & People</div>
+            <div class="text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Portrait</div>
+            <div class="text-[10px] sm:text-xs text-[#807d72] dark:text-[#a09c92]">Headshot & People</div>
           </div>
         </button>
 
         <button
           type="button"
           data-sample="/samples/signature.jpg"
-          class="sample-btn flex items-center gap-3 p-2 pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
+          class="sample-btn flex items-center gap-2 sm:gap-3 p-1.5 pr-3 sm:p-2 sm:pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
         >
-          <img src="/samples/signature.jpg" alt="Handwritten signature transparency sample" class="w-10 h-10 rounded-md object-cover bg-white group-hover/card:scale-105 transition-transform" />
+          <img src="/samples/signature.jpg" alt="Handwritten signature transparency sample" class="w-8 h-8 sm:w-10 sm:h-10 rounded-md object-cover bg-white group-hover/card:scale-105 transition-transform" />
           <div class="text-left">
-            <div class="text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Signature</div>
-            <div class="text-xs text-[#807d72] dark:text-[#a09c92]">Ink & Documents</div>
+            <div class="text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Signature</div>
+            <div class="text-[10px] sm:text-xs text-[#807d72] dark:text-[#a09c92]">Ink & Documents</div>
           </div>
         </button>
 
         <button
           type="button"
           data-sample="/samples/product.jpg"
-          class="sample-btn flex items-center gap-3 p-2 pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
+          class="sample-btn flex items-center gap-2 sm:gap-3 p-1.5 pr-3 sm:p-2 sm:pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
         >
-          <img src="/samples/product.jpg" alt="E-commerce product background removal sample" class="w-10 h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
+          <img src="/samples/product.jpg" alt="E-commerce product background removal sample" class="w-8 h-8 sm:w-10 sm:h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
           <div class="text-left">
-            <div class="text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Product</div>
-            <div class="text-xs text-[#807d72] dark:text-[#a09c92]">Commercial Object</div>
+            <div class="text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Product</div>
+            <div class="text-[10px] sm:text-xs text-[#807d72] dark:text-[#a09c92]">Commercial Object</div>
           </div>
         </button>
       </div>
@@ -140,10 +140,10 @@ const {
     <!-- STATE 3: RESULT VIEW (INTERACTIVE BEFORE/AFTER SLIDER & INLINE CONTROLS) -->
     <div id="result-view" class="hidden flex flex-col space-y-3.5">
       <!-- Toolbar Header: Resolution badge & Ratio Segmented Controls -->
-      <div class="flex flex-wrap items-center justify-between gap-3 pb-2.5 border-b border-[#e6e5e0] dark:border-[#2e2e33]">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pb-2.5 border-b border-[#e6e5e0] dark:border-[#2e2e33]">
         <!-- Left: Image Resolution & Size Badge -->
-        <div class="flex items-center gap-2.5">
-          <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#f54e00]/10 border border-[#f54e00]/20 text-xs font-semibold text-[#d04200] dark:text-[#f54e00] font-mono">
+        <div class="flex items-center justify-between sm:justify-start gap-2">
+          <span class="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md bg-[#f54e00]/10 border border-[#f54e00]/20 text-[11px] sm:text-xs font-semibold text-[#d04200] dark:text-[#f54e00] font-mono">
             <span class="w-2 h-2 rounded-full bg-[#f54e00]"></span>
             <span id="meta-res-badge">HD READY</span>
           </span>
@@ -151,42 +151,42 @@ const {
         </div>
 
         <!-- Right: Canvas Ratio Controls & 50% Split Reset -->
-        <div class="flex flex-wrap items-center gap-2">
-          <div class="flex items-center gap-1.5 text-xs font-mono text-[#807d72] dark:text-[#a09c92] hidden md:flex">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 max-w-full">
+          <div class="flex items-center gap-1.5 text-xs font-mono text-[#807d72] dark:text-[#a09c92] hidden md:flex shrink-0">
             <svg class="w-3.5 h-3.5 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
             </svg>
             <span>Ratio:</span>
           </div>
 
-          <div id="ratio-selector" class="flex items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs text-xs font-mono">
+          <div id="ratio-selector" class="flex items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs text-xs font-mono shrink-0">
             <button
               type="button"
               data-ratio="original"
-              class="ratio-btn active py-1.5 px-3 rounded-md font-semibold text-[#d04200] dark:text-[#f54e00] bg-white dark:bg-[#242428] shadow-xs cursor-pointer transition-all border border-[#f54e00]/20"
+              class="ratio-btn active py-1.5 px-2.5 sm:px-3 rounded-md font-semibold text-[#d04200] dark:text-[#f54e00] bg-white dark:bg-[#242428] shadow-xs cursor-pointer transition-all border border-[#f54e00]/20 shrink-0 whitespace-nowrap"
             >
               Original
             </button>
             <button
               type="button"
               data-ratio="1:1"
-              class="ratio-btn py-1.5 px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent"
+              class="ratio-btn py-1.5 px-2.5 sm:px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent shrink-0 whitespace-nowrap"
             >
-              1:1 (Shopify/Amazon)
+              1:1
             </button>
             <button
               type="button"
               data-ratio="16:9"
-              class="ratio-btn py-1.5 px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent"
+              class="ratio-btn py-1.5 px-2.5 sm:px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent shrink-0 whitespace-nowrap"
             >
-              16:9 (YouTube)
+              16:9
             </button>
             <button
               type="button"
               data-ratio="passport"
-              class="ratio-btn py-1.5 px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent"
+              class="ratio-btn py-1.5 px-2.5 sm:px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer transition-all border border-transparent shrink-0 whitespace-nowrap"
             >
-              Passport (3.5x4.5cm)
+              Passport
             </button>
           </div>
 
@@ -194,9 +194,9 @@ const {
             id="reset-slider-btn"
             type="button"
             title="Reset slider to 50% center"
-            class="py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-xs font-mono font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] hover:border-[#f54e00] transition-all shadow-xs cursor-pointer"
+            class="shrink-0 py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-xs font-mono font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] hover:border-[#f54e00] transition-all shadow-xs cursor-pointer whitespace-nowrap"
           >
-            50% Center
+            50%
           </button>
         </div>
       </div>
@@ -210,7 +210,7 @@ const {
         <div
           id="stage-box"
           class="relative flex items-center justify-center transition-all overflow-hidden rounded-md max-h-[440px] sm:max-h-[480px] max-w-full select-none cursor-ew-resize touch-none shadow-xs border border-[#cfcdc4] dark:border-[#3e3e44]"
-          style="--slider-pos: 50%;"
+          style="--slider-pos: 50%; touch-action: none;"
         >
           <!-- LAYER 1: BASE (ORIGINAL UPLOADED IMAGE - LEFT SIDE) -->
           <div id="slider-base-layer" class="w-full h-full relative flex items-center justify-center overflow-hidden bg-[#f7f7f4] dark:bg-[#121212]">
@@ -262,6 +262,7 @@ const {
             <div
               id="slider-handle"
               class="absolute w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-[#1c1c1f] border-2 border-[#f54e00] shadow-md flex items-center justify-center text-[#d04200] dark:text-[#f54e00] pointer-events-auto cursor-ew-resize hover:scale-110 active:scale-95 transition-transform"
+              style="touch-action: none;"
               title="Drag left or right to inspect cutout contours (60fps)"
             >
               <svg class="w-4 h-4 text-[#d04200] dark:text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -274,17 +275,17 @@ const {
       </div>
 
       <!-- INLINE ACTION CONTROLS: ROW 1 (BACKDROP & BLUR SLIDER) -->
-      <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-        <div class="flex flex-wrap items-center gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 pt-1">
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <span class="text-xs font-mono text-[#807d72] dark:text-[#a09c92] hidden sm:inline">Backdrop:</span>
           <!-- Background Color Segmented Pill -->
-          <div class="flex items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs">
+          <div class="flex flex-wrap items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs max-w-full">
             <!-- Transparent Checkerboard Toggle -->
             <button
               id="bg-btn-transparent"
               type="button"
               title="Transparent Checkerboard"
-              class="bg-color-btn active py-1.5 px-3 rounded-md text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all text-[#d04200] dark:text-[#f54e00] bg-white dark:bg-[#242428] shadow-xs cursor-pointer border border-[#f54e00]/20"
+              class="bg-color-btn active py-1.5 px-2.5 sm:px-3 rounded-md text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all text-[#d04200] dark:text-[#f54e00] bg-white dark:bg-[#242428] shadow-xs cursor-pointer border border-[#f54e00]/20 shrink-0"
               data-bg="transparent"
             >
               <div class="w-3.5 h-3.5 rounded-sm bg-checkerboard-dense border border-zinc-300 dark:border-zinc-600"></div>
@@ -296,7 +297,7 @@ const {
               id="bg-btn-white"
               type="button"
               title="Pure White (#FFFFFF)"
-              class="bg-color-btn py-1.5 px-3 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
+              class="bg-color-btn py-1.5 px-2.5 sm:px-3 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent shrink-0"
               data-bg="#FFFFFF"
             >
               <div class="w-3.5 h-3.5 rounded-sm bg-white border border-zinc-300"></div>
@@ -308,7 +309,7 @@ const {
               id="bg-btn-blue"
               type="button"
               title="Royal / Passport Blue (#2563EB)"
-              class="bg-color-btn py-1.5 px-3 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
+              class="bg-color-btn py-1.5 px-2.5 sm:px-3 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent shrink-0"
               data-bg="#2563EB"
             >
               <div class="w-3.5 h-3.5 rounded-sm bg-[#2563EB] border border-blue-400/40"></div>
@@ -318,7 +319,7 @@ const {
             <!-- Custom Color Picker -->
             <label
               title="Custom Hex Color"
-              class="relative flex items-center gap-1.5 py-1.5 px-2.5 rounded-md text-xs sm:text-sm font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
+              class="relative flex items-center gap-1.5 py-1.5 px-2 sm:px-2.5 rounded-md text-xs sm:text-sm font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent shrink-0"
             >
               <input type="color" id="custom-color-picker" value="#000000" class="sr-only" />
               <div id="custom-color-swatch" class="w-3.5 h-3.5 rounded-sm border border-zinc-300 dark:border-zinc-600 bg-black"></div>
@@ -330,7 +331,7 @@ const {
               id="bg-btn-custom-image"
               type="button"
               title="Upload Custom Backdrop Image"
-              class="bg-color-btn py-1.5 px-2.5 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent"
+              class="bg-color-btn py-1.5 px-2 sm:px-2.5 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#d04200] dark:hover:text-[#f54e00] cursor-pointer border border-transparent shrink-0"
             >
               <svg class="w-3.5 h-3.5 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -366,11 +367,71 @@ const {
 
       <!-- Action Bar: Prominent Primary Button & Secondary Actions -->
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-        <!-- Left: Upload Another -->
+        <!-- Right Action Group (Shown First on Mobile via order-1 sm:order-2) -->
+        <div class="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 order-1 sm:order-2">
+          <!-- Primary Hero Button: Download Full HD PNG (Full width on mobile for easy one-tap export) -->
+          <button
+            id="download-hd-btn"
+            type="button"
+            class="w-full sm:w-auto h-12 sm:h-11 px-7 rounded-md bg-[#f54e00] hover:bg-[#d04200] active:bg-[#b03800] text-white text-sm sm:text-base font-semibold transition-all flex items-center justify-center gap-2.5 shadow-xs hover:shadow cursor-pointer active:scale-[0.99] order-1 sm:order-3"
+          >
+            <svg class="w-5 h-5 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span class="whitespace-nowrap">Download Full HD PNG</span>
+          </button>
+
+          <!-- Secondary Actions: Clean 2-Column Grid on Mobile, Inline on Desktop -->
+          <div class="w-full sm:w-auto grid grid-cols-2 sm:flex items-center gap-2 sm:gap-2.5 order-2 sm:order-1">
+            <!-- Copy to Clipboard Button -->
+            <button
+              id="copy-clipboard-btn"
+              type="button"
+              class="w-full sm:w-auto h-11 px-3 sm:px-4 rounded-md bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs"
+              title="Copy cutout image to clipboard"
+            >
+              <svg class="w-4 h-4 text-[#f54e00] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="copy-btn-text" class="truncate">Copy PNG</span>
+            </button>
+
+            <!-- DUAL EXPORT TRIGGER: Compressed JPG with discrete target selector -->
+            <div class="w-full sm:w-auto flex items-center shadow-xs">
+              <select
+                id="jpg-preset-select"
+                aria-label="JPG compression target"
+                class="w-1/2 sm:w-auto h-11 pl-2 sm:pl-3 pr-1 sm:pr-2 rounded-l-md border border-r-0 border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#1c1c1f] text-[11px] sm:text-xs font-mono font-medium text-[#26251e] dark:text-[#ededed] cursor-pointer focus:outline-none focus:border-[#f54e00]"
+              >
+                <option value="50kb">&lt;50KB</option>
+                <option value="100kb" selected>&lt;100KB</option>
+                <option value="max">Max</option>
+              </select>
+              <button
+                id="export-jpg-btn"
+                type="button"
+                class="w-1/2 sm:w-auto h-11 px-2 sm:px-4 rounded-r-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] hover:border-[#f54e00] text-[11px] sm:text-xs md:text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap"
+                title="Export compressed JPG strictly below target threshold"
+              >
+                <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#f54e00] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span id="export-jpg-text">JPG</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Left: Upload Another (Order 2 on mobile so Download HD is top priority) -->
         <button
           id="upload-another-btn"
           type="button"
-          class="w-full sm:w-auto h-11 px-5 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#cfcdc4] dark:hover:border-[#3e3e44] text-sm font-medium text-[#26251e] dark:text-[#ededed] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+          class="w-full sm:w-auto h-11 px-5 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#cfcdc4] dark:hover:border-[#3e3e44] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs order-2 sm:order-1"
         >
           <svg class="w-4 h-4 text-[#807d72] dark:text-[#a09c92]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -379,63 +440,6 @@ const {
           </svg>
           <span>Select New Image</span>
         </button>
-
-        <!-- Right: Copy, Compressed JPG & Primary Download Full HD PNG -->
-        <div class="w-full sm:w-auto flex flex-wrap items-center gap-2.5">
-          <!-- Copy to Clipboard Button -->
-          <button
-            id="copy-clipboard-btn"
-            type="button"
-            class="flex-1 sm:flex-none h-11 px-4 rounded-md bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-            title="Copy cutout image to clipboard"
-          >
-            <svg class="w-4 h-4 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            <span id="copy-btn-text">Copy PNG</span>
-          </button>
-
-          <!-- DUAL EXPORT TRIGGER: Compressed JPG with discrete target selector -->
-          <div class="flex items-center shadow-xs">
-            <select
-              id="jpg-preset-select"
-              aria-label="JPG compression target"
-              class="h-11 pl-3 pr-2 rounded-l-md border border-r-0 border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#1c1c1f] text-xs font-mono font-medium text-[#26251e] dark:text-[#ededed] cursor-pointer focus:outline-none focus:border-[#f54e00]"
-            >
-              <option value="50kb">Under 50 KB</option>
-              <option value="100kb" selected>Under 100 KB</option>
-              <option value="max">Max Quality</option>
-            </select>
-            <button
-              id="export-jpg-btn"
-              type="button"
-              class="h-11 px-4 rounded-r-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] hover:border-[#f54e00] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#d04200] dark:hover:text-[#f54e00] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
-              title="Export compressed JPG strictly below target threshold"
-            >
-              <svg class="w-4 h-4 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              <span id="export-jpg-text">Export JPG</span>
-            </button>
-          </div>
-
-          <!-- Primary Hero Button: Download Full HD PNG (Cursor Orange CTA) -->
-          <button
-            id="download-hd-btn"
-            type="button"
-            class="flex-2 sm:flex-none h-11 px-7 rounded-md bg-[#f54e00] hover:bg-[#d04200] active:bg-[#b03800] text-white text-base font-medium transition-all flex items-center justify-center gap-2.5 shadow-xs hover:shadow cursor-pointer active:scale-[0.99]"
-          >
-            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            <span>Download Full HD PNG</span>
-          </button>
-        </div>
       </div>
     </div>
 
@@ -905,13 +909,61 @@ const {
     }
   }
 
+  // Touch Event Handlers for Thumb Dragging on Mobile Devices
+  function onTouchStart(e: TouchEvent) {
+    if (e.touches && e.touches.length > 0) {
+      isDraggingSlider = true;
+      updateSliderFromClientX(e.touches[0].clientX);
+    }
+  }
+
+  function onTouchMove(e: TouchEvent) {
+    if (!isDraggingSlider) return;
+    if (e.touches && e.touches.length > 0) {
+      if (e.cancelable) e.preventDefault();
+      updateSliderFromClientX(e.touches[0].clientX);
+    }
+  }
+
+  function onTouchEnd() {
+    if (isDraggingSlider) {
+      isDraggingSlider = false;
+    }
+  }
+
+  // Mouse fallback handlers
+  function onMouseDown(e: MouseEvent) {
+    isDraggingSlider = true;
+    updateSliderFromClientX(e.clientX);
+  }
+
+  function onMouseMove(e: MouseEvent) {
+    if (!isDraggingSlider) return;
+    updateSliderFromClientX(e.clientX);
+  }
+
+  function onMouseUp() {
+    if (isDraggingSlider) isDraggingSlider = false;
+  }
+
   if (stageBox) {
+    // Pointer Events API
     stageBox.addEventListener('pointerdown', onPointerDown);
     stageBox.addEventListener('pointermove', onPointerMove);
     stageBox.addEventListener('pointerup', onPointerUp);
     stageBox.addEventListener('pointercancel', onPointerUp);
+
+    // Explicit Touch Events with passive: false for smooth non-scrolling thumb drag
+    stageBox.addEventListener('touchstart', onTouchStart, { passive: false });
+    stageBox.addEventListener('touchmove', onTouchMove, { passive: false });
+    stageBox.addEventListener('touchend', onTouchEnd);
+    stageBox.addEventListener('touchcancel', onTouchEnd);
+
+    // Mouse fallback
+    stageBox.addEventListener('mousedown', onMouseDown);
   }
 
+  // Global window listeners for drag continuation outside container
   window.addEventListener('pointermove', (e: PointerEvent) => {
     if (isDraggingSlider) updateSliderFromClientX(e.clientX);
   });
@@ -921,6 +973,18 @@ const {
   window.addEventListener('pointercancel', () => {
     if (isDraggingSlider) isDraggingSlider = false;
   });
+
+  window.addEventListener('touchmove', (e: TouchEvent) => {
+    if (isDraggingSlider && e.touches && e.touches.length > 0) {
+      if (e.cancelable) e.preventDefault();
+      updateSliderFromClientX(e.touches[0].clientX);
+    }
+  }, { passive: false });
+  window.addEventListener('touchend', onTouchEnd);
+  window.addEventListener('touchcancel', onTouchEnd);
+
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
 
   if (resetSliderBtn) {
     resetSliderBtn.addEventListener('click', (e) => {

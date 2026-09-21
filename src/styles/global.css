@@ -118,3 +118,13 @@
 .dark ::-webkit-scrollbar-thumb {
   background: #2e2e33;
 }
+
+/* Hide scrollbar for clean mobile horizontal scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
