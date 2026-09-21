@@ -8,6 +8,7 @@ node_modules/
 # Cloudflare & Wrangler
 .wrangler/
 .dev.vars*
+_worker.bundle
 
 # Logs
 npm-debug.log*

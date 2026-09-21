@@ -282,11 +282,64 @@ const {
         </div>
       </div>
 
-      <!-- INLINE ACTION CONTROLS: ROW 1 (BACKDROP SELECTION) -->
-      <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 pt-1">
-        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <span class="text-xs font-mono text-[#807d72] dark:text-[#a09c92] hidden sm:inline">Backdrop:</span>
-          <!-- Background Color Segmented Pill -->
+      <!-- INLINE ACTION CONTROLS: ROW 1 (BACKDROP SELECTION & TABS) -->
+      <div id="backdrop-panel" class="w-full p-3 sm:p-4 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-3">
+        <!-- Tab Switcher Header -->
+        <div class="flex items-center justify-between border-b border-[#e6e5e0]/80 dark:border-[#2e2e33]/80 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono font-semibold uppercase tracking-wider text-[#26251e] dark:text-[#ededed] flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#E5A93C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>Backdrop</span>
+            </span>
+            <div id="bg-tab-group" class="flex items-center p-0.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs text-xs font-mono">
+              <button
+                type="button"
+                id="bg-tab-btn-color"
+                data-tab="color"
+                class="bg-tab-btn active py-1 px-2.5 sm:px-3 rounded-md font-semibold text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-[#242428] shadow-xs cursor-pointer transition-all border border-[#E5A93C]/30 flex items-center gap-1.5 shrink-0"
+              >
+                <div class="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-blue-500 to-amber-500"></div>
+                <span>Color</span>
+              </button>
+              <button
+                type="button"
+                id="bg-tab-btn-photo"
+                data-tab="photo"
+                class="bg-tab-btn py-1 px-2.5 sm:px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] cursor-pointer transition-all border border-transparent flex items-center gap-1.5 shrink-0"
+              >
+                <svg class="w-3 h-3 text-[#E5A93C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span>Photo</span>
+              </button>
+              <button
+                type="button"
+                id="bg-tab-btn-magic"
+                data-tab="magic"
+                class="bg-tab-btn py-1 px-2.5 sm:px-3 rounded-md font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] cursor-pointer transition-all border border-transparent flex items-center gap-1.5 shrink-0"
+              >
+                <svg class="w-3.5 h-3.5 text-[#E5A93C]" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
+                </svg>
+                <span>Magic</span>
+                <span class="text-[9px] px-1 py-0.2 rounded bg-[#E5A93C]/20 text-[#b47818] dark:text-[#E5A93C] font-bold uppercase tracking-wider">AI</span>
+              </button>
+            </div>
+          </div>
+
+          <span class="text-[11px] font-mono text-[#807d72] dark:text-[#a09c92] hidden md:inline">
+            Drag ↔ slider to inspect edges live
+          </span>
+        </div>
+
+        <!-- TAB 1: COLOR PRESETS -->
+        <div id="bg-tab-content-color" class="bg-tab-content flex flex-wrap items-center gap-2">
           <div class="flex flex-wrap items-center p-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs max-w-full">
             <!-- Transparent Checkerboard Toggle -->
             <button
@@ -331,30 +384,110 @@ const {
             >
               <input type="color" id="custom-color-picker" value="#000000" class="sr-only" />
               <div id="custom-color-swatch" class="w-3.5 h-3.5 rounded-sm border border-zinc-300 dark:border-zinc-600 bg-black"></div>
-              <span>Color</span>
+              <span>Custom Color</span>
             </label>
-
-            <!-- [+] Custom BG Image File Input -->
-            <button
-              id="bg-btn-custom-image"
-              type="button"
-              title="Upload Custom Backdrop Image"
-              class="bg-color-btn py-1.5 px-2 sm:px-2.5 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] cursor-pointer border border-transparent shrink-0"
-            >
-              <svg class="w-3.5 h-3.5 text-[#E5A93C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-              <span>[+] Custom BG</span>
-            </button>
-            <input type="file" id="custom-bg-input" accept="image/png, image/jpeg, image/webp" class="hidden" />
           </div>
         </div>
 
-        <span class="text-xs font-mono text-[#807d72] dark:text-[#706e68] hidden md:inline">
-          Drag ↔ slider to inspect edges live
-        </span>
+        <!-- TAB 2: PHOTO UPLOAD -->
+        <div id="bg-tab-content-photo" class="bg-tab-content hidden flex flex-wrap items-center gap-3">
+          <button
+            id="bg-btn-custom-image"
+            type="button"
+            title="Upload Custom Backdrop Image"
+            class="py-2 px-4 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#151518] hover:border-[#E5A93C] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#b47818] dark:hover:text-[#E5A93C] transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+          >
+            <svg class="w-4 h-4 text-[#E5A93C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <span>Choose Backdrop Photo</span>
+          </button>
+          <input type="file" id="custom-bg-input" accept="image/png, image/jpeg, image/webp" class="hidden" />
+
+          <!-- Photo Thumbnail / Active Indicator -->
+          <div id="photo-preview-wrapper" class="hidden flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-md bg-[#efeee8] dark:bg-[#121212] border border-[#e6e5e0] dark:border-[#2e2e33] text-xs font-mono text-[#5a5852] dark:text-[#a09c92]">
+            <img id="photo-preview-thumb" alt="Custom background thumbnail" class="w-6 h-6 rounded object-cover border border-[#cfcdc4] dark:border-[#3e3e44]" />
+            <span id="photo-preview-name" class="truncate max-w-[120px] sm:max-w-[180px]">Photo applied</span>
+            <button id="photo-remove-btn" type="button" title="Remove custom background" class="ml-1 text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 cursor-pointer">✕</button>
+          </div>
+
+          <span class="text-xs font-mono text-[#807d72] dark:text-[#706e68]">
+            PNG, JPG, WebP up to 25MB
+          </span>
+        </div>
+
+        <!-- TAB 3: MAGIC AI GENERATOR -->
+        <div id="bg-tab-content-magic" class="bg-tab-content hidden space-y-2.5">
+          <!-- Input & Generate CTA -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div class="relative flex-1">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#E5A93C]">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
+                </svg>
+              </div>
+              <input
+                type="text"
+                id="magic-prompt-input"
+                placeholder="Describe your background (e.g. Modern executive office, sunset beach)"
+                class="w-full h-10 pl-9 pr-3 text-xs sm:text-sm rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] text-[#26251e] dark:text-white placeholder-[#807d72] dark:placeholder-[#706e68] focus:outline-none focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C] transition-all"
+              />
+            </div>
+            <button
+              type="button"
+              id="magic-generate-btn"
+              class="h-10 px-5 rounded-md bg-gradient-to-r from-[#E5A93C] to-[#D49B28] hover:from-[#D49B28] hover:to-[#c28c20] text-zinc-950 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-[0_2px_10px_rgba(229,169,60,0.3)] hover:shadow-[0_4px_16px_rgba(229,169,60,0.45)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0 select-none active:scale-[0.99]"
+            >
+              <svg id="magic-btn-icon" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
+              </svg>
+              <span id="magic-btn-text">Generate</span>
+              <!-- Golden Loading Spinner State -->
+              <div id="magic-btn-spinner" class="hidden w-4 h-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin"></div>
+            </button>
+          </div>
+
+          <!-- Quick-chip Suggestions -->
+          <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+            <span class="text-xs font-mono text-[#807d72] dark:text-[#a09c92]">Suggestions:</span>
+            <button
+              type="button"
+              data-prompt="Studio Light, clean minimalist photography backdrop with soft warm lighting"
+              class="magic-chip-btn text-[11px] font-medium px-2.5 py-1 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] text-[#5a5852] dark:text-[#a09c92] hover:border-[#E5A93C] hover:text-[#b47818] dark:hover:text-[#E5A93C] hover:bg-[#E5A93C]/5 transition-all cursor-pointer"
+            >
+              Studio Light
+            </button>
+            <button
+              type="button"
+              data-prompt="Neon Street, futuristic cyberpunk night city with glowing neon reflections and bokeh"
+              class="magic-chip-btn text-[11px] font-medium px-2.5 py-1 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] text-[#5a5852] dark:text-[#a09c92] hover:border-[#E5A93C] hover:text-[#b47818] dark:hover:text-[#E5A93C] hover:bg-[#E5A93C]/5 transition-all cursor-pointer"
+            >
+              Neon Street
+            </button>
+            <button
+              type="button"
+              data-prompt="Clean Office, modern bright executive corner office with floor to ceiling glass windows"
+              class="magic-chip-btn text-[11px] font-medium px-2.5 py-1 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] text-[#5a5852] dark:text-[#a09c92] hover:border-[#E5A93C] hover:text-[#b47818] dark:hover:text-[#E5A93C] hover:bg-[#E5A93C]/5 transition-all cursor-pointer"
+            >
+              Clean Office
+            </button>
+            <button
+              type="button"
+              data-prompt="Nature Bokeh, lush green garden forest with golden sunset rays and soft depth of field"
+              class="magic-chip-btn text-[11px] font-medium px-2.5 py-1 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] text-[#5a5852] dark:text-[#a09c92] hover:border-[#E5A93C] hover:text-[#b47818] dark:hover:text-[#E5A93C] hover:bg-[#E5A93C]/5 transition-all cursor-pointer"
+            >
+              Nature Bokeh
+            </button>
+          </div>
+
+          <!-- Inline Magic Status Box -->
+          <div id="magic-status-box" class="hidden p-2.5 rounded-md text-xs font-medium flex items-center justify-between transition-all">
+            <span id="magic-status-text"></span>
+            <button type="button" id="magic-status-close" class="text-xs ml-2 opacity-70 hover:opacity-100 cursor-pointer">✕</button>
+          </div>
+        </div>
       </div>
 
       <!-- ADJUST & EFFECTS PANEL: REAL-TIME GPU-ACCELERATED BLUR & SHADOW CONTROLS -->
@@ -589,6 +722,33 @@ const {
   const bgBtnCustomImage = document.getElementById('bg-btn-custom-image') as HTMLButtonElement;
   const customBgInput = document.getElementById('custom-bg-input') as HTMLInputElement;
 
+  // Backdrop Tabs & Magic AI Elements
+  const bgTabBtns = document.querySelectorAll('.bg-tab-btn');
+  const bgTabContents = document.querySelectorAll('.bg-tab-content');
+  const bgTabBtnColor = document.getElementById('bg-tab-btn-color') as HTMLButtonElement;
+  const bgTabBtnPhoto = document.getElementById('bg-tab-btn-photo') as HTMLButtonElement;
+  const bgTabBtnMagic = document.getElementById('bg-tab-btn-magic') as HTMLButtonElement;
+  const bgTabContentColor = document.getElementById('bg-tab-content-color') as HTMLElement;
+  const bgTabContentPhoto = document.getElementById('bg-tab-content-photo') as HTMLElement;
+  const bgTabContentMagic = document.getElementById('bg-tab-content-magic') as HTMLElement;
+
+  const magicPromptInput = document.getElementById('magic-prompt-input') as HTMLInputElement;
+  const magicGenerateBtn = document.getElementById('magic-generate-btn') as HTMLButtonElement;
+  const magicBtnSpinner = document.getElementById('magic-btn-spinner') as HTMLElement;
+  const magicBtnIcon = document.getElementById('magic-btn-icon') as HTMLElement;
+  const magicBtnText = document.getElementById('magic-btn-text') as HTMLElement;
+  const magicChips = document.querySelectorAll('.magic-chip-btn');
+  const magicStatusBox = document.getElementById('magic-status-box') as HTMLElement;
+  const magicStatusText = document.getElementById('magic-status-text') as HTMLElement;
+  const magicStatusClose = document.getElementById('magic-status-close') as HTMLElement;
+
+  const photoPreviewWrapper = document.getElementById('photo-preview-wrapper') as HTMLElement;
+  const photoPreviewThumb = document.getElementById('photo-preview-thumb') as HTMLImageElement;
+  const photoPreviewName = document.getElementById('photo-preview-name') as HTMLElement;
+  const photoRemoveBtn = document.getElementById('photo-remove-btn') as HTMLButtonElement;
+
+  let currentBgTab: 'color' | 'photo' | 'magic' = 'color';
+
   const blurControlWrapper = document.getElementById('blur-control-wrapper') as HTMLElement;
   const backdropBlurSlider = document.getElementById('backdrop-blur-slider') as HTMLInputElement;
   const blurValueLabel = document.getElementById('blur-value-label') as HTMLElement;
@@ -744,8 +904,11 @@ const {
       customBgPreviewImg.classList.add('hidden');
       customBgPreviewImg.src = '';
       customBgPreviewImg.style.transform = 'none';
+      customBgPreviewImg.style.filter = 'none';
     }
     if (customBgInput) customBgInput.value = '';
+    if (photoPreviewWrapper) photoPreviewWrapper.classList.add('hidden');
+    if (photoPreviewThumb) photoPreviewThumb.src = '';
   }
 
   function applyBgToElements(color: string) {
@@ -934,10 +1097,24 @@ const {
             customBgPreviewImg.src = customBgObjectUrl!;
             customBgPreviewImg.classList.remove('hidden');
           }
+          if (photoPreviewWrapper && photoPreviewThumb && photoPreviewName) {
+            photoPreviewThumb.src = customBgObjectUrl!;
+            photoPreviewName.textContent = file.name;
+            photoPreviewWrapper.classList.remove('hidden');
+          }
           applyBgToElements(currentBgColor);
+          applyBlurEffect();
+          applyShadowEffect();
         };
         img.src = customBgObjectUrl;
       }
+    });
+  }
+
+  if (photoRemoveBtn) {
+    photoRemoveBtn.addEventListener('click', () => {
+      clearCustomBg();
+      applyBgToElements('transparent');
     });
   }
 
@@ -1041,6 +1218,9 @@ const {
       cutoutUrl = null;
     }
     cutoutBlob = null;
+    clearMagicStatus();
+    if (magicPromptInput) magicPromptInput.value = '';
+    switchBgTab('color');
     fileInput.value = '';
     switchView('upload');
   }
@@ -1081,6 +1261,165 @@ const {
       applyBgToElements(currentBgColor);
     });
   }
+
+  // Backdrop Tab Switching Handler
+  function switchBgTab(tab: 'color' | 'photo' | 'magic') {
+    currentBgTab = tab;
+    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold', 'shadow-xs', 'border-[#E5A93C]/30'];
+    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
+
+    const tabs = [
+      { id: 'color', btn: bgTabBtnColor, content: bgTabContentColor },
+      { id: 'photo', btn: bgTabBtnPhoto, content: bgTabContentPhoto },
+      { id: 'magic', btn: bgTabBtnMagic, content: bgTabContentMagic },
+    ];
+
+    tabs.forEach(({ id, btn, content }) => {
+      if (!btn || !content) return;
+      if (id === tab) {
+        btn.classList.add(...activeClasses);
+        btn.classList.remove(...inactiveClasses);
+        content.classList.remove('hidden');
+      } else {
+        btn.classList.remove(...activeClasses);
+        btn.classList.add(...inactiveClasses);
+        content.classList.add('hidden');
+      }
+    });
+  }
+
+  bgTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab') as 'color' | 'photo' | 'magic';
+      if (tab) switchBgTab(tab);
+    });
+  });
+
+  // Magic AI Background Generator Handlers
+  function setMagicLoading(isLoading: boolean) {
+    if (!magicGenerateBtn) return;
+    magicGenerateBtn.disabled = isLoading;
+    if (magicPromptInput) magicPromptInput.disabled = isLoading;
+
+    if (isLoading) {
+      if (magicBtnSpinner) magicBtnSpinner.classList.remove('hidden');
+      if (magicBtnIcon) magicBtnIcon.classList.add('hidden');
+      if (magicBtnText) magicBtnText.textContent = 'Generating...';
+      magicGenerateBtn.classList.add('opacity-80', 'cursor-wait');
+    } else {
+      if (magicBtnSpinner) magicBtnSpinner.classList.add('hidden');
+      if (magicBtnIcon) magicBtnIcon.classList.remove('hidden');
+      if (magicBtnText) magicBtnText.textContent = 'Generate';
+      magicGenerateBtn.classList.remove('opacity-80', 'cursor-wait');
+    }
+  }
+
+  function showMagicStatus(msg: string, type: 'info' | 'error' | 'success') {
+    if (!magicStatusBox || !magicStatusText) return;
+    magicStatusText.textContent = msg;
+    magicStatusBox.className = 'p-2.5 rounded-md text-xs font-medium flex items-center justify-between transition-all';
+
+    if (type === 'error') {
+      magicStatusBox.classList.add('bg-red-50', 'dark:bg-red-950/40', 'border', 'border-red-200', 'dark:border-red-800/60', 'text-red-700', 'dark:text-red-200');
+    } else if (type === 'success') {
+      magicStatusBox.classList.add('bg-emerald-50', 'dark:bg-emerald-950/40', 'border', 'border-emerald-200', 'dark:border-emerald-800/60', 'text-emerald-700', 'dark:text-emerald-300');
+    } else {
+      magicStatusBox.classList.add('bg-[#E5A93C]/10', 'border', 'border-[#E5A93C]/30', 'text-[#b47818]', 'dark:text-[#E5A93C]');
+    }
+  }
+
+  function clearMagicStatus() {
+    if (magicStatusBox) magicStatusBox.classList.add('hidden');
+  }
+
+  if (magicStatusClose) {
+    magicStatusClose.addEventListener('click', clearMagicStatus);
+  }
+
+  async function generateMagicBackground() {
+    if (!magicPromptInput || !magicGenerateBtn) return;
+    const prompt = magicPromptInput.value.trim();
+    if (!prompt) {
+      showMagicStatus('Please enter a description for your background.', 'error');
+      magicPromptInput.focus();
+      return;
+    }
+
+    try {
+      setMagicLoading(true);
+      showMagicStatus('✨ Generating background with Imagen 3... (~5-10s)', 'info');
+
+      const res = await fetch('/api/generate-bg', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(data?.error || `Generation failed with status ${res.status}`);
+      }
+
+      if (!data?.imageUrl) {
+        throw new Error('No image URL returned from server.');
+      }
+
+      const img = new Image();
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Failed to render generated image asset'));
+        img.src = data.imageUrl;
+      });
+
+      // Assign to existing background layer state without touching foreground/export logic
+      customBgImageObj = img;
+      if (customBgPreviewImg) {
+        customBgPreviewImg.src = data.imageUrl;
+        customBgPreviewImg.classList.remove('hidden');
+      }
+
+      // Update backdrop elements & apply active effects seamlessly
+      currentBgColor = 'transparent';
+      applyBgToElements(currentBgColor);
+      applyBlurEffect();
+      applyShadowEffect();
+
+      showMagicStatus('✨ AI background generated and applied successfully!', 'success');
+      showToast('✨ AI background applied');
+
+    } catch (err: any) {
+      console.error('Magic AI generation error:', err);
+      showMagicStatus(err.message || 'Failed to generate background.', 'error');
+    } finally {
+      setMagicLoading(false);
+    }
+  }
+
+  if (magicGenerateBtn) {
+    magicGenerateBtn.addEventListener('click', generateMagicBackground);
+  }
+
+  if (magicPromptInput) {
+    magicPromptInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        generateMagicBackground();
+      }
+    });
+  }
+
+  magicChips.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const prompt = btn.getAttribute('data-prompt') || btn.textContent?.trim() || '';
+      if (magicPromptInput) {
+        magicPromptInput.value = prompt;
+        magicPromptInput.focus();
+      }
+    });
+  });
 
   // 60FPS Interactive Before/After Split Slider Drag Logic (Pointer Events API)
   let isDraggingSlider = false;
