@@ -73,7 +73,7 @@ const {
           data-sample="/samples/portrait.jpg"
           class="sample-btn flex items-center gap-3 p-2 pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
         >
-          <img src="/samples/portrait.jpg" alt="Portrait Photo sample" class="w-10 h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
+          <img src="/samples/portrait.jpg" alt="Portrait photo background removal sample" class="w-10 h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
           <div class="text-left">
             <div class="text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Portrait</div>
             <div class="text-xs text-[#807d72] dark:text-[#a09c92]">Headshot & People</div>
@@ -85,7 +85,7 @@ const {
           data-sample="/samples/signature.jpg"
           class="sample-btn flex items-center gap-3 p-2 pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
         >
-          <img src="/samples/signature.jpg" alt="Signature sample" class="w-10 h-10 rounded-md object-cover bg-white group-hover/card:scale-105 transition-transform" />
+          <img src="/samples/signature.jpg" alt="Handwritten signature transparency sample" class="w-10 h-10 rounded-md object-cover bg-white group-hover/card:scale-105 transition-transform" />
           <div class="text-left">
             <div class="text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Signature</div>
             <div class="text-xs text-[#807d72] dark:text-[#a09c92]">Ink & Documents</div>
@@ -97,7 +97,7 @@ const {
           data-sample="/samples/product.jpg"
           class="sample-btn flex items-center gap-3 p-2 pr-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#f54e00] hover:shadow-xs transition-all cursor-pointer group/card"
         >
-          <img src="/samples/product.jpg" alt="Product sample" class="w-10 h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
+          <img src="/samples/product.jpg" alt="E-commerce product background removal sample" class="w-10 h-10 rounded-md object-cover group-hover/card:scale-105 transition-transform" />
           <div class="text-left">
             <div class="text-sm font-semibold text-[#26251e] dark:text-[#ededed] group-hover/card:text-[#d04200] dark:group-hover/card:text-[#f54e00]">Product</div>
             <div class="text-xs text-[#807d72] dark:text-[#a09c92]">Commercial Object</div>
@@ -216,7 +216,7 @@ const {
           <div id="slider-base-layer" class="w-full h-full relative flex items-center justify-center overflow-hidden bg-[#f7f7f4] dark:bg-[#121212]">
             <img
               id="preview-original-img"
-              alt="Original uploaded image"
+              alt="Original uploaded image preview"
               class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain pointer-events-none select-none"
             />
             <!-- Left Badge: Original -->
@@ -233,13 +233,13 @@ const {
           >
             <!-- Background Layer (Checkerboard, Solid Color, or Custom BG Image + Blur) -->
             <div id="stage-bg-layer" class="absolute inset-0 z-0 bg-checkerboard transition-all overflow-hidden pointer-events-none">
-              <img id="custom-bg-preview-img" alt="Custom backdrop" class="hidden w-full h-full object-cover transition-all" />
+              <img id="custom-bg-preview-img" alt="Custom background image preview" class="hidden w-full h-full object-cover transition-all" />
             </div>
 
             <!-- Foreground Cutout Image (Identical size & containment as original) -->
             <img
               id="preview-cutout-img"
-              alt="Cutout preview"
+              alt="Transparent background cutout preview"
               class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 pointer-events-none select-none drop-shadow-xs"
             />
 

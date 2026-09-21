@@ -8,23 +8,32 @@ interface Props {
   description?: string;
   canonicalPath?: string;
   ogType?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
   structuredData?: Record<string, any> | Record<string, any>[];
 }
 
 const {
-  title = "fastbgremove.com – 100% In-Browser HD Background Remover",
-  description = "Remove image backgrounds in your browser. 100% private, zero server uploads, free full-resolution HD PNG export with no watermarks and no sign-up.",
+  title = "fastbgremove.com – 100% Free HD Background Remover (Zero Upload, Unlimited)",
+  description = "Instant, 100% in-browser background removal with zero server uploads. Download full original resolution HD PNGs with no watermarks and no sign-up.",
   canonicalPath = "",
   ogType = "website",
+  ogTitle,
+  ogDescription,
+  ogImage = "https://fastbgremove.com/og-image.png",
   structuredData
 } = Astro.props;
 
 const canonicalUrl = new URL(canonicalPath, "https://fastbgremove.com").href;
+const finalOgTitle = ogTitle || (canonicalPath === "" || canonicalPath === "/" ? "fastbgremove.com – Free In-Browser Background Remover" : title);
+const finalOgDescription = ogDescription || (canonicalPath === "" || canonicalPath === "/" ? "Remove image backgrounds instantly in HD. 100% private, no sign-up, zero watermarks." : description);
+const finalOgUrl = canonicalUrl;
 
 const defaultStructuredData = [
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@type": "SoftwareApplication",
     "name": "fastbgremove.com",
     "url": "https://fastbgremove.com",
     "description": "100% client-side in-browser background remover tool providing free, full-resolution HD PNG cutouts with zero server uploads.",
@@ -85,18 +94,20 @@ const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStr
 
     <!-- OpenGraph / Facebook -->
     <meta property="og:type" content={ogType} />
-    <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:url" content={finalOgUrl} />
+    <meta property="og:title" content={finalOgTitle} />
+    <meta property="og:description" content={finalOgDescription} />
+    <meta property="og:image" content={ogImage} />
     <meta property="og:site_name" content="fastbgremove.com" />
 
-    <!-- Twitter -->
+    <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={canonicalUrl} />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:url" content={finalOgUrl} />
+    <meta name="twitter:title" content={finalOgTitle} />
+    <meta name="twitter:description" content={finalOgDescription} />
+    <meta name="twitter:image" content={ogImage} />
 
-    <!-- Structured Data -->
+    <!-- Structured Data (SoftwareApplication + Page Schema) -->
     {schemas.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}

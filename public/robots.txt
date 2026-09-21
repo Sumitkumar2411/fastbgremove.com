@@ -1,5 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://fastbgremove.com/sitemap.xml
-Sitemap: https://fastbgremove.com/sitemap-index.xml
