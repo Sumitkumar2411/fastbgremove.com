@@ -1,4 +1,5 @@
 interface Env {
+  'GEMINI API KEY'?: string;
   GEMINI_API_KEY?: string;
   [key: string]: any;
 }
@@ -126,16 +127,39 @@ export const onRequestPost = async (context: {
       );
     }
 
-    // Read API key from Cloudflare env
-    const apiKey =
-      env?.GEMINI_API_KEY ||
-      (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : '');
+    // Read API key from Cloudflare env supporting all possible naming variants
+    const envObj = (context as any)?.env || env || {};
+    let apiKey =
+      envObj['GEMINI API KEY'] ||
+      envObj['GEMINI_API_KEY'] ||
+      envObj.GEMINI_API_KEY ||
+      envObj['gemini_api_key'] ||
+      envObj['gemini api key'] ||
+      (typeof process !== 'undefined'
+        ? process.env?.['GEMINI API KEY'] || process.env?.GEMINI_API_KEY
+        : '');
+
+    // Case-insensitive and whitespace-stripped fallback
+    if (!apiKey && envObj) {
+      for (const [k, v] of Object.entries(envObj)) {
+        if (typeof v === 'string' && k.replace(/[\s_-]/g, '').toUpperCase() === 'GEMINIAPIKEY') {
+          apiKey = v;
+          break;
+        }
+      }
+    }
 
     if (!apiKey) {
+      const rawKeys = Object.keys(envObj || {});
+      const maskedKeys = rawKeys.map((k) =>
+        k.length > 5 ? `${k.slice(0, 3)}...${k.slice(-2)}` : '***'
+      );
       return jsonResponse(
         {
           error:
-            'GEMINI_API_KEY is not configured on Cloudflare. Please configure it in Cloudflare Pages secrets.',
+            'GEMINI API KEY is not configured on Cloudflare. Please configure it in Cloudflare Pages secrets.',
+          availableKeys: maskedKeys,
+          detectedEnvKeys: rawKeys,
         },
         500
       );
