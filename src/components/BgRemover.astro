@@ -1357,15 +1357,27 @@ const {
         body: JSON.stringify({ prompt }),
       });
 
-      const data = await res.json().catch(() => null);
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
 
       if (!res.ok) {
-        throw new Error(data?.error || `Generation failed with status ${res.status}`);
+        let friendly = 'AI server busy, please try again in a few seconds.';
+        if (data?.error && typeof data.error === 'string') {
+          const raw = data.error.trim();
+          if (!raw.startsWith('{') && !raw.startsWith('<') && !raw.includes('{"') && raw.length < 100) {
+            friendly = raw;
+          }
+        }
+        throw new Error(friendly);
       }
 
       const generatedImage = data?.image || data?.imageUrl;
       if (!generatedImage) {
-        throw new Error('No image returned from server.');
+        throw new Error('AI server busy, please try again in a few seconds.');
       }
 
       const img = new Image();
@@ -1393,7 +1405,14 @@ const {
 
     } catch (err: any) {
       console.error('Magic AI generation error:', err);
-      showMagicStatus(err.message || 'Failed to generate background.', 'error');
+      let friendly = 'AI server busy, please try again in a few seconds.';
+      if (err?.message && typeof err.message === 'string') {
+        const raw = err.message.trim();
+        if (!raw.startsWith('{') && !raw.startsWith('<') && !raw.includes('status') && !raw.includes('fetch') && !raw.includes('Unexpected') && raw.length < 100) {
+          friendly = raw;
+        }
+      }
+      showMagicStatus(friendly, 'error');
     } finally {
       setMagicLoading(false);
     }

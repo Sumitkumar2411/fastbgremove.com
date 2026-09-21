@@ -89,71 +89,69 @@ export const POST: APIRoute = async (context) => {
     // Enhance prompt for high quality studio backdrop
     const fullPrompt = `${rawPrompt}, high quality, photorealistic, professional photography, 8k, background only, empty space for product cutout`;
 
-    // Construct Pollinations Flux endpoint URL
-    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+    // Direct flux model with random seed to prevent collisions / rate limits
+    const randomSeed = Math.floor(Math.random() * 1000000);
+    const primaryUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
       fullPrompt
-    )}?width=1024&height=1024&nologo=true&model=flux`;
+    )}?width=1024&height=1024&nologo=true&model=flux&seed=${randomSeed}`;
+    const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+      fullPrompt
+    )}?width=1024&height=1024&nologo=true&seed=${randomSeed}`;
 
-    // Fetch with 50-second timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 50000);
-
-    let upstreamRes: Response;
-    try {
-      upstreamRes = await fetch(pollinationsUrl, {
-        method: 'GET',
-        headers: {
-          Accept: 'image/jpeg,image/png,image/*',
-          'User-Agent': 'FastBgRemove-Backdrop/1.0',
-        },
-        signal: controller.signal,
-      });
-    } catch (fetchErr: any) {
-      clearTimeout(timeoutId);
-      if (fetchErr.name === 'AbortError') {
-        return jsonResponse(
-          { error: 'Background generation timed out. Please try again with a simpler prompt.' },
-          504
-        );
+    const fetchImageBuffer = async (
+      url: string,
+      timeoutMs: number
+    ): Promise<{ buffer: ArrayBuffer; mimeType: string } | null> => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            Accept: 'image/jpeg,image/png,image/*',
+            'User-Agent': 'FastBgRemove-Backdrop/1.0',
+          },
+          signal: controller.signal,
+        });
+        if (!res.ok) return null;
+        const buf = await res.arrayBuffer();
+        if (!buf || buf.byteLength === 0) return null;
+        const mimeHeader = res.headers.get('content-type') || 'image/jpeg';
+        const mimeType = mimeHeader.includes('png') ? 'image/png' : 'image/jpeg';
+        return { buffer: buf, mimeType };
+      } catch {
+        return null;
+      } finally {
+        clearTimeout(timeoutId);
       }
-      return jsonResponse(
-        { error: `Network error reaching image generator: ${fetchErr.message || 'Unknown network error'}` },
-        502
-      );
-    } finally {
-      clearTimeout(timeoutId);
+    };
+
+    // 1. Try primary direct flux model with random seed
+    let result = await fetchImageBuffer(primaryUrl, 30000);
+
+    // 2. If primary fails with non-200 or timeout, try fallback URL
+    if (!result) {
+      result = await fetchImageBuffer(fallbackUrl, 25000);
     }
 
-    if (!upstreamRes.ok) {
-      const errText = await upstreamRes.text().catch(() => '');
+    if (!result) {
       return jsonResponse(
-        { error: `Image generation failed with status ${upstreamRes.status}: ${errText || upstreamRes.statusText}` },
-        upstreamRes.status >= 400 && upstreamRes.status < 500 ? upstreamRes.status : 502
-      );
-    }
-
-    // Process binary image buffer into base64 Data URL
-    const arrayBuffer = await upstreamRes.arrayBuffer();
-    if (!arrayBuffer || arrayBuffer.byteLength === 0) {
-      return jsonResponse(
-        { error: 'Image generator returned an empty response. Please try again.' },
-        502
+        { error: 'AI server busy, please try again in a few seconds.' },
+        429
       );
     }
 
-    const mimeHeader = upstreamRes.headers.get('content-type') || 'image/jpeg';
-    const mimeType = mimeHeader.includes('png') ? 'image/png' : 'image/jpeg';
-    const base64Data = arrayBufferToBase64(arrayBuffer);
-    const dataUrl = `data:${mimeType};base64,${base64Data}`;
+    const base64Data = arrayBufferToBase64(result.buffer);
+    const dataUrl = `data:${result.mimeType};base64,${base64Data}`;
 
     // Return both image and imageUrl for full specification and frontend compatibility
     return jsonResponse({
       image: dataUrl,
       imageUrl: dataUrl,
     });
-  } catch (err: any) {
+  } catch {
     return jsonResponse(
-      { error: `Unexpected internal server error: ${err?.message || 'Unknown error'}` },
+      { error: 'AI server busy, please try again in a few seconds.' },
       500
     );
   }
