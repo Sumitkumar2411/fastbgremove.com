@@ -1347,7 +1347,7 @@ const {
 
     try {
       setMagicLoading(true);
-      showMagicStatus('✨ Generating background with Imagen 3... (~5-10s)', 'info');
+      showMagicStatus('✨ Generating background with Flux AI... (~3-8s)', 'info');
 
       const res = await fetch('/api/generate-bg', {
         method: 'POST',
@@ -1363,21 +1363,22 @@ const {
         throw new Error(data?.error || `Generation failed with status ${res.status}`);
       }
 
-      if (!data?.imageUrl) {
-        throw new Error('No image URL returned from server.');
+      const generatedImage = data?.image || data?.imageUrl;
+      if (!generatedImage) {
+        throw new Error('No image returned from server.');
       }
 
       const img = new Image();
       await new Promise<void>((resolve, reject) => {
         img.onload = () => resolve();
         img.onerror = () => reject(new Error('Failed to render generated image asset'));
-        img.src = data.imageUrl;
+        img.src = generatedImage;
       });
 
       // Assign to existing background layer state without touching foreground/export logic
       customBgImageObj = img;
       if (customBgPreviewImg) {
-        customBgPreviewImg.src = data.imageUrl;
+        customBgPreviewImg.src = generatedImage;
         customBgPreviewImg.classList.remove('hidden');
       }
 

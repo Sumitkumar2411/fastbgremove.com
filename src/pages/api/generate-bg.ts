@@ -19,6 +19,23 @@ function jsonResponse(data: Record<string, any>, status = 200): Response {
 }
 
 /**
+ * Convert ArrayBuffer to base64 string safely across Node and Cloudflare Worker runtimes
+ */
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(buffer).toString('base64');
+  }
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 8192;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode.apply(null, chunk as unknown as number[]);
+  }
+  return btoa(binary);
+}
+
+/**
  * Handle CORS preflight
  */
 export const OPTIONS: APIRoute = async () => {
@@ -29,65 +46,12 @@ export const OPTIONS: APIRoute = async () => {
 };
 
 /**
- * Helper to call Google Imagen 3 (imagen-3.0-generate-002:predict)
- */
-async function callImagen(apiKey: string, prompt: string, signal: AbortSignal) {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${encodeURIComponent(apiKey)}`;
-  const payload = {
-    instances: [{ prompt }],
-    parameters: {
-      sampleCount: 1,
-      aspectRatio: '1:1',
-    },
-  };
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    signal,
-  });
-
-  return res;
-}
-
-/**
- * Helper to call Google Gemini Image model (generateContent with responseModalities: ["IMAGE"])
- */
-async function callGeminiImage(apiKey: string, modelName: string, prompt: string, signal: AbortSignal) {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
-  const payload = {
-    contents: [
-      {
-        parts: [
-          {
-            text: `Generate a high quality, clean photo background: ${prompt}`,
-          },
-        ],
-      },
-    ],
-    generationConfig: {
-      responseModalities: ['IMAGE'],
-    },
-  };
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    signal,
-  });
-
-  return res;
-}
-
-/**
  * POST /api/generate-bg
- * Generates an AI background using Google Imagen 3 with Gemini image fallback
+ * Generates an AI background using Pollinations AI (Flux model, 100% free, zero keys)
  */
 export const POST: APIRoute = async (context) => {
   try {
-    const { request, locals } = context;
+    const { request } = context;
 
     // Validate request content type
     const contentType = request.headers.get('content-type') || '';
@@ -107,197 +71,86 @@ export const POST: APIRoute = async (context) => {
     }
 
     // Extract & validate prompt
-    const prompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
-    if (!prompt) {
+    const rawPrompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
+    if (!rawPrompt) {
       return jsonResponse(
         { error: 'Prompt is required and cannot be empty.' },
         400
       );
     }
 
-    if (prompt.length > 1000) {
+    if (rawPrompt.length > 1000) {
       return jsonResponse(
         { error: 'Prompt exceeds the 1000 character limit.' },
         400
       );
     }
 
-    // Read API key from Cloudflare runtime env or process.env supporting all naming variants
-    const runtimeEnv = (locals as any)?.runtime?.env || (context as any)?.env || {};
-    const envObj = runtimeEnv;
-    let apiKey =
-      envObj['GEMINI API KEY'] ||
-      envObj['GEMINI_API_KEY'] ||
-      envObj.GEMINI_API_KEY ||
-      envObj['gemini_api_key'] ||
-      envObj['gemini api key'] ||
-      (context as any)?.env?.['GEMINI API KEY'] ||
-      (context as any)?.env?.['GEMINI_API_KEY'] ||
-      (context as any)?.env?.GEMINI_API_KEY ||
-      (typeof process !== 'undefined'
-        ? process.env?.['GEMINI API KEY'] || process.env?.GEMINI_API_KEY
-        : '');
+    // Enhance prompt for high quality studio backdrop
+    const fullPrompt = `${rawPrompt}, high quality, photorealistic, professional photography, 8k, background only, empty space for product cutout`;
 
-    // Case-insensitive and whitespace-stripped fallback
-    if (!apiKey && envObj) {
-      for (const [k, v] of Object.entries(envObj)) {
-        if (typeof v === 'string' && k.replace(/[\s_-]/g, '').toUpperCase() === 'GEMINIAPIKEY') {
-          apiKey = v;
-          break;
-        }
-      }
-    }
+    // Construct Pollinations Flux endpoint URL
+    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+      fullPrompt
+    )}?width=1024&height=1024&nologo=true&model=flux`;
 
-    if (!apiKey) {
-      const rawKeys = Object.keys(envObj || {});
-      const maskedKeys = rawKeys.map((k) =>
-        k.length > 5 ? `${k.slice(0, 3)}...${k.slice(-2)}` : '***'
-      );
-      return jsonResponse(
-        {
-          error:
-            'GEMINI API KEY is not configured on Cloudflare. Please configure it in Cloudflare Pages secrets.',
-          availableKeys: maskedKeys,
-          detectedEnvKeys: rawKeys,
-        },
-        500
-      );
-    }
-
+    // Fetch with 50-second timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 45000);
+    const timeoutId = setTimeout(() => controller.abort(), 50000);
 
+    let upstreamRes: Response;
     try {
-      // 1. Try Imagen 3 primary endpoint
-      let upstreamRes = await callImagen(apiKey, prompt, controller.signal);
-
-      // 2. If Imagen model returns 404 (not found / not supported for predict on this key),
-      // seamlessly try available Gemini image models
-      if (upstreamRes.status === 404) {
-        const candidateModels = [
-          'gemini-3.1-flash-lite-image',
-          'gemini-3.1-flash-image',
-          'gemini-2.5-flash-image',
-          'gemini-3-pro-image',
-        ];
-
-        for (const model of candidateModels) {
-          upstreamRes = await callGeminiImage(apiKey, model, prompt, controller.signal);
-          if (upstreamRes.status === 200) {
-            break;
-          }
-          // If 404 (model not found) or 429 with limit 0, try next candidate
-          if (upstreamRes.status === 404) continue;
-          if (upstreamRes.status === 429) {
-            const clone = upstreamRes.clone();
-            const text = await clone.text().catch(() => '');
-            if (text.includes('limit: 0')) {
-              continue;
-            }
-            break; // Standard rate limit, don't keep hammering
-          }
-          break;
-        }
-      }
-
-      // Handle Rate Limiting (429)
-      if (upstreamRes.status === 429) {
-        const text = await upstreamRes.text().catch(() => '');
-        let upstreamMessage = '';
-        try {
-          const parsed = JSON.parse(text);
-          upstreamMessage = parsed?.error?.message || text;
-        } catch {
-          upstreamMessage = text;
-        }
-
-        if (upstreamMessage.includes('limit: 0')) {
-          return jsonResponse(
-            {
-              error:
-                'Google AI Image Generation requires a billing-enabled Gemini API key (Google free tier quota for image generation is 0). Please enable Pay-As-You-Go in Google AI Studio.',
-            },
-            429
-          );
-        }
-
-        return jsonResponse(
-          { error: `Google AI rate limit (429): ${upstreamMessage || 'Quota exceeded'}` },
-          429
-        );
-      }
-
-      // Handle non-200 responses
-      if (!upstreamRes.ok) {
-        const errorJson = await upstreamRes.json().catch(() => null);
-        const upstreamMessage =
-          errorJson?.error?.message ||
-          `Google AI generation failed with HTTP ${upstreamRes.status}: ${upstreamRes.statusText}`;
-
-        if (upstreamRes.status === 400 && upstreamMessage.toLowerCase().includes('safety')) {
-          return jsonResponse(
-            { error: 'The prompt was flagged by Google AI safety guidelines. Please modify your description.' },
-            400
-          );
-        }
-
-        return jsonResponse(
-          { error: upstreamMessage },
-          upstreamRes.status >= 400 && upstreamRes.status < 500 ? upstreamRes.status : 502
-        );
-      }
-
-      const data: any = await upstreamRes.json();
-
-      // Extract image from Imagen 3 format
-      let base64Bytes: string | undefined;
-      let mimeType = 'image/jpeg';
-
-      if (data?.predictions?.[0]) {
-        const prediction = data.predictions[0];
-        base64Bytes =
-          prediction?.bytesBase64Encoded ||
-          prediction?.image?.imageBytes ||
-          prediction?.imageBytes;
-        if (prediction?.mimeType) {
-          mimeType = prediction.mimeType;
-        }
-      }
-
-      // Extract image from Gemini generateContent format
-      if (!base64Bytes && data?.candidates?.[0]?.content?.parts) {
-        for (const part of data.candidates[0].content.parts) {
-          if (part?.inlineData?.data) {
-            base64Bytes = part.inlineData.data;
-            mimeType = part.inlineData.mimeType || 'image/png';
-            break;
-          }
-        }
-      }
-
-      if (!base64Bytes) {
-        return jsonResponse(
-          { error: 'No image data was returned by the AI model. Please try a different prompt.' },
-          422
-        );
-      }
-
-      const imageUrl = `data:${mimeType};base64,${base64Bytes}`;
-      return jsonResponse({ imageUrl });
+      upstreamRes = await fetch(pollinationsUrl, {
+        method: 'GET',
+        headers: {
+          Accept: 'image/jpeg,image/png,image/*',
+          'User-Agent': 'FastBgRemove-Backdrop/1.0',
+        },
+        signal: controller.signal,
+      });
     } catch (fetchErr: any) {
+      clearTimeout(timeoutId);
       if (fetchErr.name === 'AbortError') {
         return jsonResponse(
-          { error: 'Image generation timed out after 45 seconds. Please try again with a simpler prompt.' },
+          { error: 'Background generation timed out. Please try again with a simpler prompt.' },
           504
         );
       }
       return jsonResponse(
-        { error: `Network error reaching Google AI: ${fetchErr.message || 'Unknown network error'}` },
+        { error: `Network error reaching image generator: ${fetchErr.message || 'Unknown network error'}` },
         502
       );
     } finally {
       clearTimeout(timeoutId);
     }
+
+    if (!upstreamRes.ok) {
+      const errText = await upstreamRes.text().catch(() => '');
+      return jsonResponse(
+        { error: `Image generation failed with status ${upstreamRes.status}: ${errText || upstreamRes.statusText}` },
+        upstreamRes.status >= 400 && upstreamRes.status < 500 ? upstreamRes.status : 502
+      );
+    }
+
+    // Process binary image buffer into base64 Data URL
+    const arrayBuffer = await upstreamRes.arrayBuffer();
+    if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+      return jsonResponse(
+        { error: 'Image generator returned an empty response. Please try again.' },
+        502
+      );
+    }
+
+    const mimeHeader = upstreamRes.headers.get('content-type') || 'image/jpeg';
+    const mimeType = mimeHeader.includes('png') ? 'image/png' : 'image/jpeg';
+    const base64Data = arrayBufferToBase64(arrayBuffer);
+    const dataUrl = `data:${mimeType};base64,${base64Data}`;
+
+    // Return both image and imageUrl for full specification and frontend compatibility
+    return jsonResponse({
+      image: dataUrl,
+      imageUrl: dataUrl,
+    });
   } catch (err: any) {
     return jsonResponse(
       { error: `Unexpected internal server error: ${err?.message || 'Unknown error'}` },
