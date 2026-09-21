@@ -232,15 +232,23 @@ const {
             style="clip-path: inset(0 0 0 var(--slider-pos, 50%));"
           >
             <!-- Background Layer (Checkerboard, Solid Color, or Custom BG Image + Blur) -->
-            <div id="stage-bg-layer" class="absolute inset-0 z-0 bg-checkerboard transition-all overflow-hidden pointer-events-none">
+            <div id="stage-bg-layer" class="absolute inset-0 z-0 bg-checkerboard transition-all overflow-hidden pointer-events-none flex items-center justify-center">
               <img id="custom-bg-preview-img" alt="Custom background image preview" class="hidden w-full h-full object-cover transition-all" />
+              <!-- Hardware-Accelerated Blurred Background Layer (Original image scaled 1.04x to prevent blur edge-bleeding/halo) -->
+              <img
+                id="blurred-original-bg-img"
+                alt="Blurred background preview"
+                class="hidden max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain pointer-events-none select-none transition-none"
+                style="will-change: filter, transform; transform: scale(1.04) translateZ(0);"
+              />
             </div>
 
             <!-- Foreground Cutout Image (Identical size & containment as original) -->
             <img
               id="preview-cutout-img"
               alt="Transparent background cutout preview"
-              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 pointer-events-none select-none drop-shadow-xs"
+              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 pointer-events-none select-none drop-shadow-xs transition-none"
+              style="will-change: filter, transform; transform: translateZ(0);"
             />
 
             <!-- Right Badge: Cutout -->
@@ -274,7 +282,7 @@ const {
         </div>
       </div>
 
-      <!-- INLINE ACTION CONTROLS: ROW 1 (BACKDROP & BLUR SLIDER) -->
+      <!-- INLINE ACTION CONTROLS: ROW 1 (BACKDROP SELECTION) -->
       <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 pt-1">
         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <span class="text-xs font-mono text-[#807d72] dark:text-[#a09c92] hidden sm:inline">Backdrop:</span>
@@ -342,27 +350,84 @@ const {
             </button>
             <input type="file" id="custom-bg-input" accept="image/png, image/jpeg, image/webp" class="hidden" />
           </div>
-
-          <!-- Discrete Backdrop Blur Range Slider (Visible when custom backdrop or solid color is active) -->
-          <div id="blur-control-wrapper" class="hidden items-center gap-2 px-3 py-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] shadow-xs text-xs font-mono">
-            <span class="text-[#5a5852] dark:text-[#a09c92]">Blur:</span>
-            <input
-              type="range"
-              id="backdrop-blur-slider"
-              min="0"
-              max="20"
-              value="0"
-              step="1"
-              class="w-18 sm:w-20 h-1.5 accent-[#f54e00] cursor-pointer"
-              title="Adjust backdrop blur (0-20px)"
-            />
-            <span id="blur-value-label" class="w-7 text-right font-semibold text-[#26251e] dark:text-white">0px</span>
-          </div>
         </div>
 
         <span class="text-xs font-mono text-[#807d72] dark:text-[#706e68] hidden md:inline">
           Drag ↔ slider to inspect edges live
         </span>
+      </div>
+
+      <!-- ADJUST & EFFECTS PANEL: REAL-TIME GPU-ACCELERATED BLUR & SHADOW CONTROLS -->
+      <div id="effects-panel" class="w-full p-3 sm:p-4 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-3">
+        <div class="flex items-center justify-between border-b border-[#e6e5e0]/80 dark:border-[#2e2e33]/80 pb-2">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            </svg>
+            <span class="text-xs font-mono font-semibold uppercase tracking-wider text-[#26251e] dark:text-[#ededed]">Effects & Adjustments</span>
+          </div>
+          <span class="text-[11px] font-mono text-[#807d72] dark:text-[#a09c92]">60 FPS Live GPU</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <!-- Effect 1: Blur Background -->
+          <div class="p-3 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] flex flex-col justify-between space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] flex items-center gap-1.5">
+                <span>Blur background</span>
+              </span>
+              <!-- Toggle switch -->
+              <label class="relative inline-flex items-center cursor-pointer select-none">
+                <input type="checkbox" id="blur-bg-toggle" class="sr-only peer" />
+                <div class="w-8 h-4.5 sm:w-9 sm:h-5 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 sm:after:h-4 sm:after:w-4 after:transition-all peer-checked:bg-[#f54e00]"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center gap-3 pt-0.5">
+              <input
+                type="range"
+                id="blur-bg-slider"
+                min="0"
+                max="30"
+                value="0"
+                step="1"
+                disabled
+                class="flex-1 h-1.5 accent-[#f54e00] cursor-pointer opacity-50 disabled:cursor-not-allowed transition-opacity"
+                title="Adjust background blur (0-30px)"
+              />
+              <span id="blur-bg-label" class="w-10 text-right text-xs font-mono font-semibold text-[#807d72] dark:text-[#a09c92]">0px</span>
+            </div>
+          </div>
+
+          <!-- Effect 2: Add Shadow / Opacity -->
+          <div class="p-3 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] flex flex-col justify-between space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] flex items-center gap-1.5">
+                <span>Add Shadow / Opacity</span>
+              </span>
+              <!-- Toggle switch -->
+              <label class="relative inline-flex items-center cursor-pointer select-none">
+                <input type="checkbox" id="shadow-toggle" class="sr-only peer" />
+                <div class="w-8 h-4.5 sm:w-9 sm:h-5 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 sm:after:h-4 sm:after:w-4 after:transition-all peer-checked:bg-[#f54e00]"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center gap-3 pt-0.5">
+              <input
+                type="range"
+                id="shadow-slider"
+                min="0"
+                max="100"
+                value="0"
+                step="5"
+                disabled
+                class="flex-1 h-1.5 accent-[#f54e00] cursor-pointer opacity-50 disabled:cursor-not-allowed transition-opacity"
+                title="Adjust shadow depth & opacity (0-100%)"
+              />
+              <span id="shadow-label" class="w-10 text-right text-xs font-mono font-semibold text-[#807d72] dark:text-[#a09c92]">0%</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Action Bar: Prominent Primary Button & Secondary Actions -->
@@ -528,6 +593,21 @@ const {
   const backdropBlurSlider = document.getElementById('backdrop-blur-slider') as HTMLInputElement;
   const blurValueLabel = document.getElementById('blur-value-label') as HTMLElement;
 
+  // New GPU-Accelerated Effects Elements & State
+  const blurredOriginalBgImg = document.getElementById('blurred-original-bg-img') as HTMLImageElement;
+  const blurBgToggle = document.getElementById('blur-bg-toggle') as HTMLInputElement;
+  const blurBgSlider = document.getElementById('blur-bg-slider') as HTMLInputElement;
+  const blurBgLabel = document.getElementById('blur-bg-label') as HTMLElement;
+  const shadowToggle = document.getElementById('shadow-toggle') as HTMLInputElement;
+  const shadowSlider = document.getElementById('shadow-slider') as HTMLInputElement;
+  const shadowLabel = document.getElementById('shadow-label') as HTMLElement;
+
+  let isBlurBgActive: boolean = false;
+  let blurBgPx: number = 0;
+  let isShadowActive: boolean = false;
+  let shadowOpacityPct: number = 0;
+  let originalImageObj: HTMLImageElement | null = null;
+
   const ratioButtons = document.querySelectorAll('.ratio-btn');
 
   const uploadAnotherBtn = document.getElementById('upload-another-btn') as HTMLButtonElement;
@@ -593,6 +673,10 @@ const {
         previewOriginalImg.style.width = 'auto';
         previewOriginalImg.style.height = 'auto';
       }
+      if (blurredOriginalBgImg) {
+        blurredOriginalBgImg.style.width = 'auto';
+        blurredOriginalBgImg.style.height = 'auto';
+      }
     } else if (ratio === '1:1') {
       stageBox.style.aspectRatio = '1 / 1';
       stageBox.style.width = 'min(100%, 460px)';
@@ -603,6 +687,10 @@ const {
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
         previewOriginalImg.style.height = '100%';
+      }
+      if (blurredOriginalBgImg) {
+        blurredOriginalBgImg.style.width = '100%';
+        blurredOriginalBgImg.style.height = '100%';
       }
     } else if (ratio === '16:9') {
       stageBox.style.aspectRatio = '16 / 9';
@@ -615,6 +703,10 @@ const {
         previewOriginalImg.style.width = '100%';
         previewOriginalImg.style.height = '100%';
       }
+      if (blurredOriginalBgImg) {
+        blurredOriginalBgImg.style.width = '100%';
+        blurredOriginalBgImg.style.height = '100%';
+      }
     } else if (ratio === 'passport') {
       stageBox.style.aspectRatio = '3.5 / 4.5';
       stageBox.style.width = 'min(100%, 350px)';
@@ -625,6 +717,10 @@ const {
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
         previewOriginalImg.style.height = '100%';
+      }
+      if (blurredOriginalBgImg) {
+        blurredOriginalBgImg.style.width = '100%';
+        blurredOriginalBgImg.style.height = '100%';
       }
     }
 
@@ -683,30 +779,12 @@ const {
       bgBtnBlue.classList.remove(...inactiveClasses);
     }
 
-    // Blur slider visibility: visible when custom backdrop or solid color is active, hidden when transparent
-    if (isTrans) {
-      if (blurControlWrapper) {
-        blurControlWrapper.classList.add('hidden');
-        blurControlWrapper.classList.remove('flex');
-      }
-      currentBlur = 0;
-      if (backdropBlurSlider) backdropBlurSlider.value = '0';
-      if (blurValueLabel) blurValueLabel.textContent = '0px';
-      if (stageBgLayer) stageBgLayer.style.filter = 'none';
-      if (customBgPreviewImg) customBgPreviewImg.style.transform = 'none';
-    } else {
-      if (blurControlWrapper) {
-        blurControlWrapper.classList.remove('hidden');
-        blurControlWrapper.classList.add('flex');
-      }
-    }
-
     // Apply to preview backdrop layers
     if (stageBgLayer) {
       if (isCustomImg) {
         stageBgLayer.style.backgroundColor = 'transparent';
         stageBgLayer.classList.remove('bg-checkerboard');
-      } else if (isTrans) {
+      } else if (isTrans && !isBlurBgActive) {
         stageBgLayer.style.backgroundColor = '';
         stageBgLayer.classList.add('bg-checkerboard');
       } else {
@@ -717,14 +795,123 @@ const {
     }
   }
 
-  // Backdrop blur slider input
-  if (backdropBlurSlider) {
-    backdropBlurSlider.addEventListener('input', () => {
-      currentBlur = parseInt(backdropBlurSlider.value, 10) || 0;
-      if (blurValueLabel) blurValueLabel.textContent = `${currentBlur}px`;
-      const filterVal = currentBlur > 0 ? `blur(${currentBlur}px)` : 'none';
-      if (stageBgLayer) stageBgLayer.style.filter = filterVal;
-      if (customBgPreviewImg) customBgPreviewImg.style.transform = currentBlur > 0 ? 'scale(1.08)' : 'none';
+  // Real-time GPU Blur Effect Handler
+  function applyBlurEffect() {
+    if (!blurredOriginalBgImg) return;
+    if (isBlurBgActive && blurBgPx > 0) {
+      blurredOriginalBgImg.classList.remove('hidden');
+      blurredOriginalBgImg.style.filter = `blur(${blurBgPx}px)`;
+      blurredOriginalBgImg.style.transform = 'scale(1.04) translateZ(0)';
+      blurredOriginalBgImg.style.willChange = 'filter, transform';
+      if (stageBgLayer) stageBgLayer.classList.remove('bg-checkerboard');
+      if (customBgPreviewImg && customBgImageObj) {
+        customBgPreviewImg.style.filter = `blur(${blurBgPx}px)`;
+        customBgPreviewImg.style.transform = 'scale(1.04) translateZ(0)';
+        customBgPreviewImg.style.willChange = 'filter, transform';
+      }
+    } else {
+      blurredOriginalBgImg.classList.add('hidden');
+      blurredOriginalBgImg.style.filter = 'none';
+      if (customBgPreviewImg) {
+        customBgPreviewImg.style.filter = 'none';
+        customBgPreviewImg.style.transform = 'none';
+      }
+      if (currentBgColor === 'transparent' && !customBgImageObj && stageBgLayer) {
+        stageBgLayer.classList.add('bg-checkerboard');
+      }
+    }
+  }
+
+  // Real-time GPU Drop Shadow Effect Handler
+  function applyShadowEffect() {
+    if (!previewCutoutImg) return;
+    if (isShadowActive && shadowOpacityPct > 0) {
+      const factor = shadowOpacityPct / 100;
+      const blur = Math.round(18 * factor);
+      const offsetY = Math.round(10 * factor);
+      const alpha = (0.65 * factor).toFixed(2);
+      previewCutoutImg.style.filter = `drop-shadow(0px ${offsetY}px ${blur}px rgba(0, 0, 0, ${alpha}))`;
+      previewCutoutImg.style.transform = 'translateZ(0)';
+      previewCutoutImg.style.willChange = 'filter, transform';
+    } else {
+      previewCutoutImg.style.filter = 'none';
+      previewCutoutImg.style.transform = 'translateZ(0)';
+    }
+  }
+
+  // Blur Background Switch & Slider Listeners
+  if (blurBgToggle) {
+    blurBgToggle.addEventListener('change', () => {
+      isBlurBgActive = blurBgToggle.checked;
+      if (isBlurBgActive) {
+        if (blurBgSlider) {
+          blurBgSlider.disabled = false;
+          blurBgSlider.classList.remove('opacity-50', 'disabled:cursor-not-allowed');
+          if (blurBgPx === 0) {
+            blurBgPx = 12;
+            blurBgSlider.value = '12';
+            if (blurBgLabel) blurBgLabel.textContent = '12px';
+          }
+        }
+      } else {
+        if (blurBgSlider) {
+          blurBgSlider.disabled = true;
+          blurBgSlider.classList.add('opacity-50', 'disabled:cursor-not-allowed');
+        }
+      }
+      applyBlurEffect();
+    });
+  }
+
+  if (blurBgSlider) {
+    blurBgSlider.addEventListener('input', () => {
+      blurBgPx = parseInt(blurBgSlider.value, 10) || 0;
+      if (blurBgLabel) blurBgLabel.textContent = `${blurBgPx}px`;
+      if (blurBgPx > 0 && blurBgToggle && !blurBgToggle.checked) {
+        blurBgToggle.checked = true;
+        isBlurBgActive = true;
+        blurBgSlider.disabled = false;
+        blurBgSlider.classList.remove('opacity-50', 'disabled:cursor-not-allowed');
+      }
+      applyBlurEffect();
+    });
+  }
+
+  // Add Shadow / Opacity Switch & Slider Listeners
+  if (shadowToggle) {
+    shadowToggle.addEventListener('change', () => {
+      isShadowActive = shadowToggle.checked;
+      if (isShadowActive) {
+        if (shadowSlider) {
+          shadowSlider.disabled = false;
+          shadowSlider.classList.remove('opacity-50', 'disabled:cursor-not-allowed');
+          if (shadowOpacityPct === 0) {
+            shadowOpacityPct = 60;
+            shadowSlider.value = '60';
+            if (shadowLabel) shadowLabel.textContent = '60%';
+          }
+        }
+      } else {
+        if (shadowSlider) {
+          shadowSlider.disabled = true;
+          shadowSlider.classList.add('opacity-50', 'disabled:cursor-not-allowed');
+        }
+      }
+      applyShadowEffect();
+    });
+  }
+
+  if (shadowSlider) {
+    shadowSlider.addEventListener('input', () => {
+      shadowOpacityPct = parseInt(shadowSlider.value, 10) || 0;
+      if (shadowLabel) shadowLabel.textContent = `${shadowOpacityPct}%`;
+      if (shadowOpacityPct > 0 && shadowToggle && !shadowToggle.checked) {
+        shadowToggle.checked = true;
+        isShadowActive = true;
+        shadowSlider.disabled = false;
+        shadowSlider.classList.remove('opacity-50', 'disabled:cursor-not-allowed');
+      }
+      applyShadowEffect();
     });
   }
 
@@ -809,11 +996,41 @@ const {
     currentFile = null;
     clearCustomBg();
     currentBlur = 0;
-    backdropBlurSlider.value = '0';
-    blurValueLabel.textContent = '0px';
     currentRatio = 'original';
     setCanvasRatio('original');
     setSliderPercentage(50);
+
+    // Reset Blur Effect
+    isBlurBgActive = false;
+    blurBgPx = 0;
+    if (blurBgToggle) blurBgToggle.checked = false;
+    if (blurBgSlider) {
+      blurBgSlider.value = '0';
+      blurBgSlider.disabled = true;
+      blurBgSlider.classList.add('opacity-50', 'disabled:cursor-not-allowed');
+    }
+    if (blurBgLabel) blurBgLabel.textContent = '0px';
+    if (blurredOriginalBgImg) {
+      blurredOriginalBgImg.classList.add('hidden');
+      blurredOriginalBgImg.style.filter = 'none';
+      blurredOriginalBgImg.src = '';
+    }
+
+    // Reset Shadow Effect
+    isShadowActive = false;
+    shadowOpacityPct = 0;
+    if (shadowToggle) shadowToggle.checked = false;
+    if (shadowSlider) {
+      shadowSlider.value = '0';
+      shadowSlider.disabled = true;
+      shadowSlider.classList.add('opacity-50', 'disabled:cursor-not-allowed');
+    }
+    if (shadowLabel) shadowLabel.textContent = '0%';
+    if (previewCutoutImg) {
+      previewCutoutImg.style.filter = 'none';
+    }
+
+    originalImageObj = null;
 
     if (originalImageUrl) {
       URL.revokeObjectURL(originalImageUrl);
@@ -1008,6 +1225,9 @@ const {
       if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
       originalImageUrl = URL.createObjectURL(file);
       previewOriginalImg.src = originalImageUrl;
+      if (blurredOriginalBgImg) {
+        blurredOriginalBgImg.src = originalImageUrl;
+      }
 
       const imgProbe = new Image();
       imgProbe.src = originalImageUrl;
@@ -1015,6 +1235,7 @@ const {
         imgProbe.onload = () => {
           imageNaturalWidth = imgProbe.naturalWidth;
           imageNaturalHeight = imgProbe.naturalHeight;
+          originalImageObj = imgProbe;
           resolve(null);
         };
         imgProbe.onerror = () => resolve(null);
@@ -1079,6 +1300,8 @@ const {
       metaSizeBadge.textContent = `${mbSize} MB PNG`;
 
       applyBgToElements(currentBgColor);
+      applyBlurEffect();
+      applyShadowEffect();
       setSliderPercentage(50);
 
       setTimeout(() => {
@@ -1196,7 +1419,11 @@ const {
           ratio: currentRatio,
           backgroundColor: currentBgColor,
           customBgImage: customBgImageObj,
-          blur: currentBlur
+          originalImage: originalImageObj,
+          blur: blurBgPx,
+          isBlurEnabled: isBlurBgActive,
+          isShadowEnabled: isShadowActive,
+          shadowOpacity: shadowOpacityPct
         };
 
         const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
@@ -1226,7 +1453,11 @@ const {
           ratio: currentRatio,
           backgroundColor: currentBgColor,
           customBgImage: customBgImageObj,
-          blur: currentBlur
+          originalImage: originalImageObj,
+          blur: blurBgPx,
+          isBlurEnabled: isBlurBgActive,
+          isShadowEnabled: isShadowActive,
+          shadowOpacity: shadowOpacityPct
         };
 
         const finalBlob = await createCompressedJpgBlob(cutoutBlob, preset, exportOpts);
@@ -1260,7 +1491,11 @@ const {
           ratio: currentRatio,
           backgroundColor: currentBgColor,
           customBgImage: customBgImageObj,
-          blur: currentBlur
+          originalImage: originalImageObj,
+          blur: blurBgPx,
+          isBlurEnabled: isBlurBgActive,
+          isShadowEnabled: isShadowActive,
+          shadowOpacity: shadowOpacityPct
         };
 
         const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);

@@ -10,7 +10,11 @@ export interface ExportOptions {
   ratio?: CanvasRatio;
   backgroundColor?: string;
   customBgImage?: HTMLImageElement | null;
-  blur?: number; // 0 to 20 px
+  originalImage?: HTMLImageElement | null;
+  blur?: number; // 0 to 30 px
+  isBlurEnabled?: boolean;
+  isShadowEnabled?: boolean;
+  shadowOpacity?: number; // 0 to 100
 }
 
 /**
@@ -298,12 +302,16 @@ export async function renderCompositeCanvas(
   }
   ctx.clearRect(0, 0, targetW, targetH);
 
-  // 1. Draw Background Layer (Custom Image or Solid Color)
-  const blur = Math.max(0, Math.min(20, options.blur || 0));
+  // 1. Draw Background Layer (Blurred Original Image, Custom Image, or Solid Color)
+  const isBlur = !!options.isBlurEnabled && (options.blur || 0) > 0;
+  const rawBlur = Math.max(0, Math.min(30, options.blur || 0));
+  // Scale blur proportionally so high-resolution exports (e.g. 4000px wide) have identical visual depth as the preview canvas
+  const canvasBlurPx = Math.max(1, Math.round(rawBlur * (targetW / 800)));
 
-  if (options.customBgImage) {
-    const bgImg = options.customBgImage;
-    // Cover fit for custom background image
+  // Target background image: custom uploaded background OR original image when blur is enabled
+  const bgImg = options.customBgImage || (options.isBlurEnabled && options.originalImage ? options.originalImage : null);
+
+  if (bgImg) {
     const bgScale = Math.max(targetW / bgImg.naturalWidth, targetH / bgImg.naturalHeight);
     const bgW = bgImg.naturalWidth * bgScale;
     const bgH = bgImg.naturalHeight * bgScale;
@@ -311,11 +319,15 @@ export async function renderCompositeCanvas(
     const bgY = (targetH - bgH) / 2;
 
     ctx.save();
-    if (blur > 0) {
-      ctx.filter = `blur(${blur}px)`;
-      // Slight bleed expansion to prevent edge fading under blur
-      const bleed = blur * 2;
-      ctx.drawImage(bgImg, bgX - bleed, bgY - bleed, bgW + bleed * 2, bgH + bleed * 2);
+    if (isBlur) {
+      ctx.filter = `blur(${canvasBlurPx}px)`;
+      // 1.04x scale / bleed expansion to prevent edge fading/halo under blur
+      const bleedScale = 1.04;
+      const bw = bgW * bleedScale;
+      const bh = bgH * bleedScale;
+      const bx = (targetW - bw) / 2;
+      const by = (targetH - bh) / 2;
+      ctx.drawImage(bgImg, bx, by, bw, bh);
     } else {
       ctx.drawImage(bgImg, bgX, bgY, bgW, bgH);
     }
@@ -332,6 +344,24 @@ export async function renderCompositeCanvas(
   const dx = Math.round((targetW - dw) / 2);
   const dy = Math.round((targetH - dh) / 2);
 
+  // 3. Draw Realistic Drop Shadow if enabled
+  if (options.isShadowEnabled) {
+    const shadowIntensity = Math.max(0, Math.min(100, options.shadowOpacity ?? 60)) / 100;
+    if (shadowIntensity > 0) {
+      ctx.save();
+      const scaleRatio = targetW / 800;
+      const shadowBlur = Math.round(20 * scaleRatio * shadowIntensity);
+      const shadowOffsetY = Math.round(10 * scaleRatio * shadowIntensity);
+      ctx.shadowColor = `rgba(0, 0, 0, ${(0.65 * shadowIntensity).toFixed(3)})`;
+      ctx.shadowBlur = shadowBlur;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = shadowOffsetY;
+      ctx.drawImage(cutoutImg, dx, dy, dw, dh);
+      ctx.restore();
+    }
+  }
+
+  // Draw sharp cutout foreground
   ctx.filter = 'none';
   ctx.drawImage(cutoutImg, dx, dy, dw, dh);
 
@@ -350,11 +380,13 @@ export async function createHdExportBlob(
       ? { backgroundColor: backgroundColorOrOptions }
       : backgroundColorOrOptions;
 
-  // Fast path: if original ratio, no blur, transparent, and no custom image, the cutoutBlob is already correct
+  // Fast path: if original ratio, no blur, no shadow, transparent, and no custom image, the cutoutBlob is already correct
   if (
     (!options.ratio || options.ratio === 'original') &&
     (!options.backgroundColor || options.backgroundColor === 'transparent') &&
     !options.customBgImage &&
+    !options.isBlurEnabled &&
+    !options.isShadowEnabled &&
     (!options.blur || options.blur === 0)
   ) {
     return cutoutBlob;
