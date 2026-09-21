@@ -3,8 +3,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-cursor-orange: #f54e00;
-  --color-cursor-orange-active: #d04200;
+  --color-gold: #E5A93C;
+  --color-gold-hover: #D49B28;
+  --color-gold-active: #D49B28;
+  --color-cursor-orange: #E5A93C;
+  --color-cursor-orange-active: #D49B28;
   --color-cursor-dark: #121212;
   --color-cursor-surface-dark: #1c1c1f;
   --color-cursor-pill-dark: #242428;
@@ -22,8 +25,10 @@
     --text-primary: #26251e;
     --text-secondary: #5a5852;
     --text-muted: #807d72;
-    --cursor-orange: #f54e00;
-    --cursor-orange-active: #d04200;
+    --brand-gold: #E5A93C;
+    --brand-gold-hover: #D49B28;
+    --cursor-orange: #E5A93C;
+    --cursor-orange-active: #D49B28;
     --passport-blue: #0055A5;
   }
 
@@ -36,8 +41,10 @@
     --text-primary: #ededed;
     --text-secondary: #a09c92;
     --text-muted: #706e68;
-    --cursor-orange: #f54e00;
-    --cursor-orange-active: #d04200;
+    --brand-gold: #E5A93C;
+    --brand-gold-hover: #D49B28;
+    --cursor-orange: #E5A93C;
+    --cursor-orange-active: #D49B28;
   }
 
   body {
@@ -127,4 +134,16 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Golden Brand Glows & Accents */
+.gold-glow {
+  box-shadow: 0 0 16px rgba(229, 169, 60, 0.25);
+}
+.gold-glow-lg {
+  box-shadow: 0 4px 24px rgba(229, 169, 60, 0.35);
+}
+.gold-glow-active:active, .gold-glow-focus:focus-visible {
+  box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.35);
+}
+
 

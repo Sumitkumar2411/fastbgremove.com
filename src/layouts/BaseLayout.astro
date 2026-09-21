@@ -22,7 +22,7 @@ const {
   ogType = "website",
   ogTitle,
   ogDescription,
-  ogImage = "https://fastbgremove.com/og-image.png",
+  ogImage = "https://fastbgremove.com/logo.png",
   structuredData,
   noindex = false
 } = Astro.props;
@@ -116,7 +116,7 @@ const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStr
     <!-- Favicon & Icons -->
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
-    <meta name="theme-color" content="#f54e00" />
+    <meta name="theme-color" content="#E5A93C" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <!-- Fonts: Geist, Geist Mono & JetBrains Mono -->
@@ -150,7 +150,7 @@ const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStr
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
   </head>
-  <body class="bg-[#f7f7f4] dark:bg-[#121212] text-[#26251e] dark:text-[#ededed] antialiased flex flex-col min-h-screen selection:bg-[#f54e00]/20 selection:text-[#d04200]">
+  <body class="bg-[#f7f7f4] dark:bg-[#121212] text-[#26251e] dark:text-[#ededed] antialiased flex flex-col min-h-screen selection:bg-[#E5A93C]/20 selection:text-[#b47818] dark:selection:text-[#E5A93C]">
     <Header />
     <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-2 sm:py-4">
       <slot />

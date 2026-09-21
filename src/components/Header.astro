@@ -9,7 +9,8 @@ const currentPath = Astro.url.pathname;
       <img 
         src="/logo.png" 
         alt="FastBgRemove logo" 
-        class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shrink-0 border border-zinc-200 dark:border-zinc-800 shadow-sm" 
+        class="h-[38px] w-auto object-contain shrink-0" 
+        style="height: 38px; width: auto; object-fit: contain;"
       />
       <span class="font-bold text-sm xs:text-base sm:text-lg text-zinc-900 dark:text-white tracking-tight whitespace-nowrap">FastBgRemove</span>
     </a>
@@ -22,7 +23,7 @@ const currentPath = Astro.url.pathname;
           class:list={[
             "inline-flex items-center px-2.5 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium rounded-full border shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98] shrink-0 whitespace-nowrap",
             currentPath === "/passport-photo-white-background"
-              ? "bg-orange-50/80 dark:bg-orange-950/30 text-[#d04200] dark:text-[#f54e00] border-[#d04200]/50 dark:border-[#f54e00]/50 font-semibold ring-1 ring-[#d04200]/20"
+              ? "bg-amber-500/10 dark:bg-amber-500/15 text-[#b47818] dark:text-[#E5A93C] border-[#D49B28]/40 dark:border-[#E5A93C]/40 font-semibold ring-1 ring-[#E5A93C]/20"
               : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
           ]}
         >
@@ -33,7 +34,7 @@ const currentPath = Astro.url.pathname;
           class:list={[
             "inline-flex items-center px-2.5 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium rounded-full border shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98] shrink-0 whitespace-nowrap",
             currentPath === "/transparent-signature-maker"
-              ? "bg-orange-50/80 dark:bg-orange-950/30 text-[#d04200] dark:text-[#f54e00] border-[#d04200]/50 dark:border-[#f54e00]/50 font-semibold ring-1 ring-[#d04200]/20"
+              ? "bg-amber-500/10 dark:bg-amber-500/15 text-[#b47818] dark:text-[#E5A93C] border-[#D49B28]/40 dark:border-[#E5A93C]/40 font-semibold ring-1 ring-[#E5A93C]/20"
               : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
           ]}
         >
@@ -44,7 +45,7 @@ const currentPath = Astro.url.pathname;
           class:list={[
             "hidden md:inline-flex items-center px-2.5 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium rounded-full border shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98] shrink-0 whitespace-nowrap",
             currentPath === "/remove-bg-alternative"
-              ? "bg-orange-50/80 dark:bg-orange-950/30 text-[#d04200] dark:text-[#f54e00] border-[#d04200]/50 dark:border-[#f54e00]/50 font-semibold ring-1 ring-[#d04200]/20"
+              ? "bg-amber-500/10 dark:bg-amber-500/15 text-[#b47818] dark:text-[#E5A93C] border-[#D49B28]/40 dark:border-[#E5A93C]/40 font-semibold ring-1 ring-[#E5A93C]/20"
               : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
           ]}
         >
@@ -60,7 +61,7 @@ const currentPath = Astro.url.pathname;
         class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-[#26251e] dark:text-[#ededed] hover:bg-zinc-50 dark:hover:bg-zinc-800 flex items-center justify-center transition-all active:scale-[0.95] cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] shrink-0"
       >
         <!-- Sun Icon (in dark mode) -->
-        <svg class="w-4 h-4 hidden dark:block text-[#f54e00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="w-4 h-4 hidden dark:block text-[#E5A93C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5"/>
           <line x1="12" y1="1" x2="12" y2="3"/>
           <line x1="12" y1="21" x2="12" y2="23"/>
