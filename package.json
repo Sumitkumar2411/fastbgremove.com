@@ -7,9 +7,10 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "wrangler pages deploy dist --project-name=fastbgremove"
+    "deploy": "wrangler pages deploy dist --project-name=fastbgremove --branch=main"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.4",
     "@astrojs/sitemap": "^3.7.4",
     "@imgly/background-removal": "^1.7.0",
     "@tailwindcss/vite": "^4.0.9",

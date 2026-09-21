@@ -6,6 +6,13 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
 
+# API Endpoints (No Cache, CORS)
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type
+
 # WASM and Neural Model Binaries (Immutable)
 /*.wasm
   Content-Type: application/wasm

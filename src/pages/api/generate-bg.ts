@@ -1,7 +1,6 @@
-interface Env {
-  GEMINI_API_KEY?: string;
-  [key: string]: any;
-}
+import type { APIRoute } from 'astro';
+
+export const prerender = false;
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -22,7 +21,7 @@ function jsonResponse(data: Record<string, any>, status = 200): Response {
 /**
  * Handle CORS preflight
  */
-export const onRequestOptions = async (): Promise<Response> => {
+export const OPTIONS: APIRoute = async () => {
   return new Response(null, {
     status: 204,
     headers: CORS_HEADERS,
@@ -86,12 +85,9 @@ async function callGeminiImage(apiKey: string, modelName: string, prompt: string
  * POST /api/generate-bg
  * Generates an AI background using Google Imagen 3 with Gemini image fallback
  */
-export const onRequestPost = async (context: {
-  request: Request;
-  env: Env;
-}): Promise<Response> => {
+export const POST: APIRoute = async (context) => {
   try {
-    const { request, env } = context;
+    const { request, locals } = context;
 
     // Validate request content type
     const contentType = request.headers.get('content-type') || '';
@@ -126,9 +122,11 @@ export const onRequestPost = async (context: {
       );
     }
 
-    // Read API key from Cloudflare env
+    // Read API key from Cloudflare runtime env or process.env
+    const runtimeEnv = (locals as any)?.runtime?.env || (context as any)?.env || {};
     const apiKey =
-      env?.GEMINI_API_KEY ||
+      runtimeEnv.GEMINI_API_KEY ||
+      (context as any)?.env?.GEMINI_API_KEY ||
       (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : '');
 
     if (!apiKey) {
