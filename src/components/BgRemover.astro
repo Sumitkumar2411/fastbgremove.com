@@ -168,6 +168,20 @@ const {
             </svg>
             <span>Replace Image</span>
           </button>
+
+          <!-- Add Name / Signature Toggle Action -->
+          <button
+            type="button"
+            id="btn-toggle-annotation"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-750 transition-all cursor-pointer select-none"
+            title="Add typed name/date stamp or hand-drawn signature"
+          >
+            <svg class="w-3.5 h-3.5 text-[#E5A93C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+              <path d="m15 5 4 4"/>
+            </svg>
+            <span id="btn-toggle-annotation-text">Add Name / Signature</span>
+          </button>
         </div>
 
         <!-- Right: Canvas Ratio Controls & 50% Split Reset -->
@@ -217,6 +231,146 @@ const {
             class="shrink-0 py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-xs font-mono font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] hover:border-[#E5A93C] transition-all shadow-xs cursor-pointer whitespace-nowrap"
           >
             50%
+          </button>
+        </div>
+      </div>
+
+      <!-- SECONDARY COMPACT ANNOTATION TOOLBAR -->
+      <div
+        id="annotation-toolbar"
+        class="hidden flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 p-2.5 rounded-lg bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs text-xs font-mono transition-all"
+      >
+        <!-- Left Group: Mode Switch + Color Picker + Size -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Mode Switch: Typed Text vs Freehand Pen -->
+          <div class="flex items-center p-0.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#242428] gap-1 shadow-xs">
+            <button
+              type="button"
+              id="annot-mode-text"
+              class="annot-mode-btn active py-1 px-2.5 rounded font-semibold text-[#b47818] dark:text-[#E5A93C] bg-[#E5A93C]/10 border border-[#E5A93C]/30 flex items-center gap-1.5 cursor-pointer transition-all shrink-0"
+            >
+              <span>🔤 Typed Text</span>
+            </button>
+            <button
+              type="button"
+              id="annot-mode-pen"
+              class="annot-mode-btn py-1 px-2.5 rounded font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] border border-transparent flex items-center gap-1.5 cursor-pointer transition-all shrink-0"
+            >
+              <span>✍️ Freehand Pen</span>
+            </button>
+          </div>
+
+          <!-- Color Picker: Black, White, Navy Blue -->
+          <div class="flex items-center gap-1 pl-1">
+            <span class="text-[11px] text-[#807d72] dark:text-[#a09c92] hidden sm:inline">Color:</span>
+            <div class="flex items-center p-0.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#242428] gap-1 shadow-xs">
+              <button
+                type="button"
+                id="annot-color-black"
+                data-color="#000000"
+                class="annot-color-btn active w-6 h-6 rounded flex items-center justify-center bg-black border-2 border-[#E5A93C] shadow-xs cursor-pointer transition-transform hover:scale-105"
+                title="Pure Black (#000000)"
+              >
+                <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+              </button>
+              <button
+                type="button"
+                id="annot-color-navy"
+                data-color="#001F3F"
+                class="annot-color-btn w-6 h-6 rounded flex items-center justify-center bg-[#001F3F] border border-zinc-300 dark:border-zinc-700 shadow-xs cursor-pointer transition-transform hover:scale-105"
+                title="Navy Blue (#001F3F)"
+              >
+              </button>
+              <button
+                type="button"
+                id="annot-color-white"
+                data-color="#FFFFFF"
+                class="annot-color-btn w-6 h-6 rounded flex items-center justify-center bg-white border border-zinc-300 dark:border-zinc-700 shadow-xs cursor-pointer transition-transform hover:scale-105"
+                title="Pure White (#FFFFFF)"
+              >
+              </button>
+            </div>
+          </div>
+
+          <!-- Brush / Font Size Selector -->
+          <div class="flex items-center gap-1 pl-1">
+            <span class="text-[11px] text-[#807d72] dark:text-[#a09c92] hidden sm:inline">Size:</span>
+            <div class="flex items-center p-0.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#242428] gap-0.5 shadow-xs">
+              <button
+                type="button"
+                data-size="sm"
+                class="annot-size-btn py-0.5 px-2 rounded text-[11px] font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] cursor-pointer"
+              >
+                S
+              </button>
+              <button
+                type="button"
+                data-size="md"
+                class="annot-size-btn active py-0.5 px-2 rounded text-[11px] font-semibold text-[#b47818] dark:text-[#E5A93C] bg-[#E5A93C]/10 border border-[#E5A93C]/30 cursor-pointer"
+              >
+                M
+              </button>
+              <button
+                type="button"
+                data-size="lg"
+                class="annot-size-btn py-0.5 px-2 rounded text-[11px] font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] cursor-pointer"
+              >
+                L
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Group: Contextual Inputs & Actions -->
+        <div class="flex items-center gap-2 flex-wrap justify-between md:justify-end">
+          <!-- Text Mode Inputs: Name, Date & Plate Toggle -->
+          <div id="annot-text-controls" class="flex items-center gap-1.5 flex-wrap">
+            <input
+              type="text"
+              id="annot-name-input"
+              placeholder="NAME SURNAME"
+              class="h-7 px-2 text-xs rounded border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#242428] text-[#26251e] dark:text-[#ededed] focus:outline-none focus:border-[#E5A93C] w-28 sm:w-36 font-semibold uppercase"
+              maxlength="40"
+            />
+            <input
+              type="text"
+              id="annot-date-input"
+              placeholder="DD/MM/YYYY"
+              class="h-7 px-2 text-xs rounded border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#242428] text-[#26251e] dark:text-[#ededed] focus:outline-none focus:border-[#E5A93C] w-24 sm:w-28 font-medium"
+              maxlength="15"
+            />
+            <button
+              type="button"
+              id="annot-today-btn"
+              title="Insert today's date"
+              class="h-7 px-2 rounded border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#242428] hover:border-[#E5A93C] text-[11px] font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] cursor-pointer"
+            >
+              Today
+            </button>
+            <label class="flex items-center gap-1 text-[11px] cursor-pointer select-none text-[#5a5852] dark:text-[#a09c92] pl-1">
+              <input type="checkbox" id="annot-plate-toggle" checked class="accent-[#E5A93C]" />
+              <span>Plate</span>
+            </label>
+          </div>
+
+          <!-- Freehand Pen Mode Hint -->
+          <div id="annot-pen-controls" class="hidden flex items-center text-[11px] text-[#807d72] dark:text-[#a09c92]">
+            <span>Draw signature directly on photo</span>
+          </div>
+
+          <!-- Clear / Reset Action -->
+          <button
+            type="button"
+            id="annot-clear-btn"
+            title="Clear annotation strokes and text"
+            class="h-7 px-2.5 rounded border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#242428] hover:border-red-400 hover:text-red-500 text-[11px] font-medium text-[#5a5852] dark:text-[#a09c92] transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+          >
+            <svg class="w-3 h-3 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            <span>Clear</span>
           </button>
         </div>
       </div>
@@ -277,6 +431,28 @@ const {
               class="hidden max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 select-none drop-shadow-xs transition-none cursor-none touch-none pointer-events-auto"
               style="will-change: filter, transform; transform: translateZ(0); touch-action: none;"
             ></canvas>
+
+            <!-- Interactive Annotation Signature Canvas (overlay for freehand signature) -->
+            <canvas
+              id="annotation-canvas"
+              class="hidden max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-15 select-none drop-shadow-xs transition-none touch-none pointer-events-none"
+              style="will-change: transform; touch-action: none;"
+            ></canvas>
+
+            <!-- Draggable & Editable Text Badge Overlay -->
+            <div
+              id="annotation-text-badge"
+              class="hidden absolute z-20 select-none cursor-move touch-none border border-black/20 bg-white shadow-md rounded px-3 py-1 text-center transition-shadow hover:shadow-lg font-mono pointer-events-auto"
+              style="left: 50%; bottom: 20px; transform: translateX(-50%); touch-action: none;"
+              title="Drag to reposition badge on photo"
+            >
+              <div id="badge-name-display" class="font-bold tracking-wider text-xs sm:text-sm text-black leading-tight uppercase font-sans">
+                NAME SURNAME
+              </div>
+              <div id="badge-date-display" class="text-[10px] sm:text-xs font-semibold text-black/80 font-mono">
+                DD/MM/YYYY
+              </div>
+            </div>
 
             <!-- Right Badge: Cutout -->
             <span class="absolute top-3 right-3 text-xs font-mono font-semibold text-[#b47818] dark:text-[#E5A93C] bg-white/95 dark:bg-[#1c1c1f]/95 px-2.5 py-1 rounded-md border border-[#E5A93C]/20 shadow-xs pointer-events-none z-20 backdrop-blur-xs">
@@ -901,7 +1077,8 @@ const {
     copyImageToClipboard,
     type CanvasRatio,
     type JpgCompressionPreset,
-    type ExportOptions
+    type ExportOptions,
+    type AnnotationExportData
   } from '../lib/canvasExport';
 
   // Global state
@@ -1055,6 +1232,41 @@ const {
   let originalPattern: CanvasPattern | null = null;
   let brushCtx: CanvasRenderingContext2D | null = null;
 
+  // Passport Annotation Suite Elements & State
+  const btnToggleAnnotation = document.getElementById('btn-toggle-annotation') as HTMLButtonElement | null;
+  const btnToggleAnnotationText = document.getElementById('btn-toggle-annotation-text') as HTMLElement | null;
+  const annotationToolbar = document.getElementById('annotation-toolbar') as HTMLElement | null;
+  const annotModeTextBtn = document.getElementById('annot-mode-text') as HTMLButtonElement | null;
+  const annotModePenBtn = document.getElementById('annot-mode-pen') as HTMLButtonElement | null;
+  const annotColorBtns = document.querySelectorAll('.annot-color-btn') as NodeListOf<HTMLButtonElement>;
+  const annotSizeBtns = document.querySelectorAll('.annot-size-btn') as NodeListOf<HTMLButtonElement>;
+  const annotTextControls = document.getElementById('annot-text-controls') as HTMLElement | null;
+  const annotPenControls = document.getElementById('annot-pen-controls') as HTMLElement | null;
+  const annotNameInput = document.getElementById('annot-name-input') as HTMLInputElement | null;
+  const annotDateInput = document.getElementById('annot-date-input') as HTMLInputElement | null;
+  const annotTodayBtn = document.getElementById('annot-today-btn') as HTMLButtonElement | null;
+  const annotPlateToggle = document.getElementById('annot-plate-toggle') as HTMLInputElement | null;
+  const annotClearBtn = document.getElementById('annot-clear-btn') as HTMLButtonElement | null;
+  const annotationCanvas = document.getElementById('annotation-canvas') as HTMLCanvasElement | null;
+  const annotationTextBadge = document.getElementById('annotation-text-badge') as HTMLElement | null;
+  const badgeNameDisplay = document.getElementById('badge-name-display') as HTMLElement | null;
+  const badgeDateDisplay = document.getElementById('badge-date-display') as HTMLElement | null;
+
+  let isAnnotationActive: boolean = false;
+  let currentAnnotMode: 'text' | 'pen' = 'text';
+  let currentAnnotColor: string = '#000000';
+  let annotSizeLevel: 'sm' | 'md' | 'lg' = 'md';
+  let isAnnotPlateEnabled: boolean = true;
+  let annotNameText: string = '';
+  let annotDateText: string = '';
+  let annotRelX: number = 0.5;
+  let annotRelY: number = 0.88;
+  let annotationCtx: CanvasRenderingContext2D | null = null;
+  let hasSignatureStrokes: boolean = false;
+  let isDrawingAnnotation: boolean = false;
+  let annotStrokePoints: { x: number; y: number }[] = [];
+  let isDraggingBadge: boolean = false;
+
   // Setup initial color mode based on page prop
   if (initialDefaultBg === 'white') {
     currentBgColor = '#FFFFFF';
@@ -1110,6 +1322,10 @@ const {
         brushCanvas.style.width = 'auto';
         brushCanvas.style.height = 'auto';
       }
+      if (annotationCanvas) {
+        annotationCanvas.style.width = 'auto';
+        annotationCanvas.style.height = 'auto';
+      }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = 'auto';
         previewOriginalImg.style.height = 'auto';
@@ -1128,6 +1344,10 @@ const {
       if (brushCanvas) {
         brushCanvas.style.width = '100%';
         brushCanvas.style.height = '100%';
+      }
+      if (annotationCanvas) {
+        annotationCanvas.style.width = '100%';
+        annotationCanvas.style.height = '100%';
       }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
@@ -1148,6 +1368,10 @@ const {
         brushCanvas.style.width = '100%';
         brushCanvas.style.height = '100%';
       }
+      if (annotationCanvas) {
+        annotationCanvas.style.width = '100%';
+        annotationCanvas.style.height = '100%';
+      }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
         previewOriginalImg.style.height = '100%';
@@ -1166,6 +1390,10 @@ const {
       if (brushCanvas) {
         brushCanvas.style.width = '100%';
         brushCanvas.style.height = '100%';
+      }
+      if (annotationCanvas) {
+        annotationCanvas.style.width = '100%';
+        annotationCanvas.style.height = '100%';
       }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
@@ -1547,6 +1775,39 @@ const {
     offscreenOriginalCanvas = null;
     originalPattern = null;
     brushCtx = null;
+
+    // Reset Passport Annotation Suite
+    isAnnotationActive = false;
+    currentAnnotMode = 'text';
+    currentAnnotColor = '#000000';
+    annotSizeLevel = 'md';
+    isAnnotPlateEnabled = true;
+    annotNameText = '';
+    annotDateText = '';
+    annotRelX = 0.5;
+    annotRelY = 0.88;
+    hasSignatureStrokes = false;
+    if (annotationToolbar) annotationToolbar.classList.add('hidden');
+    if (btnToggleAnnotation) {
+      btnToggleAnnotation.classList.remove('bg-[#E5A93C]/10', 'border-[#E5A93C]/40', 'text-[#b47818]', 'dark:text-[#E5A93C]');
+    }
+    if (annotationCanvas) {
+      annotationCanvas.classList.add('hidden');
+      annotationCanvas.style.pointerEvents = 'none';
+      if (annotationCtx) annotationCtx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+    }
+    if (annotationTextBadge) {
+      annotationTextBadge.classList.add('hidden');
+      annotationTextBadge.style.left = '50%';
+      annotationTextBadge.style.top = '88%';
+      annotationTextBadge.style.bottom = 'auto';
+      annotationTextBadge.style.transform = 'translate(-50%, -50%)';
+    }
+    if (annotNameInput) annotNameInput.value = '';
+    if (annotDateInput) annotDateInput.value = '';
+    if (badgeNameDisplay) badgeNameDisplay.textContent = 'NAME SURNAME';
+    if (badgeDateDisplay) badgeDateDisplay.textContent = 'DD/MM/YYYY';
+    if (annotPlateToggle) annotPlateToggle.checked = true;
 
     originalImageObj = null;
 
@@ -2214,6 +2475,17 @@ const {
         clearHistoryStacks();
       }
 
+      // Initialize Annotation Signature Canvas Buffer
+      if (annotationCanvas && imageNaturalWidth && imageNaturalHeight) {
+        annotationCanvas.width = imageNaturalWidth;
+        annotationCanvas.height = imageNaturalHeight;
+        annotationCtx = annotationCanvas.getContext('2d');
+        if (annotationCtx) {
+          annotationCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
+        }
+        hasSignatureStrokes = false;
+      }
+
       updateResolutionBadge();
 
       const mbSize = (resultBlob.size / (1024 * 1024)).toFixed(2);
@@ -2871,6 +3143,417 @@ const {
   }
 
   // ==========================================
+  // PASSPORT ANNOTATION SUITE ENGINE
+  // ==========================================
+
+  function updateBadgeVisuals() {
+    if (!annotationTextBadge) return;
+    annotationTextBadge.style.left = `${(annotRelX * 100).toFixed(2)}%`;
+    annotationTextBadge.style.top = `${(annotRelY * 100).toFixed(2)}%`;
+    annotationTextBadge.style.bottom = 'auto';
+    annotationTextBadge.style.transform = 'translate(-50%, -50%)';
+
+    if (isAnnotPlateEnabled) {
+      if (currentAnnotColor === '#FFFFFF') {
+        annotationTextBadge.style.backgroundColor = '#18181b';
+        annotationTextBadge.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+      } else {
+        annotationTextBadge.style.backgroundColor = '#ffffff';
+        annotationTextBadge.style.borderColor = 'rgba(0, 0, 0, 0.2)';
+      }
+      annotationTextBadge.classList.add('shadow-md');
+    } else {
+      annotationTextBadge.style.backgroundColor = 'transparent';
+      annotationTextBadge.style.borderColor = 'transparent';
+      annotationTextBadge.classList.remove('shadow-md');
+    }
+
+    if (badgeNameDisplay) {
+      badgeNameDisplay.style.color = currentAnnotColor;
+      if (annotSizeLevel === 'sm') {
+        badgeNameDisplay.className = 'font-bold tracking-wider text-[11px] leading-tight uppercase font-sans';
+      } else if (annotSizeLevel === 'lg') {
+        badgeNameDisplay.className = 'font-bold tracking-wider text-sm sm:text-base leading-tight uppercase font-sans';
+      } else {
+        badgeNameDisplay.className = 'font-bold tracking-wider text-xs sm:text-sm leading-tight uppercase font-sans';
+      }
+    }
+
+    if (badgeDateDisplay) {
+      badgeDateDisplay.style.color = currentAnnotColor;
+      if (annotSizeLevel === 'sm') {
+        badgeDateDisplay.className = 'text-[9px] font-semibold opacity-90 font-mono';
+      } else if (annotSizeLevel === 'lg') {
+        badgeDateDisplay.className = 'text-xs sm:text-sm font-semibold opacity-90 font-mono';
+      } else {
+        badgeDateDisplay.className = 'text-[10px] sm:text-xs font-semibold opacity-90 font-mono';
+      }
+    }
+  }
+
+  if (btnToggleAnnotation) {
+    btnToggleAnnotation.addEventListener('click', () => {
+      isAnnotationActive = !isAnnotationActive;
+      if (isAnnotationActive) {
+        if (annotationToolbar) annotationToolbar.classList.remove('hidden');
+        btnToggleAnnotation.classList.add('bg-[#E5A93C]/10', 'border-[#E5A93C]/40', 'text-[#b47818]', 'dark:text-[#E5A93C]');
+        if (currentAnnotMode === 'text') {
+          if (annotationTextBadge) {
+            annotationTextBadge.classList.remove('hidden');
+            annotationTextBadge.style.pointerEvents = 'auto';
+          }
+          if (annotationCanvas) {
+            annotationCanvas.style.pointerEvents = 'none';
+          }
+        } else {
+          if (annotationCanvas) {
+            annotationCanvas.classList.remove('hidden');
+            annotationCanvas.style.pointerEvents = 'auto';
+            annotationCanvas.style.cursor = 'crosshair';
+            annotationCanvas.style.zIndex = '25';
+          }
+        }
+        updateBadgeVisuals();
+      } else {
+        if (annotationToolbar) annotationToolbar.classList.add('hidden');
+        btnToggleAnnotation.classList.remove('bg-[#E5A93C]/10', 'border-[#E5A93C]/40', 'text-[#b47818]', 'dark:text-[#E5A93C]');
+        if (annotationCanvas) {
+          annotationCanvas.style.pointerEvents = 'none';
+          if (!hasSignatureStrokes) {
+            annotationCanvas.classList.add('hidden');
+          }
+        }
+        if (annotationTextBadge) {
+          if (!annotNameText.trim() && !annotDateText.trim()) {
+            annotationTextBadge.classList.add('hidden');
+          } else {
+            annotationTextBadge.style.pointerEvents = 'none';
+          }
+        }
+      }
+    });
+  }
+
+  if (annotModeTextBtn && annotModePenBtn) {
+    const activeClasses = ['active', 'bg-[#E5A93C]/10', 'border-[#E5A93C]/30', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold'];
+    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent', 'font-medium'];
+
+    annotModeTextBtn.addEventListener('click', () => {
+      currentAnnotMode = 'text';
+      annotModeTextBtn.classList.add(...activeClasses);
+      annotModeTextBtn.classList.remove(...inactiveClasses);
+      annotModePenBtn.classList.remove(...activeClasses);
+      annotModePenBtn.classList.add(...inactiveClasses);
+
+      if (annotTextControls) annotTextControls.classList.remove('hidden');
+      if (annotPenControls) annotPenControls.classList.add('hidden');
+
+      if (annotationTextBadge) {
+        annotationTextBadge.classList.remove('hidden');
+        annotationTextBadge.style.pointerEvents = 'auto';
+      }
+      if (annotationCanvas) {
+        annotationCanvas.style.pointerEvents = 'none';
+      }
+      updateBadgeVisuals();
+    });
+
+    annotModePenBtn.addEventListener('click', () => {
+      currentAnnotMode = 'pen';
+      annotModePenBtn.classList.add(...activeClasses);
+      annotModePenBtn.classList.remove(...inactiveClasses);
+      annotModeTextBtn.classList.remove(...activeClasses);
+      annotModeTextBtn.classList.add(...inactiveClasses);
+
+      if (annotTextControls) annotTextControls.classList.add('hidden');
+      if (annotPenControls) annotPenControls.classList.remove('hidden');
+
+      if (annotationCanvas) {
+        annotationCanvas.classList.remove('hidden');
+        annotationCanvas.style.pointerEvents = 'auto';
+        annotationCanvas.style.cursor = 'crosshair';
+        annotationCanvas.style.zIndex = '25';
+      }
+      if (annotationTextBadge) {
+        annotationTextBadge.style.pointerEvents = 'none';
+      }
+    });
+  }
+
+  annotColorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const color = btn.getAttribute('data-color') || '#000000';
+      currentAnnotColor = color;
+      annotColorBtns.forEach(b => {
+        b.classList.remove('border-2', 'border-[#E5A93C]', 'scale-105');
+      });
+      btn.classList.add('border-2', 'border-[#E5A93C]', 'scale-105');
+      updateBadgeVisuals();
+    });
+  });
+
+  annotSizeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const size = (btn.getAttribute('data-size') as 'sm' | 'md' | 'lg') || 'md';
+      annotSizeLevel = size;
+      annotSizeBtns.forEach(b => {
+        b.classList.remove('active', 'bg-[#E5A93C]/10', 'border-[#E5A93C]/30', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold');
+        b.classList.add('text-[#5a5852]', 'dark:text-[#a09c92]', 'font-medium');
+      });
+      btn.classList.add('active', 'bg-[#E5A93C]/10', 'border-[#E5A93C]/30', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold');
+      btn.classList.remove('text-[#5a5852]', 'dark:text-[#a09c92]', 'font-medium');
+      updateBadgeVisuals();
+    });
+  });
+
+  if (annotNameInput) {
+    annotNameInput.addEventListener('input', () => {
+      annotNameText = annotNameInput.value.toUpperCase();
+      if (badgeNameDisplay) {
+        badgeNameDisplay.textContent = annotNameText || 'NAME SURNAME';
+      }
+      if (annotationTextBadge && isAnnotationActive) {
+        annotationTextBadge.classList.remove('hidden');
+      }
+    });
+  }
+
+  if (annotDateInput) {
+    annotDateInput.addEventListener('input', () => {
+      annotDateText = annotDateInput.value;
+      if (badgeDateDisplay) {
+        badgeDateDisplay.textContent = annotDateText || 'DD/MM/YYYY';
+      }
+      if (annotationTextBadge && isAnnotationActive) {
+        annotationTextBadge.classList.remove('hidden');
+      }
+    });
+  }
+
+  if (annotTodayBtn) {
+    annotTodayBtn.addEventListener('click', () => {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      const formatted = `${dd}/${mm}/${yyyy}`;
+      if (annotDateInput) {
+        annotDateInput.value = formatted;
+      }
+      annotDateText = formatted;
+      if (badgeDateDisplay) {
+        badgeDateDisplay.textContent = formatted;
+      }
+      if (annotationTextBadge && isAnnotationActive) {
+        annotationTextBadge.classList.remove('hidden');
+      }
+    });
+  }
+
+  if (annotPlateToggle) {
+    annotPlateToggle.addEventListener('change', () => {
+      isAnnotPlateEnabled = annotPlateToggle.checked;
+      updateBadgeVisuals();
+    });
+  }
+
+  if (annotClearBtn) {
+    annotClearBtn.addEventListener('click', () => {
+      if (annotationCtx && annotationCanvas) {
+        annotationCtx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+      }
+      hasSignatureStrokes = false;
+      if (annotNameInput) annotNameInput.value = '';
+      if (annotDateInput) annotDateInput.value = '';
+      annotNameText = '';
+      annotDateText = '';
+      if (badgeNameDisplay) badgeNameDisplay.textContent = 'NAME SURNAME';
+      if (badgeDateDisplay) badgeDateDisplay.textContent = 'DD/MM/YYYY';
+      showToast('Annotations cleared');
+    });
+  }
+
+  if (annotationTextBadge) {
+    annotationTextBadge.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      if (!stageBox) return;
+      isDraggingBadge = true;
+      try {
+        annotationTextBadge.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    });
+
+    annotationTextBadge.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!isDraggingBadge || !stageBox) return;
+      e.stopPropagation();
+      const rect = stageBox.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      annotRelX = Math.max(0.06, Math.min(0.94, x / rect.width));
+      annotRelY = Math.max(0.06, Math.min(0.94, y / rect.height));
+      updateBadgeVisuals();
+    });
+
+    const stopBadgeDrag = (e: PointerEvent) => {
+      if (isDraggingBadge) {
+        isDraggingBadge = false;
+        try {
+          annotationTextBadge.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }
+    };
+    annotationTextBadge.addEventListener('pointerup', stopBadgeDrag);
+    annotationTextBadge.addEventListener('pointercancel', stopBadgeDrag);
+  }
+
+  function getAnnotCanvasCoords(clientX: number, clientY: number) {
+    if (!annotationCanvas) return { x: 0, y: 0, scale: 1 };
+    const rect = annotationCanvas.getBoundingClientRect();
+    const scaleX = rect.width > 0 ? annotationCanvas.width / rect.width : 1;
+    const scaleY = rect.height > 0 ? annotationCanvas.height / rect.height : 1;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+      scale: scaleX
+    };
+  }
+
+  if (annotationCanvas) {
+    annotationCanvas.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (!isAnnotationActive || currentAnnotMode !== 'pen' || e.button !== 0) return;
+      e.stopPropagation();
+      try {
+        annotationCanvas.setPointerCapture(e.pointerId);
+      } catch (_) {}
+
+      isDrawingAnnotation = true;
+      const pt = getAnnotCanvasCoords(e.clientX, e.clientY);
+      annotStrokePoints = [pt];
+
+      if (annotationCtx) {
+        const baseWidth = annotSizeLevel === 'sm' ? 2 : annotSizeLevel === 'lg' ? 6 : 3.5;
+        const pressureMultiplier = e.pressure ? Math.max(0.4, Math.min(2, e.pressure * 1.5)) : 1;
+        const strokeWidth = Math.max(1, baseWidth * pt.scale * pressureMultiplier);
+
+        annotationCtx.save();
+        annotationCtx.fillStyle = currentAnnotColor;
+        annotationCtx.beginPath();
+        annotationCtx.arc(pt.x, pt.y, strokeWidth / 2, 0, Math.PI * 2);
+        annotationCtx.fill();
+        annotationCtx.restore();
+        hasSignatureStrokes = true;
+      }
+    });
+
+    annotationCanvas.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!isDrawingAnnotation || !annotationCtx) return;
+      e.stopPropagation();
+      const pt = getAnnotCanvasCoords(e.clientX, e.clientY);
+      annotStrokePoints.push(pt);
+
+      const baseWidth = annotSizeLevel === 'sm' ? 2 : annotSizeLevel === 'lg' ? 6 : 3.5;
+      const pressureMultiplier = e.pressure ? Math.max(0.4, Math.min(2, e.pressure * 1.5)) : 1;
+      const strokeWidth = Math.max(1, baseWidth * pt.scale * pressureMultiplier);
+
+      annotationCtx.save();
+      annotationCtx.strokeStyle = currentAnnotColor;
+      annotationCtx.lineWidth = strokeWidth;
+      annotationCtx.lineCap = 'round';
+      annotationCtx.lineJoin = 'round';
+
+      if (annotStrokePoints.length === 2) {
+        annotationCtx.beginPath();
+        annotationCtx.moveTo(annotStrokePoints[0].x, annotStrokePoints[0].y);
+        annotationCtx.lineTo(annotStrokePoints[1].x, annotStrokePoints[1].y);
+        annotationCtx.stroke();
+      } else if (annotStrokePoints.length >= 3) {
+        const p0 = annotStrokePoints[annotStrokePoints.length - 3];
+        const p1 = annotStrokePoints[annotStrokePoints.length - 2];
+        const p2 = annotStrokePoints[annotStrokePoints.length - 1];
+        const mid1 = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+        const mid2 = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+        annotationCtx.beginPath();
+        annotationCtx.moveTo(mid1.x, mid1.y);
+        annotationCtx.quadraticCurveTo(p1.x, p1.y, mid2.x, mid2.y);
+        annotationCtx.stroke();
+      }
+      annotationCtx.restore();
+      hasSignatureStrokes = true;
+    });
+
+    const endAnnotDrawing = (e: PointerEvent) => {
+      if (!isDrawingAnnotation) return;
+      e.stopPropagation();
+      isDrawingAnnotation = false;
+      try {
+        annotationCanvas.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+
+      if (annotationCtx && annotStrokePoints.length >= 2) {
+        const lastPt = annotStrokePoints[annotStrokePoints.length - 1];
+        const prevPt = annotStrokePoints[annotStrokePoints.length - 2];
+        const mid = { x: (prevPt.x + lastPt.x) / 2, y: (prevPt.y + lastPt.y) / 2 };
+        const baseWidth = annotSizeLevel === 'sm' ? 2 : annotSizeLevel === 'lg' ? 6 : 3.5;
+        const strokeWidth = Math.max(1, baseWidth * lastPt.scale);
+
+        annotationCtx.save();
+        annotationCtx.strokeStyle = currentAnnotColor;
+        annotationCtx.lineWidth = strokeWidth;
+        annotationCtx.lineCap = 'round';
+        annotationCtx.lineJoin = 'round';
+        annotationCtx.beginPath();
+        annotationCtx.moveTo(mid.x, mid.y);
+        annotationCtx.lineTo(lastPt.x, lastPt.y);
+        annotationCtx.stroke();
+        annotationCtx.restore();
+      }
+      annotStrokePoints = [];
+    };
+
+    annotationCanvas.addEventListener('pointerup', endAnnotDrawing);
+    annotationCanvas.addEventListener('pointercancel', endAnnotDrawing);
+
+    // Prevent touch scrolling when drawing
+    annotationCanvas.addEventListener('touchstart', (e: TouchEvent) => {
+      if (isAnnotationActive && currentAnnotMode === 'pen' && e.cancelable) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    annotationCanvas.addEventListener('touchmove', (e: TouchEvent) => {
+      if (isAnnotationActive && currentAnnotMode === 'pen' && e.cancelable) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
+  function getAnnotationExportData(): AnnotationExportData | null {
+    const hasText = !!(annotNameText.trim() || annotDateText.trim());
+    if (!hasSignatureStrokes && !hasText) {
+      return null;
+    }
+
+    const exportData: AnnotationExportData = {};
+    if (hasSignatureStrokes && annotationCanvas) {
+      exportData.signatureCanvas = annotationCanvas;
+    }
+    if (hasText) {
+      exportData.textBadge = {
+        name: annotNameText.trim(),
+        date: annotDateText.trim(),
+        showPlate: isAnnotPlateEnabled,
+        color: currentAnnotColor,
+        sizeLevel: annotSizeLevel,
+        relX: annotRelX,
+        relY: annotRelY,
+      };
+    }
+    return exportData;
+  }
+
+  // ==========================================
   // EXPORT ACTIONS (HD PNG, JPG, CLIPBOARD)
   // ==========================================
 
@@ -2895,7 +3578,8 @@ const {
           blur: blurBgPx,
           isBlurEnabled: isBlurBgActive,
           isShadowEnabled: isShadowActive,
-          shadowOpacity: shadowOpacityPct
+          shadowOpacity: shadowOpacityPct,
+          annotation: getAnnotationExportData()
         };
 
         const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
@@ -2930,7 +3614,8 @@ const {
           blur: blurBgPx,
           isBlurEnabled: isBlurBgActive,
           isShadowEnabled: isShadowActive,
-          shadowOpacity: shadowOpacityPct
+          shadowOpacity: shadowOpacityPct,
+          annotation: getAnnotationExportData()
         };
 
         const finalBlob = await createCompressedJpgBlob(cutoutBlob, preset, exportOpts);
@@ -2969,7 +3654,8 @@ const {
           blur: blurBgPx,
           isBlurEnabled: isBlurBgActive,
           isShadowEnabled: isShadowActive,
-          shadowOpacity: shadowOpacityPct
+          shadowOpacity: shadowOpacityPct,
+          annotation: getAnnotationExportData()
         };
 
         const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);

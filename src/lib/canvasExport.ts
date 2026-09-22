@@ -6,6 +6,21 @@
 export type CanvasRatio = 'original' | '1:1' | '16:9' | 'passport';
 export type JpgCompressionPreset = '50kb' | '100kb' | 'max';
 
+export interface TextBadgeAnnotation {
+  name: string;
+  date?: string;
+  color?: string; // e.g. '#000000', '#FFFFFF', '#001F3F'
+  showPlate?: boolean; // default true (white bounding plate)
+  relX: number; // 0 to 1 relative to cutout width (center point)
+  relY: number; // 0 to 1 relative to cutout height (center point)
+  sizeLevel?: 'sm' | 'md' | 'lg'; // default 'md'
+}
+
+export interface AnnotationExportData {
+  signatureCanvas?: HTMLCanvasElement | null;
+  textBadge?: TextBadgeAnnotation | null;
+}
+
 export interface ExportOptions {
   ratio?: CanvasRatio;
   backgroundColor?: string;
@@ -15,6 +30,7 @@ export interface ExportOptions {
   isBlurEnabled?: boolean;
   isShadowEnabled?: boolean;
   shadowOpacity?: number; // 0 to 100
+  annotation?: AnnotationExportData | null;
 }
 
 /**
@@ -367,6 +383,92 @@ export async function renderCompositeCanvas(
   ctx.filter = 'none';
   ctx.drawImage(cutoutImg, dx, dy, dw, dh);
 
+  // 4. Sequential Annotation Compositing: Signature Strokes + Typed Text Overlay
+  if (options.annotation?.signatureCanvas) {
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(options.annotation.signatureCanvas, dx, dy, dw, dh);
+    ctx.restore();
+  }
+
+  if (options.annotation?.textBadge) {
+    const badge = options.annotation.textBadge;
+    const nameText = (badge.name || '').trim();
+    const dateText = (badge.date || '').trim();
+
+    if (nameText || dateText) {
+      ctx.save();
+      // Font scale factor based on size level: sm: 0.036, md: 0.046, lg: 0.056 of cutout width
+      const sizeMultiplier = badge.sizeLevel === 'sm' ? 0.036 : badge.sizeLevel === 'lg' ? 0.056 : 0.046;
+      const baseFontSize = Math.max(14, Math.round(dw * sizeMultiplier));
+      const dateFontSize = Math.max(11, Math.round(baseFontSize * 0.75));
+      const textColor = badge.color || '#000000';
+      const showPlate = badge.showPlate !== false;
+
+      // Calculate center coordinates
+      const centerX = Math.round(dx + badge.relX * dw);
+      const centerY = Math.round(dy + badge.relY * dh);
+
+      ctx.font = `bold ${baseFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      const nameMetrics = nameText ? ctx.measureText(nameText) : { width: 0 };
+
+      ctx.font = `600 ${dateFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      const dateMetrics = dateText ? ctx.measureText(dateText) : { width: 0 };
+
+      const contentWidth = Math.max(nameMetrics.width, dateMetrics.width);
+      const padX = Math.round(baseFontSize * 0.85);
+      const padY = Math.round(baseFontSize * 0.45);
+      const lineGap = Math.round(baseFontSize * 0.22);
+
+      const totalTextHeight = (nameText ? baseFontSize : 0) + (nameText && dateText ? lineGap : 0) + (dateText ? dateFontSize : 0);
+      const plateWidth = Math.round(contentWidth + padX * 2);
+      const plateHeight = Math.round(totalTextHeight + padY * 2);
+      const plateX = Math.round(centerX - plateWidth / 2);
+      const plateY = Math.round(centerY - plateHeight / 2);
+
+      // Draw white bounding plate if enabled (or dark plate if white text)
+      if (showPlate) {
+        ctx.fillStyle = textColor === '#FFFFFF' ? '#18181b' : '#FFFFFF';
+        ctx.strokeStyle = textColor === '#FFFFFF' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.2)';
+        ctx.lineWidth = Math.max(1, Math.round(dw * 0.002));
+        const radius = Math.min(8, Math.round(plateHeight * 0.2));
+
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(plateX, plateY, plateWidth, plateHeight, radius);
+        } else {
+          ctx.rect(plateX, plateY, plateWidth, plateHeight);
+        }
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // Draw text
+      ctx.textAlign = 'center';
+      ctx.fillStyle = textColor;
+
+      if (nameText && dateText) {
+        ctx.font = `bold ${baseFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.textBaseline = 'top';
+        ctx.fillText(nameText, centerX, plateY + padY);
+
+        ctx.font = `600 ${dateFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText(dateText, centerX, plateY + padY + baseFontSize + lineGap);
+      } else if (nameText) {
+        ctx.font = `bold ${baseFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(nameText, centerX, centerY);
+      } else if (dateText) {
+        ctx.font = `600 ${dateFontSize}px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(dateText, centerX, centerY);
+      }
+
+      ctx.restore();
+    }
+  }
+
   return canvas;
 }
 
@@ -382,14 +484,20 @@ export async function createHdExportBlob(
       ? { backgroundColor: backgroundColorOrOptions }
       : backgroundColorOrOptions;
 
-  // Fast path: if original ratio, no blur, no shadow, transparent, and no custom image, the cutoutBlob is already correct
+  const hasAnnotation = !!(
+    options.annotation?.signatureCanvas ||
+    (options.annotation?.textBadge && (options.annotation.textBadge.name || options.annotation.textBadge.date))
+  );
+
+  // Fast path: if original ratio, no blur, no shadow, transparent, no custom image, and no annotations
   if (
     (!options.ratio || options.ratio === 'original') &&
     (!options.backgroundColor || options.backgroundColor === 'transparent') &&
     !options.customBgImage &&
     !options.isBlurEnabled &&
     !options.isShadowEnabled &&
-    (!options.blur || options.blur === 0)
+    (!options.blur || options.blur === 0) &&
+    !hasAnnotation
   ) {
     return cutoutBlob;
   }
