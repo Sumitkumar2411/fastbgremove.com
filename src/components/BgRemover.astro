@@ -251,11 +251,25 @@ const {
               style="will-change: filter, transform; transform: translateZ(0);"
             />
 
+            <!-- Interactive Brush Canvas (overlay / active drawing surface) -->
+            <canvas
+              id="brush-canvas"
+              class="hidden max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 select-none drop-shadow-xs transition-none cursor-none touch-none pointer-events-auto"
+              style="will-change: filter, transform; transform: translateZ(0); touch-action: none;"
+            ></canvas>
+
             <!-- Right Badge: Cutout -->
             <span class="absolute top-3 right-3 text-xs font-mono font-semibold text-[#b47818] dark:text-[#E5A93C] bg-white/95 dark:bg-[#1c1c1f]/95 px-2.5 py-1 rounded-md border border-[#E5A93C]/20 shadow-xs pointer-events-none z-20 backdrop-blur-xs">
               CUTOUT
             </span>
           </div>
+
+          <!-- Floating Brush Cursor Circle Indicator (tracks pointer in brush mode) -->
+          <div
+            id="brush-cursor-indicator"
+            class="hidden fixed pointer-events-none z-50 rounded-full border-2 border-white shadow-[0_0_0_1.5px_rgba(0,0,0,0.7),0_0_10px_rgba(229,169,60,0.8)] transform -translate-x-1/2 -translate-y-1/2 transition-none"
+            style="width: 25px; height: 25px;"
+          ></div>
 
           <!-- CENTER DRAGGABLE DIVIDER -->
           <div
@@ -563,6 +577,130 @@ const {
         </div>
       </div>
 
+      <!-- ERASE & RESTORE BRUSH PANEL -->
+      <div id="brush-panel" class="w-full p-3 sm:p-4 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-3">
+        <!-- Header with Enable Switch -->
+        <div class="flex items-center justify-between border-b border-[#e6e5e0]/80 dark:border-[#2e2e33]/80 pb-2">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#E5A93C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m18 15-6-6-6 6"/>
+              <path d="m9 9 3 3 3-3"/>
+            </svg>
+            <span class="text-xs font-mono font-semibold uppercase tracking-wider text-[#26251e] dark:text-[#ededed]">Erase & Restore Brush Tool</span>
+          </div>
+          <!-- Brush Mode Toggle Switch -->
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-mono text-[#807d72] dark:text-[#a09c92]">Enable Brush</span>
+            <label class="relative inline-flex items-center cursor-pointer select-none" title="Toggle Erase & Restore Brush Mode">
+              <input type="checkbox" id="brush-tool-toggle" class="sr-only peer" />
+              <div class="w-8 h-4.5 sm:w-9 sm:h-5 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 sm:after:h-4 sm:after:w-4 after:transition-all peer-checked:bg-[#E5A93C]"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Controls container: Mode, Size, History -->
+        <div id="brush-controls" class="space-y-3 opacity-50 pointer-events-none transition-opacity">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-center">
+            <!-- 1. Mode Selector: Erase vs Restore -->
+            <div class="p-2 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] flex items-center justify-between gap-2">
+              <span class="text-xs font-semibold text-[#26251e] dark:text-[#ededed] shrink-0">Mode:</span>
+              <div class="flex items-center gap-1 p-0.5 rounded-md bg-[#efeee8] dark:bg-[#121212] border border-[#e6e5e0] dark:border-[#2e2e33] w-full max-w-[200px]">
+                <button
+                  type="button"
+                  id="brush-mode-erase"
+                  class="brush-mode-btn active flex-1 py-1 px-2 rounded text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-[#242428] shadow-xs transition-all flex items-center justify-center gap-1 border border-[#E5A93C]/30 cursor-pointer select-none"
+                  data-mode="erase"
+                  title="Erase unwanted background pixels"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+                    <path d="M22 21H7"/>
+                    <path d="m5 11 9 9"/>
+                  </svg>
+                  <span>Erase</span>
+                </button>
+                <button
+                  type="button"
+                  id="brush-mode-restore"
+                  class="brush-mode-btn flex-1 py-1 px-2 rounded text-xs font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] transition-all flex items-center justify-center gap-1 border border-transparent cursor-pointer select-none"
+                  data-mode="restore"
+                  title="Restore original image details"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                    <path d="M2 2l7.586 7.586"/>
+                    <circle cx="11" cy="11" r="2"/>
+                  </svg>
+                  <span>Restore</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Brush Size Slider -->
+            <div class="p-2 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33] flex items-center gap-2">
+              <span class="text-xs font-semibold text-[#26251e] dark:text-[#ededed] shrink-0">Size:</span>
+              <input
+                type="range"
+                id="brush-size-slider"
+                min="5"
+                max="100"
+                value="25"
+                class="flex-1 h-1.5 accent-[#E5A93C] cursor-pointer"
+                title="Adjust brush diameter (5-100px)"
+              />
+              <span id="brush-size-label" class="text-xs font-mono font-semibold text-[#b47818] dark:text-[#E5A93C] w-10 text-right">25px</span>
+            </div>
+
+            <!-- 3. Undo / Redo / Reset Actions -->
+            <div class="flex items-center gap-1.5 sm:col-span-2 lg:col-span-1 justify-end">
+              <button
+                type="button"
+                id="brush-undo-btn"
+                disabled
+                class="flex-1 lg:flex-none py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#151518] text-xs font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer select-none"
+                title="Undo last stroke (Ctrl+Z)"
+              >
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 7v6h6"/>
+                  <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                </svg>
+                <span>Undo</span>
+              </button>
+              <button
+                type="button"
+                id="brush-redo-btn"
+                disabled
+                class="flex-1 lg:flex-none py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#151518] text-xs font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#26251e] dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer select-none"
+                title="Redo stroke (Ctrl+Y)"
+              >
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 7v6h-6"/>
+                  <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/>
+                </svg>
+                <span>Redo</span>
+              </button>
+              <button
+                type="button"
+                id="brush-reset-btn"
+                class="py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#151518] text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer select-none"
+                title="Reset all brush edits to original AI cutout"
+              >
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-[11px] font-mono text-[#807d72] dark:text-[#706e68] pt-0.5">
+            <span>Hover and draw smoothly on the preview image</span>
+            <span class="hidden sm:inline">Erase removes pixels • Restore paints back original photo</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Action Bar: Prominent Primary Button & Secondary Actions -->
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
         <!-- Right Action Group (Shown First on Mobile via order-1 sm:order-2) -->
@@ -778,6 +916,32 @@ const {
   const exportJpgText = document.getElementById('export-jpg-text') as HTMLElement;
   const jpgPresetSelect = document.getElementById('jpg-preset-select') as HTMLInputElement;
 
+  // Erase & Restore Brush Tool Elements & State
+  const brushCanvas = document.getElementById('brush-canvas') as HTMLCanvasElement;
+  const brushCursorIndicator = document.getElementById('brush-cursor-indicator') as HTMLElement;
+  const brushToolToggle = document.getElementById('brush-tool-toggle') as HTMLInputElement;
+  const brushControls = document.getElementById('brush-controls') as HTMLElement;
+  const brushModeErase = document.getElementById('brush-mode-erase') as HTMLButtonElement;
+  const brushModeRestore = document.getElementById('brush-mode-restore') as HTMLButtonElement;
+  const brushSizeSlider = document.getElementById('brush-size-slider') as HTMLInputElement;
+  const brushSizeLabel = document.getElementById('brush-size-label') as HTMLElement;
+  const brushUndoBtn = document.getElementById('brush-undo-btn') as HTMLButtonElement;
+  const brushRedoBtn = document.getElementById('brush-redo-btn') as HTMLButtonElement;
+  const brushResetBtn = document.getElementById('brush-reset-btn') as HTMLButtonElement;
+
+  let isBrushModeActive: boolean = false;
+  let currentBrushMode: 'erase' | 'restore' = 'erase';
+  let brushSize: number = 25;
+  let isDrawing: boolean = false;
+  let strokePoints: { x: number; y: number }[] = [];
+  let undoStack: ImageBitmap[] = [];
+  let redoStack: ImageBitmap[] = [];
+  const MAX_HISTORY = 10;
+  let initialCutoutBitmap: ImageBitmap | null = null;
+  let offscreenOriginalCanvas: HTMLCanvasElement | null = null;
+  let originalPattern: CanvasPattern | null = null;
+  let brushCtx: CanvasRenderingContext2D | null = null;
+
   // Setup initial color mode based on page prop
   if (initialDefaultBg === 'white') {
     currentBgColor = '#FFFFFF';
@@ -829,6 +993,10 @@ const {
       stageBox.classList.remove('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
       previewCutoutImg.style.width = 'auto';
       previewCutoutImg.style.height = 'auto';
+      if (brushCanvas) {
+        brushCanvas.style.width = 'auto';
+        brushCanvas.style.height = 'auto';
+      }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = 'auto';
         previewOriginalImg.style.height = 'auto';
@@ -844,6 +1012,10 @@ const {
       stageBox.classList.add('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
       previewCutoutImg.style.width = '100%';
       previewCutoutImg.style.height = '100%';
+      if (brushCanvas) {
+        brushCanvas.style.width = '100%';
+        brushCanvas.style.height = '100%';
+      }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
         previewOriginalImg.style.height = '100%';
@@ -859,6 +1031,10 @@ const {
       stageBox.classList.add('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
       previewCutoutImg.style.width = '100%';
       previewCutoutImg.style.height = '100%';
+      if (brushCanvas) {
+        brushCanvas.style.width = '100%';
+        brushCanvas.style.height = '100%';
+      }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
         previewOriginalImg.style.height = '100%';
@@ -874,6 +1050,10 @@ const {
       stageBox.classList.add('border', 'border-[#cfcdc4]', 'dark:border-[#3e3e44]', 'shadow-xs');
       previewCutoutImg.style.width = '100%';
       previewCutoutImg.style.height = '100%';
+      if (brushCanvas) {
+        brushCanvas.style.width = '100%';
+        brushCanvas.style.height = '100%';
+      }
       if (previewOriginalImg) {
         previewOriginalImg.style.width = '100%';
         previewOriginalImg.style.height = '100%';
@@ -987,18 +1167,23 @@ const {
 
   // Real-time GPU Drop Shadow Effect Handler
   function applyShadowEffect() {
-    if (!previewCutoutImg) return;
-    if (isShadowActive && shadowOpacityPct > 0) {
-      const factor = shadowOpacityPct / 100;
-      const blur = Math.round(18 * factor);
-      const offsetY = Math.round(10 * factor);
-      const alpha = (0.65 * factor).toFixed(2);
-      previewCutoutImg.style.filter = `drop-shadow(0px ${offsetY}px ${blur}px rgba(0, 0, 0, ${alpha}))`;
+    const filterVal = (isShadowActive && shadowOpacityPct > 0)
+      ? `drop-shadow(0px ${Math.round(10 * (shadowOpacityPct / 100))}px ${Math.round(18 * (shadowOpacityPct / 100))}px rgba(0, 0, 0, ${(0.65 * (shadowOpacityPct / 100)).toFixed(2)}))`
+      : 'none';
+
+    if (previewCutoutImg) {
+      previewCutoutImg.style.filter = filterVal;
       previewCutoutImg.style.transform = 'translateZ(0)';
-      previewCutoutImg.style.willChange = 'filter, transform';
-    } else {
-      previewCutoutImg.style.filter = 'none';
-      previewCutoutImg.style.transform = 'translateZ(0)';
+      if (isShadowActive && shadowOpacityPct > 0) {
+        previewCutoutImg.style.willChange = 'filter, transform';
+      }
+    }
+    if (brushCanvas) {
+      brushCanvas.style.filter = filterVal;
+      brushCanvas.style.transform = 'translateZ(0)';
+      if (isShadowActive && shadowOpacityPct > 0) {
+        brushCanvas.style.willChange = 'filter, transform';
+      }
     }
   }
 
@@ -1205,7 +1390,36 @@ const {
     if (shadowLabel) shadowLabel.textContent = '0%';
     if (previewCutoutImg) {
       previewCutoutImg.style.filter = 'none';
+      previewCutoutImg.classList.remove('hidden');
     }
+
+    // Reset Brush Tool state
+    isBrushModeActive = false;
+    currentBrushMode = 'erase';
+    brushSize = 25;
+    if (brushSizeSlider) brushSizeSlider.value = '25';
+    if (brushSizeLabel) brushSizeLabel.textContent = '25px';
+    if (brushToolToggle) brushToolToggle.checked = false;
+    if (brushControls) brushControls.classList.add('opacity-50', 'pointer-events-none');
+    if (brushCanvas) {
+      brushCanvas.classList.add('hidden');
+      brushCanvas.style.filter = 'none';
+      if (brushCtx) brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+    }
+    if (brushCursorIndicator) brushCursorIndicator.classList.add('hidden');
+    if (sliderDivider) sliderDivider.classList.remove('hidden');
+    if (stageBox) {
+      stageBox.classList.remove('cursor-none');
+      stageBox.classList.add('cursor-ew-resize');
+    }
+    clearHistoryStacks();
+    if (initialCutoutBitmap) {
+      try { initialCutoutBitmap.close(); } catch (_) {}
+      initialCutoutBitmap = null;
+    }
+    offscreenOriginalCanvas = null;
+    originalPattern = null;
+    brushCtx = null;
 
     originalImageObj = null;
 
@@ -1464,6 +1678,7 @@ const {
   }
 
   function onPointerDown(e: PointerEvent) {
+    if (isBrushModeActive) return;
     isDraggingSlider = true;
     try {
       (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
@@ -1472,7 +1687,7 @@ const {
   }
 
   function onPointerMove(e: PointerEvent) {
-    if (!isDraggingSlider) return;
+    if (isBrushModeActive || !isDraggingSlider) return;
     updateSliderFromClientX(e.clientX);
   }
 
@@ -1487,6 +1702,7 @@ const {
 
   // Touch Event Handlers for Thumb Dragging on Mobile Devices
   function onTouchStart(e: TouchEvent) {
+    if (isBrushModeActive) return;
     if (e.touches && e.touches.length > 0) {
       isDraggingSlider = true;
       updateSliderFromClientX(e.touches[0].clientX);
@@ -1494,7 +1710,7 @@ const {
   }
 
   function onTouchMove(e: TouchEvent) {
-    if (!isDraggingSlider) return;
+    if (isBrushModeActive || !isDraggingSlider) return;
     if (e.touches && e.touches.length > 0) {
       if (e.cancelable) e.preventDefault();
       updateSliderFromClientX(e.touches[0].clientX);
@@ -1509,6 +1725,7 @@ const {
 
   // Mouse fallback handlers
   function onMouseDown(e: MouseEvent) {
+    if (isBrushModeActive) return;
     isDraggingSlider = true;
     updateSliderFromClientX(e.clientX);
   }
@@ -1653,6 +1870,56 @@ const {
 
       previewCutoutImg.src = cutoutUrl;
 
+      // Initialize Brush Canvas & Offscreen Pattern Buffers
+      if (brushCanvas && imageNaturalWidth && imageNaturalHeight) {
+        brushCanvas.width = imageNaturalWidth;
+        brushCanvas.height = imageNaturalHeight;
+        brushCtx = brushCanvas.getContext('2d', { willReadFrequently: true });
+
+        // Draw the cutout to the brush canvas
+        const cutoutImg = new Image();
+        cutoutImg.src = cutoutUrl;
+        await new Promise((resolve) => {
+          cutoutImg.onload = () => resolve(null);
+          cutoutImg.onerror = () => resolve(null);
+        });
+
+        if (brushCtx) {
+          brushCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
+          brushCtx.drawImage(cutoutImg, 0, 0);
+        }
+
+        // Store pristine initial cutout bitmap for Reset feature
+        if (initialCutoutBitmap) {
+          try { initialCutoutBitmap.close(); } catch (_) {}
+          initialCutoutBitmap = null;
+        }
+        if (window.createImageBitmap) {
+          try {
+            initialCutoutBitmap = await createImageBitmap(brushCanvas);
+          } catch (_) {}
+        }
+
+        // Create offscreen original image canvas for Restore pattern
+        offscreenOriginalCanvas = document.createElement('canvas');
+        offscreenOriginalCanvas.width = imageNaturalWidth;
+        offscreenOriginalCanvas.height = imageNaturalHeight;
+        const offCtx = offscreenOriginalCanvas.getContext('2d');
+        if (offCtx && originalImageObj) {
+          offCtx.drawImage(originalImageObj, 0, 0);
+        }
+
+        if (brushCtx && offscreenOriginalCanvas) {
+          try {
+            originalPattern = brushCtx.createPattern(offscreenOriginalCanvas, 'no-repeat');
+          } catch (e) {
+            console.warn('Pattern creation failed:', e);
+          }
+        }
+
+        clearHistoryStacks();
+      }
+
       updateResolutionBadge();
 
       const mbSize = (resultBlob.size / (1024 * 1024)).toFixed(2);
@@ -1763,6 +2030,390 @@ const {
     });
   });
 
+  // ==========================================
+  // ERASE & RESTORE BRUSH TOOL ENGINE
+  // ==========================================
+
+  function clearHistoryStacks() {
+    while (undoStack.length > 0) {
+      const snap = undoStack.pop();
+      try { snap?.close(); } catch (_) {}
+    }
+    while (redoStack.length > 0) {
+      const snap = redoStack.pop();
+      try { snap?.close(); } catch (_) {}
+    }
+    updateHistoryBtnStates();
+  }
+
+  function updateHistoryBtnStates() {
+    if (brushUndoBtn) brushUndoBtn.disabled = undoStack.length === 0;
+    if (brushRedoBtn) brushRedoBtn.disabled = redoStack.length === 0;
+  }
+
+  function getCanvasCoords(clientX: number, clientY: number) {
+    if (!brushCanvas) return { x: 0, y: 0, scale: 1 };
+    const rect = brushCanvas.getBoundingClientRect();
+    const scaleX = rect.width > 0 ? brushCanvas.width / rect.width : 1;
+    const scaleY = rect.height > 0 ? brushCanvas.height / rect.height : 1;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+      scale: scaleX
+    };
+  }
+
+  function updateCursorIndicator(clientX: number, clientY: number) {
+    if (!brushCursorIndicator) return;
+    brushCursorIndicator.style.left = `${clientX}px`;
+    brushCursorIndicator.style.top = `${clientY}px`;
+    brushCursorIndicator.style.width = `${brushSize}px`;
+    brushCursorIndicator.style.height = `${brushSize}px`;
+    if (currentBrushMode === 'erase') {
+      brushCursorIndicator.style.borderColor = 'rgba(239, 68, 68, 0.9)';
+      brushCursorIndicator.style.boxShadow = '0 0 0 1.5px rgba(0,0,0,0.7), 0 0 10px rgba(239, 68, 68, 0.6)';
+    } else {
+      brushCursorIndicator.style.borderColor = 'rgba(34, 197, 94, 0.9)';
+      brushCursorIndicator.style.boxShadow = '0 0 0 1.5px rgba(0,0,0,0.7), 0 0 10px rgba(34, 197, 94, 0.6)';
+    }
+  }
+
+  async function pushUndoState() {
+    if (!brushCanvas || !window.createImageBitmap) return;
+    try {
+      const snapshot = await createImageBitmap(brushCanvas);
+      undoStack.push(snapshot);
+      if (undoStack.length > MAX_HISTORY) {
+        const oldest = undoStack.shift();
+        try { oldest?.close(); } catch (_) {}
+      }
+      while (redoStack.length > 0) {
+        const snap = redoStack.pop();
+        try { snap?.close(); } catch (_) {}
+      }
+      updateHistoryBtnStates();
+    } catch (e) {
+      console.warn('Snapshot creation error:', e);
+    }
+  }
+
+  async function handleUndo() {
+    if (undoStack.length === 0 || !brushCtx || !brushCanvas) return;
+    try {
+      if (window.createImageBitmap) {
+        const currentState = await createImageBitmap(brushCanvas);
+        redoStack.push(currentState);
+      }
+      const prevState = undoStack.pop()!;
+      brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+      brushCtx.drawImage(prevState, 0, 0);
+      try { prevState.close(); } catch (_) {}
+      updateHistoryBtnStates();
+      await syncCanvasToBlobAndPreview();
+    } catch (e) {
+      console.warn('Undo error:', e);
+    }
+  }
+
+  async function handleRedo() {
+    if (redoStack.length === 0 || !brushCtx || !brushCanvas) return;
+    try {
+      if (window.createImageBitmap) {
+        const currentState = await createImageBitmap(brushCanvas);
+        undoStack.push(currentState);
+      }
+      const nextState = redoStack.pop()!;
+      brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+      brushCtx.drawImage(nextState, 0, 0);
+      try { nextState.close(); } catch (_) {}
+      updateHistoryBtnStates();
+      await syncCanvasToBlobAndPreview();
+    } catch (e) {
+      console.warn('Redo error:', e);
+    }
+  }
+
+  async function handleReset() {
+    if (!initialCutoutBitmap || !brushCtx || !brushCanvas) return;
+    try {
+      await pushUndoState();
+      brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+      brushCtx.drawImage(initialCutoutBitmap, 0, 0);
+      updateHistoryBtnStates();
+      await syncCanvasToBlobAndPreview();
+      showToast('Reset to original AI cutout');
+    } catch (e) {
+      console.warn('Reset error:', e);
+    }
+  }
+
+  function drawDot(pt: { x: number; y: number }, scale: number) {
+    if (!brushCtx) return;
+    const radius = Math.max(1, (brushSize * scale) / 2);
+    brushCtx.save();
+    if (currentBrushMode === 'erase') {
+      brushCtx.globalCompositeOperation = 'destination-out';
+      brushCtx.fillStyle = 'rgba(0,0,0,1)';
+    } else {
+      brushCtx.globalCompositeOperation = 'source-over';
+      if (originalPattern) {
+        brushCtx.fillStyle = originalPattern;
+      } else {
+        brushCtx.fillStyle = 'rgba(255,255,255,1)';
+      }
+    }
+    brushCtx.beginPath();
+    brushCtx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
+    brushCtx.fill();
+    brushCtx.restore();
+  }
+
+  function drawSmoothLine(p1: { x: number; y: number }, p2: { x: number; y: number }, scale: number) {
+    if (!brushCtx) return;
+    const lineWidth = Math.max(1, brushSize * scale);
+    brushCtx.save();
+    brushCtx.lineWidth = lineWidth;
+    brushCtx.lineCap = 'round';
+    brushCtx.lineJoin = 'round';
+    if (currentBrushMode === 'erase') {
+      brushCtx.globalCompositeOperation = 'destination-out';
+      brushCtx.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+      brushCtx.globalCompositeOperation = 'source-over';
+      if (originalPattern) {
+        brushCtx.strokeStyle = originalPattern;
+      }
+    }
+    brushCtx.beginPath();
+    brushCtx.moveTo(p1.x, p1.y);
+    brushCtx.lineTo(p2.x, p2.y);
+    brushCtx.stroke();
+    brushCtx.restore();
+  }
+
+  function drawSmoothCurve(p0: { x: number; y: number }, p1: { x: number; y: number }, p2: { x: number; y: number }, scale: number) {
+    if (!brushCtx) return;
+    const lineWidth = Math.max(1, brushSize * scale);
+    brushCtx.save();
+    brushCtx.lineWidth = lineWidth;
+    brushCtx.lineCap = 'round';
+    brushCtx.lineJoin = 'round';
+    if (currentBrushMode === 'erase') {
+      brushCtx.globalCompositeOperation = 'destination-out';
+      brushCtx.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+      brushCtx.globalCompositeOperation = 'source-over';
+      if (originalPattern) {
+        brushCtx.strokeStyle = originalPattern;
+      }
+    }
+    const mid1 = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+    const mid2 = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    brushCtx.beginPath();
+    brushCtx.moveTo(mid1.x, mid1.y);
+    brushCtx.quadraticCurveTo(p1.x, p1.y, mid2.x, mid2.y);
+    brushCtx.stroke();
+    brushCtx.restore();
+  }
+
+  function syncCanvasToBlobAndPreview(): Promise<Blob | null> {
+    return new Promise((resolve) => {
+      if (!brushCanvas) return resolve(null);
+      brushCanvas.toBlob((blob) => {
+        if (blob) {
+          cutoutBlob = blob;
+          if (cutoutUrl) URL.revokeObjectURL(cutoutUrl);
+          cutoutUrl = URL.createObjectURL(blob);
+          if (previewCutoutImg) previewCutoutImg.src = cutoutUrl;
+          const mbSize = (blob.size / (1024 * 1024)).toFixed(2);
+          if (metaSizeBadge) metaSizeBadge.textContent = `${mbSize} MB PNG`;
+        }
+        resolve(blob);
+      }, 'image/png');
+    });
+  }
+
+  // Brush Toggle Switch Listener
+  if (brushToolToggle) {
+    brushToolToggle.addEventListener('change', () => {
+      isBrushModeActive = brushToolToggle.checked;
+      if (isBrushModeActive) {
+        if (brushControls) brushControls.classList.remove('opacity-50', 'pointer-events-none');
+        if (sliderDivider) sliderDivider.classList.add('hidden');
+        if (previewCutoutImg) previewCutoutImg.classList.add('hidden');
+        if (brushCanvas) brushCanvas.classList.remove('hidden');
+        if (stageBox) {
+          stageBox.style.setProperty('--slider-pos', '0%');
+          stageBox.classList.remove('cursor-ew-resize');
+          stageBox.classList.add('cursor-none');
+        }
+        showToast('Brush enabled: Erase or Restore pixels');
+      } else {
+        if (brushControls) brushControls.classList.add('opacity-50', 'pointer-events-none');
+        if (sliderDivider) sliderDivider.classList.remove('hidden');
+        if (brushCanvas) brushCanvas.classList.add('hidden');
+        if (previewCutoutImg) previewCutoutImg.classList.remove('hidden');
+        if (brushCursorIndicator) brushCursorIndicator.classList.add('hidden');
+        if (stageBox) {
+          stageBox.style.setProperty('--slider-pos', '50%');
+          stageBox.classList.remove('cursor-none');
+          stageBox.classList.add('cursor-ew-resize');
+        }
+      }
+    });
+  }
+
+  // Brush Mode Selectors (Erase vs Restore)
+  if (brushModeErase && brushModeRestore) {
+    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold', 'shadow-xs', 'border-[#E5A93C]/30'];
+    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
+
+    brushModeErase.addEventListener('click', () => {
+      currentBrushMode = 'erase';
+      brushModeErase.classList.add(...activeClasses);
+      brushModeErase.classList.remove(...inactiveClasses);
+      brushModeRestore.classList.remove(...activeClasses);
+      brushModeRestore.classList.add(...inactiveClasses);
+      if (brushCursorIndicator) {
+        brushCursorIndicator.style.borderColor = 'rgba(239, 68, 68, 0.9)';
+        brushCursorIndicator.style.boxShadow = '0 0 0 1.5px rgba(0,0,0,0.7), 0 0 10px rgba(239, 68, 68, 0.6)';
+      }
+    });
+
+    brushModeRestore.addEventListener('click', () => {
+      currentBrushMode = 'restore';
+      brushModeRestore.classList.add(...activeClasses);
+      brushModeRestore.classList.remove(...inactiveClasses);
+      brushModeErase.classList.remove(...activeClasses);
+      brushModeErase.classList.add(...inactiveClasses);
+      if (brushCursorIndicator) {
+        brushCursorIndicator.style.borderColor = 'rgba(34, 197, 94, 0.9)';
+        brushCursorIndicator.style.boxShadow = '0 0 0 1.5px rgba(0,0,0,0.7), 0 0 10px rgba(34, 197, 94, 0.6)';
+      }
+    });
+  }
+
+  // Brush Size Slider Listener
+  if (brushSizeSlider) {
+    brushSizeSlider.addEventListener('input', () => {
+      brushSize = parseInt(brushSizeSlider.value, 10) || 25;
+      if (brushSizeLabel) brushSizeLabel.textContent = `${brushSize}px`;
+      if (brushCursorIndicator) {
+        brushCursorIndicator.style.width = `${brushSize}px`;
+        brushCursorIndicator.style.height = `${brushSize}px`;
+      }
+    });
+  }
+
+  // History & Reset Button Listeners
+  if (brushUndoBtn) brushUndoBtn.addEventListener('click', handleUndo);
+  if (brushRedoBtn) brushRedoBtn.addEventListener('click', handleRedo);
+  if (brushResetBtn) brushResetBtn.addEventListener('click', handleReset);
+
+  // Keyboard Shortcuts for Undo/Redo
+  window.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (!isBrushModeActive) return;
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
+      e.preventDefault();
+      handleUndo();
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y' || ((e.key === 'z' || e.key === 'Z') && e.shiftKey))) {
+      e.preventDefault();
+      handleRedo();
+    }
+  });
+
+  // Brush Canvas Drawing Pointer & Touch Listeners
+  if (brushCanvas) {
+    brushCanvas.addEventListener('pointerenter', (e: PointerEvent) => {
+      if (!isBrushModeActive) return;
+      if (brushCursorIndicator) brushCursorIndicator.classList.remove('hidden');
+      updateCursorIndicator(e.clientX, e.clientY);
+    });
+
+    brushCanvas.addEventListener('pointerleave', () => {
+      if (brushCursorIndicator) brushCursorIndicator.classList.add('hidden');
+      if (isDrawing) {
+        isDrawing = false;
+        strokePoints = [];
+        syncCanvasToBlobAndPreview();
+      }
+    });
+
+    brushCanvas.addEventListener('pointerdown', async (e: PointerEvent) => {
+      if (!isBrushModeActive || e.button !== 0) return;
+      try {
+        brushCanvas.setPointerCapture(e.pointerId);
+      } catch (_) {}
+
+      await pushUndoState();
+      isDrawing = true;
+      const pt = getCanvasCoords(e.clientX, e.clientY);
+      strokePoints = [pt];
+      drawDot(pt, pt.scale);
+      updateCursorIndicator(e.clientX, e.clientY);
+    });
+
+    brushCanvas.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!isBrushModeActive) return;
+      updateCursorIndicator(e.clientX, e.clientY);
+
+      if (!isDrawing) return;
+      const pt = getCanvasCoords(e.clientX, e.clientY);
+      strokePoints.push(pt);
+
+      if (strokePoints.length === 2) {
+        drawSmoothLine(strokePoints[0], strokePoints[1], pt.scale);
+      } else if (strokePoints.length >= 3) {
+        drawSmoothCurve(
+          strokePoints[strokePoints.length - 3],
+          strokePoints[strokePoints.length - 2],
+          strokePoints[strokePoints.length - 1],
+          pt.scale
+        );
+      }
+    });
+
+    const endDrawing = (e: PointerEvent) => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      try {
+        brushCanvas.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+
+      if (strokePoints.length >= 2) {
+        const lastPt = strokePoints[strokePoints.length - 1];
+        const prevPt = strokePoints[strokePoints.length - 2];
+        const mid = { x: (prevPt.x + lastPt.x) / 2, y: (prevPt.y + lastPt.y) / 2 };
+        drawSmoothLine(mid, lastPt, lastPt.scale);
+      }
+      strokePoints = [];
+      syncCanvasToBlobAndPreview();
+    };
+
+    brushCanvas.addEventListener('pointerup', endDrawing);
+    brushCanvas.addEventListener('pointercancel', endDrawing);
+
+    // Explicit touch handling with passive: false to prevent scrolling while drawing
+    brushCanvas.addEventListener('touchstart', (e: TouchEvent) => {
+      if (!isBrushModeActive) return;
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+
+    brushCanvas.addEventListener('touchmove', (e: TouchEvent) => {
+      if (!isBrushModeActive) return;
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+
+    brushCanvas.addEventListener('touchend', (e: TouchEvent) => {
+      if (!isBrushModeActive) return;
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+  }
+
+  // ==========================================
+  // EXPORT ACTIONS (HD PNG, JPG, CLIPBOARD)
+  // ==========================================
+
   // Primary Export: Download Full HD PNG
   if (downloadHdBtn) {
     downloadHdBtn.addEventListener('click', async () => {
@@ -1770,6 +2421,8 @@ const {
       try {
         downloadHdBtn.disabled = true;
         downloadHdBtn.classList.add('opacity-75');
+
+        await syncCanvasToBlobAndPreview();
 
         const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
         const filename = `${originalName}-fastbgremove-hd.png`;
@@ -1804,6 +2457,7 @@ const {
       if (!cutoutBlob) return;
       try {
         exportJpgBtn.disabled = true;
+        await syncCanvasToBlobAndPreview();
         const originalBtnText = exportJpgText ? exportJpgText.textContent : 'Export JPG';
         if (exportJpgText) exportJpgText.textContent = 'Optimizing...';
 
@@ -1843,6 +2497,7 @@ const {
       if (!cutoutBlob) return;
       try {
         copyClipboardBtn.disabled = true;
+        await syncCanvasToBlobAndPreview();
         const originalText = copyBtnText ? copyBtnText.textContent : 'Copy PNG';
         if (copyBtnText) copyBtnText.textContent = 'Copying...';
 
