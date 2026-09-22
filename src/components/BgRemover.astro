@@ -37,7 +37,7 @@ const {
         aria-label="Upload image for background removal"
         class="w-full min-h-[220px] sm:min-h-[340px] md:min-h-[440px] border-2 border-dashed border-[#cfcdc4] dark:border-[#2e2e33] hover:border-[#E5A93C] dark:hover:border-[#E5A93C] hover:bg-[#efeee8]/50 dark:hover:bg-[#1c1c1f] focus:border-[#D49B28] focus:outline-none rounded-lg p-4 sm:p-8 md:p-14 flex flex-col items-center justify-center text-center cursor-pointer transition-all group shadow-xs hover:shadow-[0_0_24px_rgba(229,169,60,0.15)] relative"
       >
-        <input type="file" id="file-input" accept="image/png, image/jpeg, image/webp" class="hidden" />
+        <input type="file" id="file-input" accept="image/png, image/jpeg, image/webp, image/avif, image/svg+xml" class="hidden" />
 
         <!-- Large Upload Icon with Golden Accent -->
         <div class="w-16 h-16 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 flex items-center justify-center text-[#E5A93C] group-hover:scale-105 transition-transform mb-6 shadow-xs">
@@ -54,7 +54,7 @@ const {
             Drop your image here, or <span class="text-[#b47818] dark:text-[#E5A93C] underline decoration-2 underline-offset-4 group-hover:text-[#D49B28]">Browse</span>
           </p>
           <p class="text-sm sm:text-base text-[#5a5852] dark:text-[#a09c92]">
-            Supports PNG, JPG, WebP up to 25MB • Or paste directly with <kbd class="px-2 py-1 rounded-md bg-[#efeee8] dark:bg-[#242428] border border-[#cfcdc4] dark:border-[#3e3e44] text-xs font-mono text-[#26251e] dark:text-[#ededed] font-semibold">Ctrl+V</kbd>
+            Supports PNG, JPG, WebP, AVIF, SVG up to 25MB • Or paste directly with <kbd class="px-2 py-1 rounded-md bg-[#efeee8] dark:bg-[#242428] border border-[#cfcdc4] dark:border-[#3e3e44] text-xs font-mono text-[#26251e] dark:text-[#ededed] font-semibold">Ctrl+V</kbd>
           </p>
         </div>
 
@@ -1410,9 +1410,23 @@ const {
     }, 2500);
   }
 
-  function showError(msg: string) {
+  function showError(msg: any) {
     if (errorBox && errorMessage) {
-      errorMessage.textContent = msg;
+      let text = 'An unexpected error occurred.';
+      if (typeof msg === 'string' && msg.trim()) {
+        text = msg.trim();
+      } else if (msg?.message && typeof msg.message === 'string') {
+        text = msg.message.trim();
+      } else if (msg) {
+        try {
+          const str = JSON.stringify(msg);
+          if (str && str !== '{}') text = str;
+        } catch (_) {}
+      }
+      if (text.includes('[object Object]')) {
+        text = 'Processing failed. The image format could not be decoded.';
+      }
+      errorMessage.textContent = text;
       errorBox.classList.remove('hidden');
     }
   }
@@ -1657,14 +1671,23 @@ const {
 
     try {
       setMagicLoading(true);
-      showMagicStatus('✨ Generating background with Flux AI... (~3-8s)', 'info');
+      showMagicStatus('⚡ Generating turbo AI background... (~2-4s)', 'info');
+
+      // Fast preview dimensions (768x512 / 512x512) for prompt drafts, upscaled during export
+      const previewWidth = currentRatio === '1:1' ? 512 : 768;
+      const previewHeight = currentRatio === '1:1' ? 512 : 512;
 
       const res = await fetch('/api/generate-bg', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({
+          prompt,
+          width: previewWidth,
+          height: previewHeight,
+          model: 'turbo',
+        }),
       });
 
       let data: any = null;
@@ -1882,17 +1905,121 @@ const {
     });
   }
 
+  // Converts image/avif, image/svg+xml or any unsupported format to standard PNG blob via offscreen canvas
+  async function convertAvifOrSvgToPng(input: File | Blob): Promise<File | Blob> {
+    const type = (input.type || '').toLowerCase();
+    const name = (input instanceof File ? input.name : '').toLowerCase();
+    const isAvifOrSvg =
+      type.includes('avif') ||
+      type.includes('svg') ||
+      name.endsWith('.avif') ||
+      name.endsWith('.svg');
+
+    if (!isAvifOrSvg) {
+      return input;
+    }
+
+    try {
+      return await new Promise<File | Blob>((resolve) => {
+        const objectUrl = URL.createObjectURL(input);
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const width = img.naturalWidth || 1024;
+            const height = img.naturalHeight || 1024;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              URL.revokeObjectURL(objectUrl);
+              return resolve(input);
+            }
+            ctx.clearRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((pngBlob) => {
+              URL.revokeObjectURL(objectUrl);
+              if (pngBlob && pngBlob.size > 0) {
+                const newName = input instanceof File
+                  ? input.name.replace(/\.(avif|svg)$/i, '') + '.png'
+                  : 'imported.png';
+                const convertedFile = new File([pngBlob], newName, { type: 'image/png' });
+                resolve(convertedFile);
+              } else {
+                resolve(input);
+              }
+            }, 'image/png');
+          } catch {
+            URL.revokeObjectURL(objectUrl);
+            resolve(input);
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          resolve(input);
+        };
+        img.src = objectUrl;
+      });
+    } catch {
+      return input;
+    }
+  }
+
+  // Fallback helper to convert any image to PNG via canvas if neural engine throws an error
+  async function convertToPngViaCanvas(input: File | Blob): Promise<File | Blob> {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(input);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const w = img.naturalWidth || 800;
+          const h = img.naturalHeight || 600;
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            URL.revokeObjectURL(url);
+            return reject(new Error('Failed to obtain canvas 2D context'));
+          }
+          ctx.clearRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob((b) => {
+            URL.revokeObjectURL(url);
+            if (b) {
+              const f = new File([b], 'converted.png', { type: 'image/png' });
+              resolve(f);
+            } else {
+              reject(new Error('Canvas toBlob returned null'));
+            }
+          }, 'image/png');
+        } catch (err) {
+          URL.revokeObjectURL(url);
+          reject(err);
+        }
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Image failed to decode in browser'));
+      };
+      img.src = url;
+    });
+  }
+
   // Core Processing Routine
-  async function processImage(file: File | Blob) {
+  async function processImage(inputFile: File | Blob) {
     try {
       isCancelled = false;
-      currentFile = file;
       clearError();
 
-      if (file.size > 25 * 1024 * 1024) {
+      if (inputFile.size > 25 * 1024 * 1024) {
         showError('Image exceeds 25MB limit. Please choose a smaller file.');
         return;
       }
+
+      // Convert AVIF / SVG to PNG buffer via offscreen canvas to prevent [object Object] decode errors
+      const file = await convertAvifOrSvgToPng(inputFile);
+      currentFile = file;
 
       if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
       originalImageUrl = URL.createObjectURL(file);
@@ -1926,26 +2053,41 @@ const {
       processingTitle.textContent = 'Segmenting foreground...';
       processingSubtitle.textContent = 'Calculating pixel contours in browser RAM...';
 
-      const rawBlob = await removeBackground(file, {
-        progress: (key: string, current: number, total: number) => {
-          if (isCancelled) return;
-          if (total > 0) {
-            const pct = Math.min(94, Math.round((current / total) * 100));
-            progressBarFill.style.width = `${Math.max(35, pct)}%`;
+      let rawBlob: Blob;
+      try {
+        rawBlob = await removeBackground(file, {
+          progress: (key: string, current: number, total: number) => {
+            if (isCancelled) return;
+            if (total > 0) {
+              const pct = Math.min(94, Math.round((current / total) * 100));
+              progressBarFill.style.width = `${Math.max(35, pct)}%`;
+            }
+            if (key.includes('fetch')) {
+              processingSubtitle.textContent = 'Caching model weights locally in browser (~20MB)...';
+            } else if (key.includes('compute')) {
+              processingSubtitle.textContent = 'Executing inference via WebAssembly...';
+            }
+          },
+          model: 'medium',
+          output: {
+            format: 'image/png',
+            quality: 1.0,
+            type: 'foreground'
           }
-          if (key.includes('fetch')) {
-            processingSubtitle.textContent = 'Caching model weights locally in browser (~20MB)...';
-          } else if (key.includes('compute')) {
-            processingSubtitle.textContent = 'Executing inference via WebAssembly...';
+        });
+      } catch (firstErr: any) {
+        console.warn('Direct background removal failed, retrying via offscreen canvas PNG conversion...', firstErr);
+        // Retry with offscreen canvas conversion to PNG
+        const fallbackPng = await convertToPngViaCanvas(file);
+        rawBlob = await removeBackground(fallbackPng, {
+          model: 'medium',
+          output: {
+            format: 'image/png',
+            quality: 1.0,
+            type: 'foreground'
           }
-        },
-        model: 'medium',
-        output: {
-          format: 'image/png',
-          quality: 1.0,
-          type: 'foreground'
-        }
-      });
+        });
+      }
 
       if (isCancelled) return;
 
@@ -2036,7 +2178,16 @@ const {
       console.error('Background removal error:', err);
       if (!isCancelled) {
         switchView('upload');
-        showError(err?.message || 'Processing failed. Please check your image format.');
+        let errMsg = 'Processing failed. Please check your image format.';
+        if (typeof err === 'string' && err.trim()) {
+          errMsg = err.trim();
+        } else if (err?.message && typeof err.message === 'string' && err.message.trim()) {
+          errMsg = err.message.trim();
+        }
+        if (errMsg.includes('[object Object]') || errMsg === '{}') {
+          errMsg = 'The image format could not be decoded. Please try another image or export as PNG/JPG.';
+        }
+        showError(errMsg);
       }
     }
   }
@@ -2070,10 +2221,10 @@ const {
       const dt = e.dataTransfer;
       if (dt && dt.files && dt.files[0]) {
         const file = dt.files[0];
-        if (file.type.startsWith('image/')) {
+        if (file.type.startsWith('image/') || /\.(png|jpe?g|webp|avif|svg)$/i.test(file.name)) {
           processImage(file);
         } else {
-          showError('Please drop a valid image (PNG, JPG, or WebP).');
+          showError('Please drop a valid image (PNG, JPG, WebP, AVIF, or SVG).');
         }
       }
     });

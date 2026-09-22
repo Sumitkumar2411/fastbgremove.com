@@ -319,6 +319,8 @@ export async function renderCompositeCanvas(
     const bgY = (targetH - bgH) / 2;
 
     ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     if (isBlur) {
       ctx.filter = `blur(${canvasBlurPx}px)`;
       // 1.04x scale / bleed expansion to prevent edge fading/halo under blur

@@ -43,7 +43,7 @@ export const onRequestOptions = async (): Promise<Response> => {
 
 /**
  * POST /api/generate-bg
- * Generates an AI background using Pollinations AI (Flux model, 100% free, zero keys)
+ * Generates an AI background using Pollinations Turbo Engine (3-5s ultra-fast generation, 100% free)
  */
 export const onRequestPost = async (context: {
   request: Request;
@@ -84,17 +84,28 @@ export const onRequestPost = async (context: {
       );
     }
 
-    // Enhance prompt for high quality studio backdrop
-    const fullPrompt = `${rawPrompt}, high quality, photorealistic, professional photography, 8k, background only, empty space for product cutout`;
+    // Optimized preview dimensions for fast prompt drafting (upscaled cleanly on final export)
+    const width = Math.min(1024, Math.max(256, Number(body?.width) || 768));
+    const height = Math.min(1024, Math.max(256, Number(body?.height) || 512));
+    const requestedModel = typeof body?.model === 'string' ? body.model.toLowerCase() : '';
+    const model = requestedModel === 'flux-realism' ? 'flux-realism' : 'turbo';
 
-    // Direct flux model with random seed to prevent collisions / rate limits
+    // Enhance prompt for high quality studio backdrop
+    const fullPrompt = `${rawPrompt}, high quality, photorealistic, professional photography, studio backdrop, clean background only, empty space for product cutout`;
+
+    // Fast Turbo engine with random seed to prevent caching collisions
     const randomSeed = Math.floor(Math.random() * 1000000);
     const primaryUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
       fullPrompt
-    )}?width=1024&height=1024&nologo=true&model=flux&seed=${randomSeed}`;
+    )}?width=${width}&height=${height}&nologo=true&model=${model}&seed=${randomSeed}`;
+
     const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
       fullPrompt
-    )}?width=1024&height=1024&nologo=true&seed=${randomSeed}`;
+    )}?width=${width}&height=${height}&nologo=true&model=flux-realism&seed=${randomSeed}`;
+
+    const emergencyUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+      fullPrompt
+    )}?width=${width}&height=${height}&nologo=true&seed=${randomSeed}`;
 
     const fetchImageBuffer = async (
       url: string,
@@ -106,8 +117,8 @@ export const onRequestPost = async (context: {
         const res = await fetch(url, {
           method: 'GET',
           headers: {
-            Accept: 'image/jpeg,image/png,image/*',
-            'User-Agent': 'FastBgRemove-Backdrop/1.0',
+            Accept: 'image/jpeg,image/png,image/webp,image/*',
+            'User-Agent': 'FastBgRemove-Turbo/2.0',
           },
           signal: controller.signal,
         });
@@ -115,7 +126,11 @@ export const onRequestPost = async (context: {
         const buf = await res.arrayBuffer();
         if (!buf || buf.byteLength === 0) return null;
         const mimeHeader = res.headers.get('content-type') || 'image/jpeg';
-        const mimeType = mimeHeader.includes('png') ? 'image/png' : 'image/jpeg';
+        const mimeType = mimeHeader.includes('png')
+          ? 'image/png'
+          : mimeHeader.includes('webp')
+          ? 'image/webp'
+          : 'image/jpeg';
         return { buffer: buf, mimeType };
       } catch {
         return null;
@@ -124,12 +139,17 @@ export const onRequestPost = async (context: {
       }
     };
 
-    // 1. Try primary direct flux model with random seed
-    let result = await fetchImageBuffer(primaryUrl, 30000);
+    // 1. Primary Turbo generation (fastest: 2-4 seconds)
+    let result = await fetchImageBuffer(primaryUrl, 12000);
 
-    // 2. If primary fails with non-200 or timeout, try fallback URL
+    // 2. Fallback to flux-realism if primary timed out or returned non-200
     if (!result) {
-      result = await fetchImageBuffer(fallbackUrl, 25000);
+      result = await fetchImageBuffer(fallbackUrl, 8000);
+    }
+
+    // 3. Emergency fallback without model parameter
+    if (!result) {
+      result = await fetchImageBuffer(emergencyUrl, 6000);
     }
 
     if (!result) {
