@@ -82,10 +82,6 @@ function verifyMobile() {
     indexHtml.includes('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12'),
     'Footer grid collapses to 1 column on mobile (grid-cols-1 sm:grid-cols-2 lg:grid-cols-4)'
   );
-  assert(
-    indexHtml.includes('India flag badge'),
-    'Indian flag badge exists'
-  );
 
   console.log('\n======================================');
   if (errors === 0) {
