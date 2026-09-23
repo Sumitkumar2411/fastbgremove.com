@@ -18,6 +18,7 @@ export interface StickerRenderOptions {
   isBold?: boolean;
   isItalic?: boolean;
   fontSize?: number;
+  showBoundingBox?: boolean;
 }
 
 // Cached silhouette offscreen canvas to avoid garbage collection churn during 60 FPS slider dragging
@@ -174,22 +175,25 @@ export function drawStickerOutline(
  * - Clamped boundaries so text stays visible within the canvas frame.
  * - High-contrast stroke outline (white on black or black on white) for 100% contrast on any image.
  */
+export interface StickerTextOptions {
+  text: string;
+  normX?: number;
+  normY?: number;
+  isBold?: boolean;
+  isItalic?: boolean;
+  fontSize?: number;
+  captionColor?: string;
+  showBoundingBox?: boolean;
+}
+
 export function drawStickerText(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  options: {
-    text: string;
-    normX?: number;
-    normY?: number;
-    isBold?: boolean;
-    isItalic?: boolean;
-    fontSize?: number;
-    captionColor?: string;
-  }
-): void {
+  options: StickerTextOptions
+): { x: number; y: number; w: number; h: number; normX: number; normY: number } | null {
   const rawText = (options.text || '').trim();
-  if (!rawText) return;
+  if (!rawText) return null;
 
   const minDim = Math.min(width, height);
   const baseFontSize = options.fontSize && options.fontSize >= 12 ? options.fontSize : 32;
@@ -245,7 +249,82 @@ export function drawStickerText(
   ctx.fillStyle = fillColor;
   ctx.fillText(rawText, clampedX, clampedY);
 
+  // 3. Subtle interactive selection bounding box (Linear / Canva grade)
+  if (options.showBoundingBox) {
+    ctx.save();
+    ctx.setLineDash([4 * scale, 3 * scale]);
+    ctx.lineWidth = Math.max(1.5, 1.8 * scale);
+    ctx.strokeStyle = '#E5A93C';
+    const padX = Math.max(6, 8 * scale);
+    const padY = Math.max(4, 5 * scale);
+    const boxX = clampedX - halfW - padX;
+    const boxY = clampedY - halfH - padY;
+    const boxW = textWidth + padX * 2;
+    const boxH = textHeight + padY * 2;
+
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    // 4 Corner anchor handles
+    ctx.fillStyle = '#E5A93C';
+    const handleSize = Math.max(4, Math.round(5 * scale));
+    ctx.fillRect(boxX - handleSize / 2, boxY - handleSize / 2, handleSize, handleSize);
+    ctx.fillRect(boxX + boxW - handleSize / 2, boxY - handleSize / 2, handleSize, handleSize);
+    ctx.fillRect(boxX - handleSize / 2, boxY + boxH - handleSize / 2, handleSize, handleSize);
+    ctx.fillRect(boxX + boxW - handleSize / 2, boxY + boxH - handleSize / 2, handleSize, handleSize);
+
+    ctx.restore();
+  }
+
   ctx.restore();
+
+  return {
+    x: clampedX - halfW,
+    y: clampedY - halfH,
+    w: textWidth,
+    h: textHeight,
+    normX: clampedX / width,
+    normY: clampedY / height
+  };
+}
+
+/**
+ * Fast hit-test helper to determine if pointer is hovering over or touching the text
+ */
+export function computeTextHitTest(
+  width: number,
+  height: number,
+  pointerNormX: number,
+  pointerNormY: number,
+  options: {
+    text: string;
+    normX?: number;
+    normY?: number;
+    fontSize?: number;
+    isBold?: boolean;
+  }
+): boolean {
+  const rawText = (options.text || '').trim();
+  if (!rawText || width <= 0 || height <= 0) return false;
+
+  const minDim = Math.min(width, height);
+  const baseFontSize = options.fontSize && options.fontSize >= 12 ? options.fontSize : 32;
+  const scale = Math.max(0.4, minDim / 480);
+  const computedFontSize = Math.max(12, Math.round(baseFontSize * scale));
+
+  const approxWidth = rawText.length * (computedFontSize * (options.isBold ? 0.65 : 0.58));
+  const approxHeight = computedFontSize;
+
+  const textNormX = typeof options.normX === 'number' ? options.normX : 0.5;
+  const textNormY = typeof options.normY === 'number' ? options.normY : 0.82;
+
+  // Normalized hit area with 16px touch padding
+  const padNormX = (approxWidth / 2 + 16 * scale) / width;
+  const padNormY = (approxHeight / 2 + 16 * scale) / height;
+
+  return (
+    Math.abs(pointerNormX - textNormX) <= padNormX &&
+    Math.abs(pointerNormY - textNormY) <= padNormY
+  );
 }
 
 /**
@@ -382,7 +461,8 @@ export function drawSticker(
       isBold: options.isBold,
       isItalic: options.isItalic,
       fontSize: options.fontSize,
-      captionColor: options.captionColor || '#FFFFFF'
+      captionColor: options.captionColor || '#FFFFFF',
+      showBoundingBox: !!options.showBoundingBox
     });
   }
 }

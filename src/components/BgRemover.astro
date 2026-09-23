@@ -212,14 +212,16 @@ const {
             </button>
           </div>
 
-          <button
-            id="reset-slider-btn"
-            type="button"
-            title="Reset slider to 50% center"
-            class="shrink-0 py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-xs font-mono font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] hover:border-[#E5A93C] transition-all shadow-xs cursor-pointer whitespace-nowrap"
-          >
-            50%
-          </button>
+          {defaultMode !== 'sticker' && (
+            <button
+              id="reset-slider-btn"
+              type="button"
+              title="Reset slider to 50% center"
+              class="shrink-0 py-1.5 px-2.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] text-xs font-mono font-medium text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] hover:border-[#E5A93C] transition-all shadow-xs cursor-pointer whitespace-nowrap"
+            >
+              50%
+            </button>
+          )}
         </div>
       </div>
 
@@ -231,8 +233,11 @@ const {
         <!-- Bounding Stage Box for Ratio Containment & Dragging -->
         <div
           id="stage-box"
-          class="relative flex items-center justify-center transition-all overflow-hidden rounded-md max-h-[440px] sm:max-h-[480px] max-w-full select-none cursor-ew-resize touch-none shadow-xs border border-[#cfcdc4] dark:border-[#3e3e44]"
-          style="--slider-pos: 50%; touch-action: none;"
+          class:list={[
+            "relative flex items-center justify-center transition-all overflow-hidden rounded-md max-h-[440px] sm:max-h-[480px] max-w-full select-none touch-none shadow-xs border border-[#cfcdc4] dark:border-[#3e3e44]",
+            defaultMode === 'sticker' ? 'cursor-default' : 'cursor-ew-resize'
+          ]}
+          style={`--slider-pos: ${defaultMode === 'sticker' ? '0%' : '50%'}; touch-action: none;`}
         >
           <!-- LAYER 1: BASE (ORIGINAL UPLOADED IMAGE - LEFT SIDE) -->
           <div id="slider-base-layer" class="w-full h-full relative flex items-center justify-center overflow-hidden bg-[#f7f7f4] dark:bg-[#121212]">
@@ -242,7 +247,13 @@ const {
               class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain pointer-events-none select-none"
             />
             <!-- Left Badge: Original -->
-            <span class="absolute top-3 left-3 text-xs font-mono font-semibold text-[#5a5852] dark:text-[#a09c92] bg-white/95 dark:bg-[#1c1c1f]/95 px-2.5 py-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs pointer-events-none z-20 backdrop-blur-xs">
+            <span
+              id="original-badge"
+              class:list={[
+                "absolute top-3 left-3 text-xs font-mono font-semibold text-[#5a5852] dark:text-[#a09c92] bg-white/95 dark:bg-[#1c1c1f]/95 px-2.5 py-1 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs pointer-events-none z-20 backdrop-blur-xs",
+                { hidden: defaultMode === 'sticker' }
+              ]}
+            >
               ORIGINAL
             </span>
           </div>
@@ -288,7 +299,13 @@ const {
             ></canvas>
 
             <!-- Right Badge: Cutout -->
-            <span class="absolute top-3 right-3 text-xs font-mono font-semibold text-[#b47818] dark:text-[#E5A93C] bg-white/95 dark:bg-[#1c1c1f]/95 px-2.5 py-1 rounded-md border border-[#E5A93C]/20 shadow-xs pointer-events-none z-20 backdrop-blur-xs">
+            <span
+              id="cutout-badge"
+              class:list={[
+                "absolute top-3 right-3 text-xs font-mono font-semibold text-[#b47818] dark:text-[#E5A93C] bg-white/95 dark:bg-[#1c1c1f]/95 px-2.5 py-1 rounded-md border border-[#E5A93C]/20 shadow-xs pointer-events-none z-20 backdrop-blur-xs",
+                { hidden: defaultMode === 'sticker' }
+              ]}
+            >
               CUTOUT
             </span>
           </div>
@@ -303,7 +320,10 @@ const {
           <!-- CENTER DRAGGABLE DIVIDER -->
           <div
             id="slider-divider"
-            class="absolute top-0 bottom-0 z-30 pointer-events-none flex items-center justify-center transition-none"
+            class:list={[
+              "absolute top-0 bottom-0 z-30 pointer-events-none flex items-center justify-center transition-none",
+              { hidden: defaultMode === 'sticker' }
+            ]}
             style="left: var(--slider-pos, 50%); transform: translateX(-50%);"
           >
             <!-- Divider Vertical Bar (#E5A93C golden active accent) -->
@@ -325,6 +345,238 @@ const {
         </div>
       </div>
 
+      {defaultMode === 'sticker' && (
+        <!-- SINGLE ELEGANT CARD-BASED INSPECTOR (LINEAR / CANVA GRADE) -->
+        <div
+          id="sticker-inspector-card"
+          class="w-full max-w-3xl mx-auto mt-5 bg-white dark:bg-[#16161a] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
+        >
+          <!-- Section A: Outline & Shape Engine -->
+          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <!-- Shape Switcher Pill Group -->
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Shape:</span>
+              <div class="inline-flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 gap-1 shadow-inner">
+                <button
+                  type="button"
+                  data-sticker-shape="die-cut"
+                  title="Exact subject contour with smooth die-cut outline"
+                  class="sticker-shape-btn active py-1.5 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-900 dark:text-white bg-white dark:bg-slate-700 shadow-xs cursor-pointer border border-slate-200/80 dark:border-slate-600"
+                >
+                  <span>✂️</span>
+                  <span>Die-Cut</span>
+                </button>
+                <button
+                  type="button"
+                  data-sticker-shape="circle"
+                  title="Circular clipping badge"
+                  class="sticker-shape-btn py-1.5 px-2.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer border border-transparent"
+                >
+                  <span>⚪</span>
+                  <span>Circle</span>
+                </button>
+                <button
+                  type="button"
+                  data-sticker-shape="square"
+                  title="Sharp 1:1 square frame"
+                  class="sticker-shape-btn py-1.5 px-2.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer border border-transparent"
+                >
+                  <span>⬛</span>
+                  <span>Square</span>
+                </button>
+                <button
+                  type="button"
+                  data-sticker-shape="rounded"
+                  title="Modern rounded rectangle frame"
+                  class="sticker-shape-btn py-1.5 px-2.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer border border-transparent"
+                >
+                  <span>🔲</span>
+                  <span>Rounded</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Border Thickness Range Slider (0px to 30px) -->
+            <div class="flex-1 flex items-center gap-2.5 min-w-[160px]">
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">Border:</span>
+              <input
+                type="range"
+                id="sticker-stroke-slider"
+                min="0"
+                max="30"
+                value="14"
+                step="1"
+                class="flex-1 h-1.5 accent-[#E5A93C] cursor-pointer bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none"
+                title="Adjust sticker border thickness (0-30px)"
+              />
+              <span id="sticker-stroke-label" class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono font-bold bg-[#E5A93C]/15 text-[#b47818] dark:text-[#E5A93C] border border-[#E5A93C]/30 min-w-[38px] text-center">14px</span>
+            </div>
+
+            <!-- 5 Tactile Circular Color Swatches -->
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Color:</span>
+              <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700">
+                <!-- Pure White (#FFFFFF) -->
+                <button
+                  type="button"
+                  data-sticker-color="#FFFFFF"
+                  title="Pure White (#FFFFFF)"
+                  class="sticker-color-btn active w-6 h-6 rounded-full bg-white border-2 border-[#E5A93C] shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900"></span>
+                </button>
+                <!-- Pure Black (#000000) -->
+                <button
+                  type="button"
+                  data-sticker-color="#000000"
+                  title="Pure Black (#000000)"
+                  class="sticker-color-btn w-6 h-6 rounded-full bg-black border border-slate-300 dark:border-slate-600 shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
+                >
+                  <span class="hidden w-1.5 h-1.5 rounded-full bg-white"></span>
+                </button>
+                <!-- Vibrant Yellow (#FACC15) -->
+                <button
+                  type="button"
+                  data-sticker-color="#FACC15"
+                  title="Vibrant Yellow (#FACC15)"
+                  class="sticker-color-btn w-6 h-6 rounded-full bg-[#FACC15] border border-amber-400 shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
+                >
+                  <span class="hidden w-1.5 h-1.5 rounded-full bg-slate-900"></span>
+                </button>
+                <!-- Neon Cyan (#06B6D4) -->
+                <button
+                  type="button"
+                  data-sticker-color="#06B6D4"
+                  title="Neon Cyan (#06B6D4)"
+                  class="sticker-color-btn w-6 h-6 rounded-full bg-[#06B6D4] border border-cyan-400 shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
+                >
+                  <span class="hidden w-1.5 h-1.5 rounded-full bg-white"></span>
+                </button>
+                <!-- Custom Color Picker -->
+                <label
+                  title="Custom Hex Color"
+                  class="relative w-6 h-6 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600 cursor-pointer hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 shadow-xs shrink-0"
+                >
+                  <input type="color" id="sticker-custom-color-picker" value="#FFFFFF" class="sr-only" />
+                  <div id="sticker-custom-color-swatch" class="w-full h-full opacity-0"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section B: Draggable Sticker Caption Studio (Toggle Activated) -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                  <span>🔤</span>
+                  <span>Add Text Caption</span>
+                </span>
+                <span class="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline">• Drag freely on canvas</span>
+              </div>
+
+              <!-- Sleek iOS/Linear Switch Toggle -->
+              <label class="relative inline-flex items-center cursor-pointer select-none">
+                <input type="checkbox" id="sticker-text-toggle-checkbox" class="sr-only peer" />
+                <div class="w-9 h-5 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#E5A93C] shadow-inner"></div>
+              </label>
+            </div>
+
+            <!-- Expandable Typography Strip -->
+            <div
+              id="sticker-caption-panel"
+              class="hidden pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3"
+            >
+              <!-- Input Box -->
+              <div class="flex-1 min-w-0">
+                <input
+                  type="text"
+                  id="sticker-caption-input"
+                  placeholder="Enter sticker text..."
+                  maxlength="32"
+                  class="w-full h-9 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C] shadow-inner font-bold tracking-wide transition-all"
+                />
+              </div>
+
+              <!-- Typography Style Controls -->
+              <div class="flex items-center gap-2 flex-wrap shrink-0">
+                <!-- Bold / Italic -->
+                <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 gap-0.5">
+                  <button
+                    type="button"
+                    id="sticker-text-bold-btn"
+                    title="Bold Typography"
+                    class="active w-7 h-7 rounded-md text-xs font-bold transition-all text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-slate-700 shadow-xs cursor-pointer flex items-center justify-center"
+                  >
+                    <b>B</b>
+                  </button>
+                  <button
+                    type="button"
+                    id="sticker-text-italic-btn"
+                    title="Italic Typography"
+                    class="w-7 h-7 rounded-md text-xs font-medium italic transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer flex items-center justify-center"
+                  >
+                    <i>I</i>
+                  </button>
+                </div>
+
+                <!-- Font Size Slider (18px to 60px) -->
+                <div class="flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700">
+                  <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Size:</span>
+                  <input
+                    type="range"
+                    id="sticker-text-size-slider"
+                    min="18"
+                    max="60"
+                    value="32"
+                    step="2"
+                    class="w-16 sm:w-20 h-1.5 accent-[#E5A93C] cursor-pointer"
+                    title="Adjust font size (18-60px)"
+                  />
+                  <span id="sticker-text-size-label" class="w-8 text-right text-[11px] font-mono font-semibold text-[#b47818] dark:text-[#E5A93C]">32px</span>
+                </div>
+
+                <!-- Text Theme (White text with black outline vs Black text with white outline) -->
+                <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 gap-0.5">
+                  <button
+                    type="button"
+                    id="sticker-caption-color-white"
+                    data-caption-color="#FFFFFF"
+                    title="White text with black contrast outline"
+                    class="sticker-caption-color-btn active px-2 h-7 rounded-md text-xs font-semibold flex items-center gap-1 text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-slate-700 shadow-xs cursor-pointer transition-all"
+                  >
+                    <span class="w-2.5 h-2.5 rounded-full bg-white border border-slate-400"></span>
+                    <span>White</span>
+                  </button>
+                  <button
+                    type="button"
+                    id="sticker-caption-color-black"
+                    data-caption-color="#000000"
+                    title="Black text with white contrast outline"
+                    class="sticker-caption-color-btn px-2 h-7 rounded-md text-xs font-medium flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-all"
+                  >
+                    <span class="w-2.5 h-2.5 rounded-full bg-black border border-slate-700"></span>
+                    <span>Black</span>
+                  </button>
+                </div>
+
+                <!-- Center Snap Button -->
+                <button
+                  type="button"
+                  id="sticker-text-center-btn"
+                  title="Center text horizontally on canvas"
+                  class="h-8 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-[#b47818] dark:hover:text-[#E5A93C] bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-750 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shadow-xs shrink-0"
+                >
+                  <span>↔</span>
+                  <span>Center</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {defaultMode !== 'sticker' && (
       <!-- INLINE ACTION CONTROLS: ROW 1 (BACKDROP SELECTION & TABS) -->
       <div id="backdrop-panel" class="w-full p-3 sm:p-4 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-3">
         <!-- Tab Switcher Header -->
@@ -990,66 +1242,71 @@ const {
           </div>
         </div>
       </div>
+      )}
 
       <!-- Action Bar: Prominent Primary Button & Secondary Actions -->
       <div class="pt-2">
         {defaultMode === 'sticker' ? (
-          <!-- Consolidated Unified Sticker Toolbar Row -->
-          <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-            <!-- 1. Select New Image -->
-            <button
-              id="upload-another-btn"
-              type="button"
-              class="h-11 px-4 rounded-md bg-[#f7f7f4] dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#cfcdc4] dark:hover:border-[#3e3e44] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs whitespace-nowrap"
-            >
-              <svg class="w-4 h-4 text-[#807d72] dark:text-[#a09c92] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              <span>Select New Image</span>
-            </button>
+          <!-- Balanced Professional Sticker Action Dock -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+            <!-- Left Group: Secondary Actions -->
+            <div class="flex items-center gap-2.5 w-full sm:w-auto">
+              <button
+                id="upload-another-btn"
+                type="button"
+                class="flex-1 sm:flex-none h-11 px-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#cfcdc4] dark:hover:border-[#3e3e44] text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] whitespace-nowrap"
+              >
+                <svg class="w-4 h-4 text-[#807d72] dark:text-[#a09c92] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Select New Image</span>
+              </button>
 
-            <!-- 2. Copy PNG -->
-            <button
-              id="copy-clipboard-btn"
-              type="button"
-              class="h-11 px-4 rounded-md bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#E5A93C] text-xs sm:text-sm font-medium text-[#26251e] dark:text-[#ededed] hover:text-[#b47818] dark:hover:text-[#E5A93C] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs whitespace-nowrap"
-              title="Copy sticker cutout to clipboard"
-            >
-              <svg class="w-4 h-4 text-[#E5A93C] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-              </svg>
-              <span id="copy-btn-text">Copy PNG</span>
-            </button>
+              <button
+                id="copy-clipboard-btn"
+                type="button"
+                class="flex-1 sm:flex-none h-11 px-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#E5A93C] text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] hover:text-[#b47818] dark:hover:text-[#E5A93C] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] whitespace-nowrap"
+                title="Copy sticker cutout to clipboard"
+              >
+                <svg class="w-4 h-4 text-[#E5A93C] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span id="copy-btn-text">Copy PNG</span>
+              </button>
+            </div>
 
-            <!-- 3. Download Full HD Sticker (PNG) -->
-            <button
-              id="download-hd-btn"
-              type="button"
-              class="h-11 px-4 rounded-md bg-[#E5A93C] hover:bg-[#D49B28] active:bg-[#c28c20] text-zinc-950 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-[0_2px_12px_rgba(229,169,60,0.35)] hover:shadow-[0_4px_20px_rgba(229,169,60,0.5)] cursor-pointer active:scale-[0.99] whitespace-nowrap"
-            >
-              <svg class="w-4 h-4 text-zinc-950 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              <span>Download Full HD Sticker (PNG)</span>
-            </button>
+            <!-- Right Group: Downloads -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+              <!-- Tactile Emerald WhatsApp Button -->
+              <button
+                id="download-whatsapp-btn"
+                type="button"
+                class="h-11 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_2px_12px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_20px_rgba(16,185,129,0.45)] active:scale-[0.99] whitespace-nowrap"
+                title="Download official WhatsApp Sticker (512x512 PNG with 16px safety padding)"
+              >
+                <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
+                </svg>
+                <span>WhatsApp Sticker (512x512)</span>
+              </button>
 
-            <!-- 4. 🟢 WhatsApp Sticker (512x512) -->
-            <button
-              id="download-whatsapp-btn"
-              type="button"
-              class="h-11 px-4 rounded-md bg-[#25D366] hover:bg-[#20ba59] active:bg-[#1da850] text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_2px_12px_rgba(37,211,102,0.35)] hover:shadow-[0_4px_20px_rgba(37,211,102,0.5)] active:scale-[0.99] whitespace-nowrap"
-              title="Download official WhatsApp Sticker (512x512 PNG with 16px safety padding)"
-            >
-              <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
-              </svg>
-              <span>🟢 WhatsApp Sticker (512x512)</span>
-            </button>
+              <!-- Solid Primary HD Download Button -->
+              <button
+                id="download-hd-btn"
+                type="button"
+                class="h-11 px-6 rounded-xl bg-gradient-to-r from-[#E5A93C] to-[#D49B28] hover:from-[#D49B28] hover:to-[#c28c20] text-zinc-950 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-[0_2px_12px_rgba(229,169,60,0.35)] hover:shadow-[0_4px_20px_rgba(229,169,60,0.5)] cursor-pointer active:scale-[0.99] whitespace-nowrap"
+              >
+                <svg class="w-4 h-4 text-zinc-950 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Download Full HD PNG</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -1255,7 +1512,8 @@ const {
   import {
     drawStickerOutline,
     drawSticker,
-    renderStickerCanvas
+    renderStickerCanvas,
+    computeTextHitTest
   } from '../utils/stickerEngine';
 
   // Global state
@@ -1361,7 +1619,10 @@ const {
   const stickerColorBtns = document.querySelectorAll('.sticker-color-btn');
   const stickerCustomColorPicker = document.getElementById('sticker-custom-color-picker') as HTMLInputElement;
   const stickerCustomColorSwatch = document.getElementById('sticker-custom-color-swatch') as HTMLElement;
-  const stickerTextToggleBtn = document.getElementById('sticker-text-toggle-btn') as HTMLButtonElement;
+  const stickerTextToggleBtn = document.getElementById('sticker-text-toggle-btn') as HTMLButtonElement | null;
+  const stickerTextToggleCheckbox = document.getElementById('sticker-text-toggle-checkbox') as HTMLInputElement | null;
+  const originalBadge = document.getElementById('original-badge') as HTMLElement | null;
+  const cutoutBadge = document.getElementById('cutout-badge') as HTMLElement | null;
   const stickerCaptionPanel = document.getElementById('sticker-caption-panel') as HTMLElement;
   const stickerCaptionInput = document.getElementById('sticker-caption-input') as HTMLInputElement;
   const stickerCaptionColorBtns = document.querySelectorAll('.sticker-caption-color-btn');
@@ -1385,6 +1646,7 @@ const {
   let stickerIsItalic: boolean = false;
   let stickerFontSize: number = 32;
   let isDraggingStickerText: boolean = false;
+  let isPointerOverStickerText: boolean = false;
   let stickerRafId: number | null = null;
 
   const blurControlWrapper = document.getElementById('blur-control-wrapper') as HTMLElement;
@@ -1977,9 +2239,17 @@ const {
     // Reset Sticker Outline state
     stickerStrokeWidth = 14;
     stickerStrokeColor = '#FFFFFF';
+    currentStickerShape = 'die-cut';
+    updateStickerShapeUI('die-cut');
     if (stickerStrokeSlider) stickerStrokeSlider.value = '14';
     if (stickerStrokeLabel) stickerStrokeLabel.textContent = '14px';
     updateStickerSwatchUI('#FFFFFF');
+    isStickerCaptionActive = false;
+    isDraggingStickerText = false;
+    isPointerOverStickerText = false;
+    if (stickerTextToggleCheckbox) stickerTextToggleCheckbox.checked = false;
+    if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
+    if (stageBox) stageBox.style.cursor = 'default';
     if (stickerCanvas) {
       stickerCanvas.classList.add('hidden');
       const sCtx = stickerCanvas.getContext('2d');
@@ -2096,10 +2366,12 @@ const {
     if (tab === 'sticker') {
       applyBgToElements('transparent');
       if (sliderDivider) sliderDivider.classList.add('hidden');
+      if (originalBadge) originalBadge.classList.add('hidden');
+      if (cutoutBadge) cutoutBadge.classList.add('hidden');
       if (stageBox) {
         stageBox.style.setProperty('--slider-pos', '0%');
         stageBox.classList.remove('cursor-ew-resize');
-        if (isStickerCaptionActive) stageBox.classList.add('cursor-move');
+        stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
       }
       renderLiveStickerPreview();
     } else {
@@ -2110,9 +2382,11 @@ const {
       if (!isBrushModeActive && sliderDivider) {
         sliderDivider.classList.remove('hidden');
       }
+      if (originalBadge) originalBadge.classList.remove('hidden');
+      if (cutoutBadge) cutoutBadge.classList.remove('hidden');
       if (stageBox && !isBrushModeActive) {
         stageBox.style.setProperty('--slider-pos', '50%');
-        stageBox.classList.remove('cursor-move');
+        stageBox.style.cursor = '';
         stageBox.classList.add('cursor-ew-resize');
       }
       applyBgToElements(currentBgColor);
@@ -2150,6 +2424,7 @@ const {
       if (sCtx) {
         sCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
         const source = (isBrushModeActive && brushCanvas) ? brushCanvas : previewCutoutImg;
+        const showBoundingBox = isStickerCaptionActive && (isDraggingStickerText || isPointerOverStickerText);
         drawSticker(sCtx, source, {
           shape: currentStickerShape,
           strokeColor: stickerStrokeColor,
@@ -2160,7 +2435,8 @@ const {
           textNormY: stickerTextNormY,
           isBold: stickerIsBold,
           isItalic: stickerIsItalic,
-          fontSize: stickerFontSize
+          fontSize: stickerFontSize,
+          showBoundingBox
         });
       }
       stickerCanvas.classList.remove('hidden');
@@ -2255,9 +2531,29 @@ const {
   }
 
   // Interactive Typography & Caption Text Controls
+  if (stickerTextToggleCheckbox) {
+    stickerTextToggleCheckbox.addEventListener('change', () => {
+      isStickerCaptionActive = stickerTextToggleCheckbox.checked;
+      if (isStickerCaptionActive) {
+        if (stickerCaptionPanel) stickerCaptionPanel.classList.remove('hidden');
+        if (stickerCaptionInput) {
+          stickerCaptionInput.focus();
+          stickerCaptionText = stickerCaptionInput.value;
+        }
+      } else {
+        if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
+        isPointerOverStickerText = false;
+        isDraggingStickerText = false;
+        if (stageBox) stageBox.style.cursor = 'default';
+      }
+      scheduleStickerRender();
+    });
+  }
+
   if (stickerTextToggleBtn) {
     stickerTextToggleBtn.addEventListener('click', () => {
       isStickerCaptionActive = !isStickerCaptionActive;
+      if (stickerTextToggleCheckbox) stickerTextToggleCheckbox.checked = isStickerCaptionActive;
       const activeClasses = ['active', 'bg-[#E5A93C]/15', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'border-[#E5A93C]/40', 'font-semibold'];
       const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-[#e6e5e0]', 'dark:border-[#2e2e33]', 'bg-[#efeee8]/60', 'dark:bg-[#121212]'];
 
@@ -2265,7 +2561,6 @@ const {
         stickerTextToggleBtn.classList.add(...activeClasses);
         stickerTextToggleBtn.classList.remove(...inactiveClasses);
         if (stickerCaptionPanel) stickerCaptionPanel.classList.remove('hidden');
-        if (stageBox) stageBox.classList.add('cursor-move');
         if (stickerCaptionInput) {
           stickerCaptionInput.focus();
           stickerCaptionText = stickerCaptionInput.value;
@@ -2274,7 +2569,9 @@ const {
         stickerTextToggleBtn.classList.remove(...activeClasses);
         stickerTextToggleBtn.classList.add(...inactiveClasses);
         if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
-        if (stageBox) stageBox.classList.remove('cursor-move');
+        isPointerOverStickerText = false;
+        isDraggingStickerText = false;
+        if (stageBox) stageBox.style.cursor = 'default';
       }
       scheduleStickerRender();
     });
@@ -2554,15 +2851,46 @@ const {
     scheduleStickerRender();
   }
 
+  function getNormalizedPointerCoords(clientX: number, clientY: number): { normX: number; normY: number } | null {
+    const targetElement = stickerCanvas && !stickerCanvas.classList.contains('hidden') ? stickerCanvas : stageBox;
+    if (!targetElement) return null;
+    const rect = targetElement.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return null;
+    return {
+      normX: (clientX - rect.left) / rect.width,
+      normY: (clientY - rect.top) / rect.height
+    };
+  }
+
+  function checkPointerOverStickerText(clientX: number, clientY: number): boolean {
+    if (!isStickerCaptionActive || !stickerCaptionText.trim() || !imageNaturalWidth || !imageNaturalHeight) {
+      return false;
+    }
+    const coords = getNormalizedPointerCoords(clientX, clientY);
+    if (!coords) return false;
+    return computeTextHitTest(imageNaturalWidth, imageNaturalHeight, coords.normX, coords.normY, {
+      text: stickerCaptionText,
+      normX: stickerTextNormX,
+      normY: stickerTextNormY,
+      fontSize: stickerFontSize,
+      isBold: stickerIsBold
+    });
+  }
+
   function onPointerDown(e: PointerEvent) {
     if (isBrushModeActive) return;
     if (currentBgTab === 'sticker') {
-      if (isStickerCaptionActive) {
-        isDraggingStickerText = true;
-        try {
-          (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
-        } catch (_) {}
-        updateStickerTextFromClient(e.clientX, e.clientY);
+      if (isStickerCaptionActive && stickerCaptionText.trim()) {
+        const isOver = checkPointerOverStickerText(e.clientX, e.clientY);
+        if (isOver) {
+          isDraggingStickerText = true;
+          if (stageBox) stageBox.style.cursor = 'grabbing';
+          try {
+            (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
+          } catch (_) {}
+          updateStickerTextFromClient(e.clientX, e.clientY);
+          scheduleStickerRender();
+        }
       }
       return;
     }
@@ -2577,7 +2905,23 @@ const {
     if (isBrushModeActive) return;
     if (currentBgTab === 'sticker') {
       if (isDraggingStickerText && isStickerCaptionActive) {
+        if (stageBox) stageBox.style.cursor = 'grabbing';
         updateStickerTextFromClient(e.clientX, e.clientY);
+        return;
+      }
+      if (isStickerCaptionActive && stickerCaptionText.trim()) {
+        const isOver = checkPointerOverStickerText(e.clientX, e.clientY);
+        if (isOver !== isPointerOverStickerText) {
+          isPointerOverStickerText = isOver;
+          if (stageBox) stageBox.style.cursor = isOver ? 'grab' : 'default';
+          scheduleStickerRender();
+        }
+      } else {
+        if (isPointerOverStickerText) {
+          isPointerOverStickerText = false;
+          if (stageBox) stageBox.style.cursor = 'default';
+          scheduleStickerRender();
+        }
       }
       return;
     }
@@ -2591,6 +2935,10 @@ const {
       try {
         (e.currentTarget as HTMLElement)?.releasePointerCapture?.(e.pointerId);
       } catch (_) {}
+      if (stageBox) {
+        stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
+      }
+      scheduleStickerRender();
     }
     if (isDraggingSlider) {
       isDraggingSlider = false;
@@ -2605,10 +2953,15 @@ const {
     if (isBrushModeActive) return;
     if (e.touches && e.touches.length > 0) {
       if (currentBgTab === 'sticker') {
-        if (isStickerCaptionActive) {
-          isDraggingStickerText = true;
-          if (e.cancelable) e.preventDefault();
-          updateStickerTextFromClient(e.touches[0].clientX, e.touches[0].clientY);
+        if (isStickerCaptionActive && stickerCaptionText.trim()) {
+          const touch = e.touches[0];
+          const isOver = checkPointerOverStickerText(touch.clientX, touch.clientY);
+          if (isOver) {
+            isDraggingStickerText = true;
+            if (e.cancelable) e.preventDefault();
+            updateStickerTextFromClient(touch.clientX, touch.clientY);
+            scheduleStickerRender();
+          }
         }
         return;
       }
@@ -2636,6 +2989,7 @@ const {
   function onTouchEnd() {
     if (isDraggingStickerText) {
       isDraggingStickerText = false;
+      scheduleStickerRender();
     }
     if (isDraggingSlider) {
       isDraggingSlider = false;
@@ -2646,9 +3000,13 @@ const {
   function onMouseDown(e: MouseEvent) {
     if (isBrushModeActive) return;
     if (currentBgTab === 'sticker') {
-      if (isStickerCaptionActive) {
-        isDraggingStickerText = true;
-        updateStickerTextFromClient(e.clientX, e.clientY);
+      if (isStickerCaptionActive && stickerCaptionText.trim()) {
+        const isOver = checkPointerOverStickerText(e.clientX, e.clientY);
+        if (isOver) {
+          isDraggingStickerText = true;
+          updateStickerTextFromClient(e.clientX, e.clientY);
+          scheduleStickerRender();
+        }
       }
       return;
     }
@@ -2668,7 +3026,10 @@ const {
   }
 
   function onMouseUp() {
-    if (isDraggingStickerText) isDraggingStickerText = false;
+    if (isDraggingStickerText) {
+      isDraggingStickerText = false;
+      scheduleStickerRender();
+    }
     if (isDraggingSlider) isDraggingSlider = false;
   }
 
@@ -2678,6 +3039,13 @@ const {
     stageBox.addEventListener('pointermove', onPointerMove);
     stageBox.addEventListener('pointerup', onPointerUp);
     stageBox.addEventListener('pointercancel', onPointerUp);
+    stageBox.addEventListener('pointerleave', () => {
+      if (!isDraggingStickerText && isPointerOverStickerText) {
+        isPointerOverStickerText = false;
+        if (stageBox) stageBox.style.cursor = 'default';
+        scheduleStickerRender();
+      }
+    });
 
     // Explicit Touch Events with passive: false for smooth non-scrolling thumb drag
     stageBox.addEventListener('touchstart', onTouchStart, { passive: false });
@@ -2698,11 +3066,19 @@ const {
     }
   });
   window.addEventListener('pointerup', () => {
-    if (isDraggingStickerText) isDraggingStickerText = false;
+    if (isDraggingStickerText) {
+      isDraggingStickerText = false;
+      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
+      scheduleStickerRender();
+    }
     if (isDraggingSlider) isDraggingSlider = false;
   });
   window.addEventListener('pointercancel', () => {
-    if (isDraggingStickerText) isDraggingStickerText = false;
+    if (isDraggingStickerText) {
+      isDraggingStickerText = false;
+      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
+      scheduleStickerRender();
+    }
     if (isDraggingSlider) isDraggingSlider = false;
   });
 
@@ -2988,12 +3364,13 @@ const {
 
       if (initialDefaultMode === 'sticker') {
         switchBgTab('sticker');
+        setSliderPercentage(0);
       } else {
         applyBgToElements(currentBgColor);
+        setSliderPercentage(50);
       }
       applyBlurEffect();
       applyShadowEffect();
-      setSliderPercentage(50);
 
       setTimeout(() => {
         if (!isCancelled) {
