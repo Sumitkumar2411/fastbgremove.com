@@ -5,7 +5,7 @@
  */
 
 export type StickerSource = ImageBitmap | HTMLCanvasElement | HTMLImageElement;
-export type StickerShape = 'die-cut' | 'circle' | 'rounded';
+export type StickerShape = 'die-cut' | 'circle' | 'square' | 'rounded';
 
 export interface StickerRenderOptions {
   shape?: StickerShape;
@@ -13,6 +13,11 @@ export interface StickerRenderOptions {
   strokeWidth?: number;
   captionText?: string;
   captionColor?: string;
+  textNormX?: number;
+  textNormY?: number;
+  isBold?: boolean;
+  isItalic?: boolean;
+  fontSize?: number;
 }
 
 // Cached silhouette offscreen canvas to avoid garbage collection churn during 60 FPS slider dragging
@@ -162,8 +167,89 @@ export function drawStickerOutline(
 }
 
 /**
- * Draws anchored sticker typography centered near the bottom of the subject/frame.
- * Renders bold sans-serif with a 4px+ contrasting stroke (ctx.strokeText + ctx.fillText).
+ * Draws free-position sticker typography on canvas with full typography controls:
+ * - Draggable normalized coordinates (textNormX, textNormY).
+ * - Bold & Italic styling: ctx.font = `${isItalic ? 'italic ' : ''}${isBold ? 'bold ' : ''}${fontSize}px sans-serif`.
+ * - Size scaling relative to standard preview so text is proportional on HD/WhatsApp exports.
+ * - Clamped boundaries so text stays visible within the canvas frame.
+ * - High-contrast stroke outline (white on black or black on white) for 100% contrast on any image.
+ */
+export function drawStickerText(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  options: {
+    text: string;
+    normX?: number;
+    normY?: number;
+    isBold?: boolean;
+    isItalic?: boolean;
+    fontSize?: number;
+    captionColor?: string;
+  }
+): void {
+  const rawText = (options.text || '').trim();
+  if (!rawText) return;
+
+  const minDim = Math.min(width, height);
+  const baseFontSize = options.fontSize && options.fontSize >= 12 ? options.fontSize : 32;
+  const scale = Math.max(0.4, minDim / 480);
+  const computedFontSize = Math.max(12, Math.round(baseFontSize * scale));
+
+  const isBold = options.isBold !== false;
+  const isItalic = !!options.isItalic;
+  const fontStyle = `${isItalic ? 'italic ' : ''}${isBold ? 'bold ' : ''}${computedFontSize}px sans-serif`.trim();
+
+  ctx.save();
+  ctx.font = fontStyle;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.lineJoin = 'round';
+  ctx.miterLimit = 2;
+
+  // 100% contrast styling on any photo
+  const captionColor = options.captionColor || '#FFFFFF';
+  const isBlack =
+    captionColor.toUpperCase() === '#000000' ||
+    captionColor.toLowerCase() === 'black' ||
+    captionColor.toLowerCase() === '#000';
+  const fillColor = isBlack ? '#000000' : '#FFFFFF';
+  const strokeColor = isBlack ? '#FFFFFF' : '#000000';
+  const strokeThickness = Math.max(3, Math.round(computedFontSize * 0.16));
+
+  // Measure text dimensions for boundary clamping
+  const metrics = ctx.measureText(rawText);
+  const textWidth = metrics.width;
+  const textHeight = computedFontSize;
+
+  const rawNormX = typeof options.normX === 'number' ? options.normX : 0.5;
+  const rawNormY = typeof options.normY === 'number' ? options.normY : 0.82;
+
+  const rawX = rawNormX * width;
+  const rawY = rawNormY * height;
+
+  const halfW = textWidth / 2;
+  const halfH = textHeight / 2;
+  const margin = Math.max(6, Math.round(8 * scale));
+
+  // Clamp boundaries so text stays visible within the canvas frame
+  const clampedX = Math.max(halfW + margin, Math.min(width - halfW - margin, rawX));
+  const clampedY = Math.max(halfH + margin, Math.min(height - halfH - margin, rawY));
+
+  // 1. Contrasting outer stroke
+  ctx.lineWidth = strokeThickness;
+  ctx.strokeStyle = strokeColor;
+  ctx.strokeText(rawText, clampedX, clampedY);
+
+  // 2. Crisp solid text fill
+  ctx.fillStyle = fillColor;
+  ctx.fillText(rawText, clampedX, clampedY);
+
+  ctx.restore();
+}
+
+/**
+ * Draws anchored sticker typography (backward-compatible delegate to drawStickerText).
  */
 export function drawAnchoredCaption(
   ctx: CanvasRenderingContext2D,
@@ -174,55 +260,25 @@ export function drawAnchoredCaption(
   strokeWidth: number = 0,
   shape: StickerShape = 'die-cut'
 ): void {
-  if (!text) return;
+  let normY = 0.85;
+  if (shape === 'circle') normY = 0.82;
+  else if (shape === 'square') normY = 0.84;
+  else if (shape === 'rounded') normY = 0.85;
 
-  const minDim = Math.min(width, height);
-  // Responsive bold font size
-  const fontSize = Math.max(18, Math.round(minDim * 0.085));
-
-  // Determine contrasting stroke color
-  const isBlackText =
-    captionColor.toUpperCase() === '#000000' ||
-    captionColor.toLowerCase() === 'black' ||
-    captionColor.toLowerCase() === '#000';
-  const textColor = isBlackText ? '#000000' : '#FFFFFF';
-  const strokeColor = isBlackText ? '#FFFFFF' : '#000000';
-  const strokeThickness = Math.max(4, Math.round(fontSize * 0.12));
-
-  // Calculate bottom margin: give enough room from the edge and shape boundary
-  let bottomMargin = Math.max(16, Math.round(height * 0.05));
-  if (shape === 'circle') {
-    bottomMargin = Math.max(24, Math.round(minDim * 0.09)) + strokeWidth;
-  } else if (shape === 'rounded') {
-    bottomMargin = Math.max(16, Math.round(height * 0.05)) + strokeWidth;
-  }
-
-  const textX = width / 2;
-  const textY = height - bottomMargin;
-
-  ctx.save();
-  ctx.font = `bold ${fontSize}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'bottom';
-  ctx.lineJoin = 'round';
-  ctx.miterLimit = 2;
-
-  // 1. Contrasting stroke outline (4px+ thickness for instant readability on any background)
-  ctx.lineWidth = strokeThickness;
-  ctx.strokeStyle = strokeColor;
-  ctx.strokeText(text, textX, textY);
-
-  // 2. Solid bold text fill
-  ctx.fillStyle = textColor;
-  ctx.fillText(text, textX, textY);
-
-  ctx.restore();
+  drawStickerText(ctx, width, height, {
+    text,
+    normX: 0.5,
+    normY,
+    captionColor,
+    isBold: true,
+    isItalic: false
+  });
 }
 
 /**
  * Unified sticker rendering function:
- * Supports die-cut contour outline, circular badge clip, and rounded rectangle clip,
- * plus anchored bold typography caption text.
+ * Supports die-cut contour outline, circular badge clip, sharp 1:1 square frame clip,
+ * rounded rectangle clip, and interactive typography text.
  */
 export function drawSticker(
   ctx: CanvasRenderingContext2D,
@@ -259,6 +315,32 @@ export function drawSticker(
       ctx.stroke();
       ctx.restore();
     }
+  } else if (shape === 'square') {
+    const minSide = Math.min(width, height);
+    const pad = strokeWidth > 0 ? strokeWidth / 2 : 0;
+    const side = Math.max(1, minSide - pad * 2);
+    const sx = Math.round((width - side) / 2);
+    const sy = Math.round((height - side) / 2);
+
+    // 1. Sharp 1:1 square clipping mask (ctx.rect)
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(sx, sy, side, side);
+    ctx.clip();
+    ctx.drawImage(source, 0, 0, width, height);
+    ctx.restore();
+
+    // 2. Outer stroke border with sharp 90-degree miter corners
+    if (strokeWidth > 0) {
+      ctx.save();
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = strokeWidth;
+      ctx.lineJoin = 'miter';
+      ctx.beginPath();
+      ctx.rect(sx, sy, side, side);
+      ctx.stroke();
+      ctx.restore();
+    }
   } else if (shape === 'rounded') {
     const pad = strokeWidth > 0 ? strokeWidth / 2 : 0;
     const rx = pad;
@@ -291,17 +373,17 @@ export function drawSticker(
     drawStickerOutline(ctx, source, strokeColor, strokeWidth);
   }
 
-  // 3. Anchored Sticker Text
+  // 3. Sticker Caption Text (Draggable & Typography-Styled)
   if (options.captionText && options.captionText.trim().length > 0) {
-    drawAnchoredCaption(
-      ctx,
-      options.captionText.trim(),
-      width,
-      height,
-      options.captionColor || '#FFFFFF',
-      strokeWidth,
-      shape
-    );
+    drawStickerText(ctx, width, height, {
+      text: options.captionText.trim(),
+      normX: options.textNormX,
+      normY: options.textNormY,
+      isBold: options.isBold,
+      isItalic: options.isItalic,
+      fontSize: options.fontSize,
+      captionColor: options.captionColor || '#FFFFFF'
+    });
   }
 }
 
@@ -347,26 +429,50 @@ export function renderStickerCanvas(
 export function exportWhatsAppSticker(sourceCanvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     try {
+      if (!sourceCanvas || sourceCanvas.width <= 0 || sourceCanvas.height <= 0) {
+        throw new Error('Invalid source canvas dimensions for WhatsApp export');
+      }
+
       const outCanvas = document.createElement('canvas');
       outCanvas.width = 512;
       outCanvas.height = 512;
       const ctx = outCanvas.getContext('2d');
       if (!ctx) throw new Error('Canvas context unavailable');
 
-      // Calculate contain-fit with 16px safety padding
-      const maxDim = 512 - 32; // 480px usable
+      ctx.clearRect(0, 0, 512, 512);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Calculate aspect-ratio contained fit with 16px safety padding
+      const padding = 16;
+      const maxDim = 512 - padding * 2; // 480px usable box
       const scale = Math.min(maxDim / sourceCanvas.width, maxDim / sourceCanvas.height);
-      const w = Math.round(sourceCanvas.width * scale);
-      const h = Math.round(sourceCanvas.height * scale);
+      const w = Math.max(1, Math.round(sourceCanvas.width * scale));
+      const h = Math.max(1, Math.round(sourceCanvas.height * scale));
       const x = Math.round((512 - w) / 2);
       const y = Math.round((512 - h) / 2);
 
-      ctx.clearRect(0, 0, 512, 512);
       ctx.drawImage(sourceCanvas, x, y, w, h);
 
       outCanvas.toBlob((blob) => {
-        if (blob) resolve(blob);
-        else reject(new Error('Blob conversion failed'));
+        if (blob) {
+          resolve(blob);
+        } else {
+          // Robust fallback via toDataURL if toBlob returns null
+          try {
+            const dataUrl = outCanvas.toDataURL('image/png');
+            const parts = dataUrl.split(',');
+            const bstr = atob(parts[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+              u8arr[n] = bstr.charCodeAt(n);
+            }
+            resolve(new Blob([u8arr], { type: 'image/png' }));
+          } catch (dataUrlErr) {
+            reject(new Error('WhatsApp sticker blob conversion failed'));
+          }
+        }
       }, 'image/png');
     } catch (err) {
       reject(err);

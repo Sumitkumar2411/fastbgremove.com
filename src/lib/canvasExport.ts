@@ -38,12 +38,17 @@ export interface ExportOptions {
   stickerShape?: StickerShape;
   stickerCaptionText?: string;
   stickerCaptionColor?: string;
+  stickerTextNormX?: number;
+  stickerTextNormY?: number;
+  stickerIsBold?: boolean;
+  stickerIsItalic?: boolean;
+  stickerFontSize?: number;
 }
 
 /**
  * Load a blob into an HTMLImageElement
  */
-function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
+export function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(blob);
@@ -375,7 +380,12 @@ export async function renderCompositeCanvas(
       strokeColor: options.stickerStrokeColor || '#FFFFFF',
       strokeWidth: options.stickerStrokeWidth ?? 14,
       captionText: options.stickerCaptionText,
-      captionColor: options.stickerCaptionColor || '#FFFFFF'
+      captionColor: options.stickerCaptionColor || '#FFFFFF',
+      textNormX: options.stickerTextNormX,
+      textNormY: options.stickerTextNormY,
+      isBold: options.stickerIsBold,
+      isItalic: options.stickerIsItalic,
+      fontSize: options.stickerFontSize
     });
   }
 
