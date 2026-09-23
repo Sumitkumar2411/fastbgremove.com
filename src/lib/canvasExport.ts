@@ -3,6 +3,14 @@
  * with custom aspect ratios, blur filters, full HD PNG and binary-search compressed JPG exports.
  */
 
+import {
+  renderStickerCanvas,
+  createWhatsAppStickerBlob,
+  createWhatsAppStickerCanvas
+} from '../utils/stickerEngine';
+
+export { createWhatsAppStickerBlob, createWhatsAppStickerCanvas };
+
 export type CanvasRatio = 'original' | '1:1' | '16:9' | 'passport';
 export type JpgCompressionPreset = '50kb' | '100kb' | 'max';
 
@@ -15,6 +23,9 @@ export interface ExportOptions {
   isBlurEnabled?: boolean;
   isShadowEnabled?: boolean;
   shadowOpacity?: number; // 0 to 100
+  isStickerEnabled?: boolean;
+  stickerStrokeColor?: string;
+  stickerStrokeWidth?: number;
 }
 
 /**
@@ -339,7 +350,17 @@ export async function renderCompositeCanvas(
     ctx.fillRect(0, 0, targetW, targetH);
   }
 
-  // 2. Draw Cutout Layer Centered with Contain Fit
+  // 2. Prepare Cutout Foreground Layer (with optional die-cut sticker outline)
+  let foregroundElement: HTMLImageElement | HTMLCanvasElement = cutoutImg;
+  if (options.isStickerEnabled && (options.stickerStrokeWidth ?? 0) > 0) {
+    foregroundElement = renderStickerCanvas(
+      cutoutImg,
+      options.stickerStrokeColor || '#FFFFFF',
+      options.stickerStrokeWidth ?? 14
+    );
+  }
+
+  // Draw Cutout Layer Centered with Contain Fit
   const fitScale = Math.min(targetW / naturalW, targetH / naturalH);
   const dw = Math.round(naturalW * fitScale);
   const dh = Math.round(naturalH * fitScale);
@@ -358,14 +379,14 @@ export async function renderCompositeCanvas(
       ctx.shadowBlur = shadowBlur;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = shadowOffsetY;
-      ctx.drawImage(cutoutImg, dx, dy, dw, dh);
+      ctx.drawImage(foregroundElement, dx, dy, dw, dh);
       ctx.restore();
     }
   }
 
   // Draw sharp cutout foreground
   ctx.filter = 'none';
-  ctx.drawImage(cutoutImg, dx, dy, dw, dh);
+  ctx.drawImage(foregroundElement, dx, dy, dw, dh);
 
   return canvas;
 }
@@ -382,14 +403,15 @@ export async function createHdExportBlob(
       ? { backgroundColor: backgroundColorOrOptions }
       : backgroundColorOrOptions;
 
-  // Fast path: if original ratio, no blur, no shadow, transparent, and no custom image, the cutoutBlob is already correct
+  // Fast path: if original ratio, no blur, no shadow, transparent, no custom image, and no sticker outline, the cutoutBlob is already correct
   if (
     (!options.ratio || options.ratio === 'original') &&
     (!options.backgroundColor || options.backgroundColor === 'transparent') &&
     !options.customBgImage &&
     !options.isBlurEnabled &&
     !options.isShadowEnabled &&
-    (!options.blur || options.blur === 0)
+    (!options.blur || options.blur === 0) &&
+    (!options.isStickerEnabled || !options.stickerStrokeWidth || options.stickerStrokeWidth <= 0)
   ) {
     return cutoutBlob;
   }

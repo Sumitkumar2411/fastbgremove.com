@@ -17,7 +17,18 @@ const currentPath = Astro.url.pathname;
 
     <!-- Navigation Links & Theme Switcher -->
     <div class="flex items-center gap-1.5 sm:gap-3 min-w-0">
-      <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 max-w-[170px] xs:max-w-[240px] sm:max-w-none">
+      <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 max-w-[200px] xs:max-w-[280px] sm:max-w-none">
+        <a
+          href="/sticker-maker"
+          class:list={[
+            "inline-flex items-center px-2.5 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium rounded-full border shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.06)] transition-all active:scale-[0.98] shrink-0 whitespace-nowrap",
+            currentPath === "/sticker-maker" || currentPath === "/sticker-maker/"
+              ? "bg-amber-500/10 dark:bg-amber-500/15 text-[#b47818] dark:text-[#E5A93C] border-[#D49B28]/40 dark:border-[#E5A93C]/40 font-semibold ring-1 ring-[#E5A93C]/20"
+              : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+          ]}
+        >
+          Sticker Maker
+        </a>
         <a
           href="/passport-photo-white-background"
           class:list={[
