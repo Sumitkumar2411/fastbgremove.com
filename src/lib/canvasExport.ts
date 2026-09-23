@@ -6,10 +6,19 @@
 import {
   renderStickerCanvas,
   createWhatsAppStickerBlob,
-  createWhatsAppStickerCanvas
+  createWhatsAppStickerCanvas,
+  exportWhatsAppSticker,
+  type StickerShape,
+  type StickerRenderOptions
 } from '../utils/stickerEngine';
 
-export { createWhatsAppStickerBlob, createWhatsAppStickerCanvas };
+export {
+  createWhatsAppStickerBlob,
+  createWhatsAppStickerCanvas,
+  exportWhatsAppSticker,
+  type StickerShape,
+  type StickerRenderOptions
+};
 
 export type CanvasRatio = 'original' | '1:1' | '16:9' | 'passport';
 export type JpgCompressionPreset = '50kb' | '100kb' | 'max';
@@ -26,6 +35,9 @@ export interface ExportOptions {
   isStickerEnabled?: boolean;
   stickerStrokeColor?: string;
   stickerStrokeWidth?: number;
+  stickerShape?: StickerShape;
+  stickerCaptionText?: string;
+  stickerCaptionColor?: string;
 }
 
 /**
@@ -350,14 +362,21 @@ export async function renderCompositeCanvas(
     ctx.fillRect(0, 0, targetW, targetH);
   }
 
-  // 2. Prepare Cutout Foreground Layer (with optional die-cut sticker outline)
+  // 2. Prepare Cutout Foreground Layer (with optional die-cut/shape sticker outline and caption)
   let foregroundElement: HTMLImageElement | HTMLCanvasElement = cutoutImg;
-  if (options.isStickerEnabled && (options.stickerStrokeWidth ?? 0) > 0) {
-    foregroundElement = renderStickerCanvas(
-      cutoutImg,
-      options.stickerStrokeColor || '#FFFFFF',
-      options.stickerStrokeWidth ?? 14
-    );
+  if (
+    options.isStickerEnabled &&
+    ((options.stickerStrokeWidth ?? 0) > 0 ||
+      (options.stickerShape && options.stickerShape !== 'die-cut') ||
+      (options.stickerCaptionText && options.stickerCaptionText.trim().length > 0))
+  ) {
+    foregroundElement = renderStickerCanvas(cutoutImg, {
+      shape: options.stickerShape || 'die-cut',
+      strokeColor: options.stickerStrokeColor || '#FFFFFF',
+      strokeWidth: options.stickerStrokeWidth ?? 14,
+      captionText: options.stickerCaptionText,
+      captionColor: options.stickerCaptionColor || '#FFFFFF'
+    });
   }
 
   // Draw Cutout Layer Centered with Contain Fit
@@ -403,7 +422,7 @@ export async function createHdExportBlob(
       ? { backgroundColor: backgroundColorOrOptions }
       : backgroundColorOrOptions;
 
-  // Fast path: if original ratio, no blur, no shadow, transparent, no custom image, and no sticker outline, the cutoutBlob is already correct
+  // Fast path: if original ratio, no blur, no shadow, transparent, no custom image, and no active sticker features, the cutoutBlob is already correct
   if (
     (!options.ratio || options.ratio === 'original') &&
     (!options.backgroundColor || options.backgroundColor === 'transparent') &&
@@ -411,7 +430,10 @@ export async function createHdExportBlob(
     !options.isBlurEnabled &&
     !options.isShadowEnabled &&
     (!options.blur || options.blur === 0) &&
-    (!options.isStickerEnabled || !options.stickerStrokeWidth || options.stickerStrokeWidth <= 0)
+    (!options.isStickerEnabled ||
+      ((!options.stickerStrokeWidth || options.stickerStrokeWidth <= 0) &&
+        (!options.stickerShape || options.stickerShape === 'die-cut') &&
+        (!options.stickerCaptionText || options.stickerCaptionText.trim().length === 0)))
   ) {
     return cutoutBlob;
   }

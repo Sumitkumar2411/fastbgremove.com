@@ -541,29 +541,73 @@ const {
           </div>
         </div>
 
-        <!-- TAB 4: STICKER DIE-CUT OUTLINE -->
-        <div id="bg-tab-content-sticker" class="bg-tab-content hidden space-y-2.5">
-          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 p-3 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33]">
-            <!-- Left: Thickness Slider -->
-            <div class="flex-1 flex items-center gap-3">
-              <span class="text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] whitespace-nowrap flex items-center gap-1.5">
-                <span>Border Thickness:</span>
-              </span>
-              <input
-                type="range"
-                id="sticker-stroke-slider"
-                min="0"
-                max="32"
-                value="14"
-                step="1"
-                class="flex-1 h-1.5 accent-[#E5A93C] cursor-pointer"
-                title="Adjust sticker border thickness (0-32px)"
-              />
-              <span id="sticker-stroke-label" class="w-10 text-right text-xs font-mono font-semibold text-[#b47818] dark:text-[#E5A93C]">14px</span>
+        <!-- TAB 4: STICKER DIE-CUT & SHAPE OUTLINE -->
+        <div id="bg-tab-content-sticker" class="bg-tab-content hidden space-y-2">
+          <!-- Main Control Bar -->
+          <div class="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3 p-3 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33]">
+            <!-- Left Group: Shape Selector & Thickness Slider -->
+            <div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <!-- Compact Shape Selector Pill Group -->
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-xs font-semibold text-[#5a5852] dark:text-[#a09c92] shrink-0">Shape:</span>
+                <div class="flex items-center p-0.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs">
+                  <!-- Die-Cut (Default) -->
+                  <button
+                    type="button"
+                    data-sticker-shape="die-cut"
+                    title="Die-Cut silhouette outline"
+                    class="sticker-shape-btn active py-1 px-2 rounded-md text-xs font-semibold flex items-center gap-1 transition-all text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-[#242428] shadow-xs cursor-pointer border border-[#E5A93C]/30 shrink-0"
+                  >
+                    <span>✂️</span>
+                    <span class="hidden sm:inline">Die-Cut</span>
+                  </button>
+
+                  <!-- Circle Badge -->
+                  <button
+                    type="button"
+                    data-sticker-shape="circle"
+                    title="Clean circular badge with outline"
+                    class="sticker-shape-btn py-1 px-2 rounded-md text-xs font-medium flex items-center gap-1 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] cursor-pointer border border-transparent shrink-0"
+                  >
+                    <span>⚪</span>
+                    <span class="hidden sm:inline">Circle</span>
+                  </button>
+
+                  <!-- Rounded Square Badge -->
+                  <button
+                    type="button"
+                    data-sticker-shape="rounded"
+                    title="Rounded badge with outline"
+                    class="sticker-shape-btn py-1 px-2 rounded-md text-xs font-medium flex items-center gap-1 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] cursor-pointer border border-transparent shrink-0"
+                  >
+                    <span>🔲</span>
+                    <span class="hidden sm:inline">Rounded</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Thickness Slider -->
+              <div class="flex-1 flex items-center gap-2.5">
+                <span class="text-xs font-semibold text-[#26251e] dark:text-[#ededed] whitespace-nowrap flex items-center gap-1">
+                  <span>Border:</span>
+                </span>
+                <input
+                  type="range"
+                  id="sticker-stroke-slider"
+                  min="0"
+                  max="32"
+                  value="14"
+                  step="1"
+                  class="flex-1 h-1.5 accent-[#E5A93C] cursor-pointer"
+                  title="Adjust sticker border thickness (0-32px)"
+                />
+                <span id="sticker-stroke-label" class="w-9 text-right text-xs font-mono font-semibold text-[#b47818] dark:text-[#E5A93C]">14px</span>
+              </div>
             </div>
 
-            <!-- Center/Right: Color Swatches & Quick WhatsApp Export -->
-            <div class="flex items-center gap-2.5 flex-wrap justify-between lg:justify-end">
+            <!-- Right Group: Color Swatches, Caption Toggle & Quick WhatsApp Export -->
+            <div class="flex items-center gap-2 flex-wrap justify-between xl:justify-end">
+              <!-- Color Swatches -->
               <div class="flex items-center gap-1.5">
                 <span class="text-xs font-semibold text-[#5a5852] dark:text-[#a09c92] shrink-0">Color:</span>
                 <div class="flex items-center p-0.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs">
@@ -622,6 +666,17 @@ const {
                 </div>
               </div>
 
+              <!-- Add Caption Toggle Button -->
+              <button
+                type="button"
+                id="sticker-text-toggle-btn"
+                title="Add bold caption text to sticker"
+                class="py-1.5 px-2.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8]/60 dark:bg-[#121212] shadow-xs cursor-pointer shrink-0"
+              >
+                <span class="font-extrabold font-mono text-sm leading-none text-[#b47818] dark:text-[#E5A93C]">T</span>
+                <span>Add Caption</span>
+              </button>
+
               <!-- Quick Export WhatsApp Action -->
               <button
                 type="button"
@@ -632,8 +687,55 @@ const {
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
                 </svg>
-                <span>WhatsApp Sticker (512×512)</span>
+                <span>Download WhatsApp Sticker (512x512 PNG)</span>
               </button>
+            </div>
+          </div>
+
+          <!-- Anchored Caption Text Panel (Toggled via "Add Caption") -->
+          <div
+            id="sticker-caption-panel"
+            class="hidden flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-2.5 rounded-md bg-[#f7f7f4] dark:bg-[#151518] border border-[#e6e5e0] dark:border-[#2e2e33]"
+          >
+            <div class="flex-1 flex items-center gap-2">
+              <span class="text-xs font-semibold text-[#26251e] dark:text-[#ededed] shrink-0 flex items-center gap-1">
+                <span class="font-mono text-sm text-[#b47818] dark:text-[#E5A93C]">T</span>
+                <span>Sticker Text:</span>
+              </span>
+              <input
+                type="text"
+                id="sticker-caption-input"
+                placeholder="Sticker Text (e.g. COOL, MOOD)"
+                maxlength="28"
+                class="flex-1 py-1 px-2.5 rounded-md bg-white dark:bg-[#242428] border border-[#e6e5e0] dark:border-[#2e2e33] text-xs text-[#26251e] dark:text-white placeholder:text-zinc-400 focus:outline-none focus:border-[#E5A93C] shadow-inner font-bold tracking-wide"
+              />
+            </div>
+
+            <!-- Text Color Toggle -->
+            <div class="flex items-center gap-2 shrink-0 justify-end">
+              <span class="text-xs font-semibold text-[#5a5852] dark:text-[#a09c92]">Text Color:</span>
+              <div class="flex items-center p-0.5 rounded-md border border-[#e6e5e0] dark:border-[#2e2e33] bg-[#efeee8] dark:bg-[#121212] gap-1 shadow-xs">
+                <button
+                  type="button"
+                  id="sticker-caption-color-white"
+                  data-caption-color="#FFFFFF"
+                  title="White text with black contrast stroke"
+                  class="sticker-caption-color-btn active py-0.5 px-2 rounded-md text-xs font-semibold flex items-center gap-1 transition-all text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-[#242428] shadow-xs cursor-pointer border border-[#E5A93C]/30 shrink-0"
+                >
+                  <span class="w-3 h-3 rounded-full bg-white border border-zinc-400"></span>
+                  <span>White</span>
+                </button>
+                <button
+                  type="button"
+                  id="sticker-caption-color-black"
+                  data-caption-color="#000000"
+                  title="Black text with white contrast stroke"
+                  class="sticker-caption-color-btn py-0.5 px-2 rounded-md text-xs font-medium flex items-center gap-1 transition-all text-[#5a5852] dark:text-[#a09c92] hover:text-[#b47818] dark:hover:text-[#E5A93C] cursor-pointer border border-transparent shrink-0"
+                >
+                  <span class="w-3 h-3 rounded-full bg-black border border-zinc-700"></span>
+                  <span>Black</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -851,7 +953,7 @@ const {
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            <span class="whitespace-nowrap">Download Full HD PNG</span>
+            <span class="whitespace-nowrap">{defaultMode === 'sticker' ? 'Download Full HD Sticker' : 'Download Full HD PNG'}</span>
           </button>
 
           <!-- Secondary Actions: Clean 2-Column Grid on Mobile, Inline on Desktop -->
@@ -906,7 +1008,7 @@ const {
               <svg class="w-4 h-4 text-[#128C7E] dark:text-[#25D366] shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
               </svg>
-              <span>WhatsApp Sticker</span>
+              <span>Download WhatsApp Sticker (512x512 PNG)</span>
             </button>
           </div>
         </div>
@@ -1028,11 +1130,17 @@ const {
     triggerDownload,
     copyImageToClipboard,
     createWhatsAppStickerBlob,
+    exportWhatsAppSticker,
     type CanvasRatio,
     type JpgCompressionPreset,
-    type ExportOptions
+    type ExportOptions,
+    type StickerShape
   } from '../lib/canvasExport';
-  import { drawStickerOutline } from '../utils/stickerEngine';
+  import {
+    drawStickerOutline,
+    drawSticker,
+    renderStickerCanvas
+  } from '../utils/stickerEngine';
 
   // Global state
   let currentFile: File | Blob | null = null;
@@ -1127,21 +1235,30 @@ const {
   const photoPreviewName = document.getElementById('photo-preview-name') as HTMLElement;
   const photoRemoveBtn = document.getElementById('photo-remove-btn') as HTMLButtonElement;
 
-  // Sticker Outline Elements & State
+  // Sticker Outline, Shape & Caption Elements & State
   const stickerCanvas = document.getElementById('sticker-canvas') as HTMLCanvasElement;
   const bgTabBtnSticker = document.getElementById('bg-tab-btn-sticker') as HTMLButtonElement;
   const bgTabContentSticker = document.getElementById('bg-tab-content-sticker') as HTMLElement;
+  const stickerShapeBtns = document.querySelectorAll('.sticker-shape-btn');
   const stickerStrokeSlider = document.getElementById('sticker-stroke-slider') as HTMLInputElement;
   const stickerStrokeLabel = document.getElementById('sticker-stroke-label') as HTMLElement;
   const stickerColorBtns = document.querySelectorAll('.sticker-color-btn');
   const stickerCustomColorPicker = document.getElementById('sticker-custom-color-picker') as HTMLInputElement;
   const stickerCustomColorSwatch = document.getElementById('sticker-custom-color-swatch') as HTMLElement;
+  const stickerTextToggleBtn = document.getElementById('sticker-text-toggle-btn') as HTMLButtonElement;
+  const stickerCaptionPanel = document.getElementById('sticker-caption-panel') as HTMLElement;
+  const stickerCaptionInput = document.getElementById('sticker-caption-input') as HTMLInputElement;
+  const stickerCaptionColorBtns = document.querySelectorAll('.sticker-caption-color-btn');
   const stickerQuickWhatsappBtn = document.getElementById('sticker-quick-whatsapp-btn') as HTMLButtonElement;
   const downloadWhatsappBtn = document.getElementById('download-whatsapp-btn') as HTMLButtonElement;
 
   let currentBgTab: 'color' | 'photo' | 'magic' | 'sticker' = initialDefaultMode === 'sticker' ? 'sticker' : 'color';
   let stickerStrokeWidth: number = 14;
   let stickerStrokeColor: string = '#FFFFFF';
+  let currentStickerShape: StickerShape = 'die-cut';
+  let isStickerCaptionActive: boolean = false;
+  let stickerCaptionText: string = '';
+  let stickerCaptionColor: string = '#FFFFFF';
   let stickerRafId: number | null = null;
 
   const blurControlWrapper = document.getElementById('blur-control-wrapper') as HTMLElement;
@@ -1876,7 +1993,15 @@ const {
   function renderLiveStickerPreview() {
     if (!stickerCanvas || !previewCutoutImg) return;
 
-    if (currentBgTab === 'sticker' && stickerStrokeWidth > 0 && imageNaturalWidth && imageNaturalHeight) {
+    const hasStickerActive =
+      currentBgTab === 'sticker' &&
+      !!imageNaturalWidth &&
+      !!imageNaturalHeight &&
+      (stickerStrokeWidth > 0 ||
+        currentStickerShape !== 'die-cut' ||
+        (isStickerCaptionActive && stickerCaptionText.trim().length > 0));
+
+    if (hasStickerActive) {
       if (stickerCanvas.width !== imageNaturalWidth || stickerCanvas.height !== imageNaturalHeight) {
         stickerCanvas.width = imageNaturalWidth;
         stickerCanvas.height = imageNaturalHeight;
@@ -1885,7 +2010,13 @@ const {
       if (sCtx) {
         sCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
         const source = (isBrushModeActive && brushCanvas) ? brushCanvas : previewCutoutImg;
-        drawStickerOutline(sCtx, source, stickerStrokeColor, stickerStrokeWidth);
+        drawSticker(sCtx, source, {
+          shape: currentStickerShape,
+          strokeColor: stickerStrokeColor,
+          strokeWidth: stickerStrokeWidth,
+          captionText: isStickerCaptionActive ? stickerCaptionText : undefined,
+          captionColor: stickerCaptionColor
+        });
       }
       stickerCanvas.classList.remove('hidden');
       previewCutoutImg.classList.add('hidden');
@@ -1904,6 +2035,32 @@ const {
       stickerRafId = null;
     });
   }
+
+  function updateStickerShapeUI(selectedShape: StickerShape) {
+    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold', 'shadow-xs', 'border-[#E5A93C]/30'];
+    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
+
+    stickerShapeBtns.forEach(btn => {
+      const s = btn.getAttribute('data-sticker-shape') as StickerShape;
+      if (s === selectedShape) {
+        btn.classList.add(...activeClasses);
+        btn.classList.remove(...inactiveClasses);
+      } else {
+        btn.classList.remove(...activeClasses);
+        btn.classList.add(...inactiveClasses);
+      }
+    });
+  }
+
+  stickerShapeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const shape = btn.getAttribute('data-sticker-shape') as StickerShape;
+      if (!shape) return;
+      currentStickerShape = shape;
+      updateStickerShapeUI(shape);
+      scheduleStickerRender();
+    });
+  });
 
   function updateStickerSwatchUI(selectedColor: string) {
     const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold', 'shadow-xs', 'border-[#E5A93C]/30'];
@@ -1951,6 +2108,65 @@ const {
       scheduleStickerRender();
     });
   }
+
+  // Anchored Caption Text Controls
+  if (stickerTextToggleBtn) {
+    stickerTextToggleBtn.addEventListener('click', () => {
+      isStickerCaptionActive = !isStickerCaptionActive;
+      const activeClasses = ['active', 'bg-[#E5A93C]/15', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'border-[#E5A93C]/40', 'font-semibold'];
+      const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-[#e6e5e0]', 'dark:border-[#2e2e33]', 'bg-[#efeee8]/60', 'dark:bg-[#121212]'];
+
+      if (isStickerCaptionActive) {
+        stickerTextToggleBtn.classList.add(...activeClasses);
+        stickerTextToggleBtn.classList.remove(...inactiveClasses);
+        if (stickerCaptionPanel) stickerCaptionPanel.classList.remove('hidden');
+        if (stickerCaptionInput) {
+          stickerCaptionInput.focus();
+          stickerCaptionText = stickerCaptionInput.value;
+        }
+      } else {
+        stickerTextToggleBtn.classList.remove(...activeClasses);
+        stickerTextToggleBtn.classList.add(...inactiveClasses);
+        if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
+      }
+      scheduleStickerRender();
+    });
+  }
+
+  if (stickerCaptionInput) {
+    ['input', 'keyup'].forEach(evt => {
+      stickerCaptionInput.addEventListener(evt, () => {
+        stickerCaptionText = stickerCaptionInput.value;
+        scheduleStickerRender();
+      });
+    });
+  }
+
+  function updateStickerCaptionColorUI(selectedColor: string) {
+    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold', 'shadow-xs', 'border-[#E5A93C]/30'];
+    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
+
+    stickerCaptionColorBtns.forEach(btn => {
+      const c = btn.getAttribute('data-caption-color');
+      if (c && c.toUpperCase() === selectedColor.toUpperCase()) {
+        btn.classList.add(...activeClasses);
+        btn.classList.remove(...inactiveClasses);
+      } else {
+        btn.classList.remove(...activeClasses);
+        btn.classList.add(...inactiveClasses);
+      }
+    });
+  }
+
+  stickerCaptionColorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const color = btn.getAttribute('data-caption-color');
+      if (!color) return;
+      stickerCaptionColor = color;
+      updateStickerCaptionColorUI(color);
+      scheduleStickerRender();
+    });
+  });
 
   // Magic AI Background Generator Handlers
   function setMagicLoading(isLoading: boolean) {
@@ -3174,7 +3390,12 @@ const {
         const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'cutout';
         const filename = `${originalName}-fastbgremove-hd.png`;
 
-        const isStickerActive = currentBgTab === 'sticker' && stickerStrokeWidth > 0;
+        const isStickerActive =
+          currentBgTab === 'sticker' &&
+          (stickerStrokeWidth > 0 ||
+            currentStickerShape !== 'die-cut' ||
+            (isStickerCaptionActive && stickerCaptionText.trim().length > 0));
+
         const exportOpts: ExportOptions = {
           ratio: currentRatio,
           backgroundColor: isStickerActive ? 'transparent' : currentBgColor,
@@ -3186,7 +3407,10 @@ const {
           shadowOpacity: shadowOpacityPct,
           isStickerEnabled: isStickerActive,
           stickerStrokeColor: stickerStrokeColor,
-          stickerStrokeWidth: stickerStrokeWidth
+          stickerStrokeWidth: stickerStrokeWidth,
+          stickerShape: currentStickerShape,
+          stickerCaptionText: isStickerCaptionActive ? stickerCaptionText : '',
+          stickerCaptionColor: stickerCaptionColor
         };
 
         const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
@@ -3213,7 +3437,12 @@ const {
         if (exportJpgText) exportJpgText.textContent = 'Optimizing...';
 
         const preset = ((jpgPresetSelect ? jpgPresetSelect.value : '100kb') as JpgCompressionPreset) || '100kb';
-        const isStickerActive = currentBgTab === 'sticker' && stickerStrokeWidth > 0;
+        const isStickerActive =
+          currentBgTab === 'sticker' &&
+          (stickerStrokeWidth > 0 ||
+            currentStickerShape !== 'die-cut' ||
+            (isStickerCaptionActive && stickerCaptionText.trim().length > 0));
+
         const exportOpts: ExportOptions = {
           ratio: currentRatio,
           backgroundColor: isStickerActive ? '#FFFFFF' : currentBgColor,
@@ -3225,7 +3454,10 @@ const {
           shadowOpacity: shadowOpacityPct,
           isStickerEnabled: isStickerActive,
           stickerStrokeColor: stickerStrokeColor,
-          stickerStrokeWidth: stickerStrokeWidth
+          stickerStrokeWidth: stickerStrokeWidth,
+          stickerShape: currentStickerShape,
+          stickerCaptionText: isStickerCaptionActive ? stickerCaptionText : '',
+          stickerCaptionColor: stickerCaptionColor
         };
 
         const finalBlob = await createCompressedJpgBlob(cutoutBlob, preset, exportOpts);
@@ -3256,7 +3488,12 @@ const {
         const originalText = copyBtnText ? copyBtnText.textContent : 'Copy PNG';
         if (copyBtnText) copyBtnText.textContent = 'Copying...';
 
-        const isStickerActive = currentBgTab === 'sticker' && stickerStrokeWidth > 0;
+        const isStickerActive =
+          currentBgTab === 'sticker' &&
+          (stickerStrokeWidth > 0 ||
+            currentStickerShape !== 'die-cut' ||
+            (isStickerCaptionActive && stickerCaptionText.trim().length > 0));
+
         const exportOpts: ExportOptions = {
           ratio: currentRatio,
           backgroundColor: isStickerActive ? 'transparent' : currentBgColor,
@@ -3268,7 +3505,10 @@ const {
           shadowOpacity: shadowOpacityPct,
           isStickerEnabled: isStickerActive,
           stickerStrokeColor: stickerStrokeColor,
-          stickerStrokeWidth: stickerStrokeWidth
+          stickerStrokeWidth: stickerStrokeWidth,
+          stickerShape: currentStickerShape,
+          stickerCaptionText: isStickerCaptionActive ? stickerCaptionText : '',
+          stickerCaptionColor: stickerCaptionColor
         };
 
         const finalBlob = await createHdExportBlob(cutoutBlob, exportOpts);
@@ -3306,7 +3546,20 @@ const {
       await syncCanvasToBlobAndPreview();
       const source = (isBrushModeActive && brushCanvas) ? brushCanvas : previewCutoutImg;
       const widthToUse = currentBgTab === 'sticker' ? stickerStrokeWidth : 14;
-      const finalBlob = await createWhatsAppStickerBlob(source, stickerStrokeColor, widthToUse);
+      const shapeToUse = currentBgTab === 'sticker' ? currentStickerShape : 'die-cut';
+      const textToUse = (currentBgTab === 'sticker' && isStickerCaptionActive) ? stickerCaptionText : '';
+
+      // 1. Render full-resolution sticker canvas with shape, stroke & text
+      const renderedSourceCanvas = renderStickerCanvas(source, {
+        shape: shapeToUse,
+        strokeColor: stickerStrokeColor,
+        strokeWidth: widthToUse,
+        captionText: textToUse,
+        captionColor: stickerCaptionColor
+      });
+
+      // 2. Export strictly at 512x512 PNG with 16px safety padding using bulletproof pipeline
+      const finalBlob = await exportWhatsAppSticker(renderedSourceCanvas);
 
       triggerDownload(finalBlob, 'sticker-512x512.png');
       showToast('WhatsApp sticker downloaded (512x512 PNG)');

@@ -1,10 +1,19 @@
 /**
- * High-Performance Client-Side Sticker Stroke Engine
- * Renders crisp, solid die-cut outline borders around subject cutouts (<50ms execution).
- * Formats transparent cutouts for official 512x512 WhatsApp & Discord sticker specifications.
+ * High-Performance Client-Side Sticker Stroke & Shape Engine
+ * Renders crisp die-cut outline borders, circular/rounded frame shapes, and anchored caption text (<50ms).
+ * Strictly formats cutouts for official 512x512 WhatsApp & Discord sticker specifications.
  */
 
 export type StickerSource = ImageBitmap | HTMLCanvasElement | HTMLImageElement;
+export type StickerShape = 'die-cut' | 'circle' | 'rounded';
+
+export interface StickerRenderOptions {
+  shape?: StickerShape;
+  strokeColor?: string;
+  strokeWidth?: number;
+  captionText?: string;
+  captionColor?: string;
+}
 
 // Cached silhouette offscreen canvas to avoid garbage collection churn during 60 FPS slider dragging
 let cachedSilhouetteCanvas: HTMLCanvasElement | null = null;
@@ -20,6 +29,32 @@ function getSourceDimensions(source: StickerSource): { width: number; height: nu
     width: source.width,
     height: source.height
   };
+}
+
+/**
+ * Fallback-safe rounded rectangle path drawer.
+ */
+function drawRoundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+): void {
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, w, h, r);
+  } else {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+  }
 }
 
 /**
@@ -69,7 +104,6 @@ function createSilhouetteCanvas(
  *
  * Algorithm:
  * - Generates a solid color silhouette in an offscreen buffer.
- * - Sets shadowColor and blur to guarantee solid outer borders.
  * - Iteratively renders concentric radial passes (8 to 16 angular steps around circumference).
  * - Composites the original clean cutout crisp on top at (0, 0).
  */
@@ -128,13 +162,168 @@ export function drawStickerOutline(
 }
 
 /**
- * Creates a standalone HTMLCanvasElement containing the subject with die-cut sticker outline.
+ * Draws anchored sticker typography centered near the bottom of the subject/frame.
+ * Renders bold sans-serif with a 4px+ contrasting stroke (ctx.strokeText + ctx.fillText).
+ */
+export function drawAnchoredCaption(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  width: number,
+  height: number,
+  captionColor: string = '#FFFFFF',
+  strokeWidth: number = 0,
+  shape: StickerShape = 'die-cut'
+): void {
+  if (!text) return;
+
+  const minDim = Math.min(width, height);
+  // Responsive bold font size
+  const fontSize = Math.max(18, Math.round(minDim * 0.085));
+
+  // Determine contrasting stroke color
+  const isBlackText =
+    captionColor.toUpperCase() === '#000000' ||
+    captionColor.toLowerCase() === 'black' ||
+    captionColor.toLowerCase() === '#000';
+  const textColor = isBlackText ? '#000000' : '#FFFFFF';
+  const strokeColor = isBlackText ? '#FFFFFF' : '#000000';
+  const strokeThickness = Math.max(4, Math.round(fontSize * 0.12));
+
+  // Calculate bottom margin: give enough room from the edge and shape boundary
+  let bottomMargin = Math.max(16, Math.round(height * 0.05));
+  if (shape === 'circle') {
+    bottomMargin = Math.max(24, Math.round(minDim * 0.09)) + strokeWidth;
+  } else if (shape === 'rounded') {
+    bottomMargin = Math.max(16, Math.round(height * 0.05)) + strokeWidth;
+  }
+
+  const textX = width / 2;
+  const textY = height - bottomMargin;
+
+  ctx.save();
+  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.lineJoin = 'round';
+  ctx.miterLimit = 2;
+
+  // 1. Contrasting stroke outline (4px+ thickness for instant readability on any background)
+  ctx.lineWidth = strokeThickness;
+  ctx.strokeStyle = strokeColor;
+  ctx.strokeText(text, textX, textY);
+
+  // 2. Solid bold text fill
+  ctx.fillStyle = textColor;
+  ctx.fillText(text, textX, textY);
+
+  ctx.restore();
+}
+
+/**
+ * Unified sticker rendering function:
+ * Supports die-cut contour outline, circular badge clip, and rounded rectangle clip,
+ * plus anchored bold typography caption text.
+ */
+export function drawSticker(
+  ctx: CanvasRenderingContext2D,
+  source: StickerSource,
+  options: StickerRenderOptions = {}
+): void {
+  const { width, height } = getSourceDimensions(source);
+  const shape = options.shape || 'die-cut';
+  const strokeColor = options.strokeColor || '#FFFFFF';
+  const strokeWidth = options.strokeWidth !== undefined ? options.strokeWidth : 14;
+
+  if (shape === 'circle') {
+    const minSide = Math.min(width, height);
+    const cx = width / 2;
+    const cy = height / 2;
+    const pad = strokeWidth > 0 ? strokeWidth / 2 : 0;
+    const radius = Math.max(1, minSide / 2 - pad);
+
+    // 1. Circular clipping mask
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(source, 0, 0, width, height);
+    ctx.restore();
+
+    // 2. Outer stroke border
+    if (strokeWidth > 0) {
+      ctx.save();
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = strokeWidth;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+  } else if (shape === 'rounded') {
+    const pad = strokeWidth > 0 ? strokeWidth / 2 : 0;
+    const rx = pad;
+    const ry = pad;
+    const rw = width - pad * 2;
+    const rh = height - pad * 2;
+    const borderRadius = Math.max(8, Math.round(Math.min(rw, rh) * 0.12));
+
+    // 1. Rounded rectangle clipping mask
+    ctx.save();
+    ctx.beginPath();
+    drawRoundRect(ctx, rx, ry, rw, rh, borderRadius);
+    ctx.clip();
+    ctx.drawImage(source, 0, 0, width, height);
+    ctx.restore();
+
+    // 2. Outer stroke border
+    if (strokeWidth > 0) {
+      ctx.save();
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = strokeWidth;
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      drawRoundRect(ctx, rx, ry, rw, rh, borderRadius);
+      ctx.stroke();
+      ctx.restore();
+    }
+  } else {
+    // Default 'die-cut' contour outline
+    drawStickerOutline(ctx, source, strokeColor, strokeWidth);
+  }
+
+  // 3. Anchored Sticker Text
+  if (options.captionText && options.captionText.trim().length > 0) {
+    drawAnchoredCaption(
+      ctx,
+      options.captionText.trim(),
+      width,
+      height,
+      options.captionColor || '#FFFFFF',
+      strokeWidth,
+      shape
+    );
+  }
+}
+
+/**
+ * Creates a standalone HTMLCanvasElement containing the subject with sticker shape, outline, and caption.
  */
 export function renderStickerCanvas(
   source: StickerSource,
-  strokeColor: string = '#FFFFFF',
+  optionsOrColor: string | StickerRenderOptions = '#FFFFFF',
   strokeWidth: number = 14
 ): HTMLCanvasElement {
+  let opts: StickerRenderOptions;
+  if (typeof optionsOrColor === 'string') {
+    opts = {
+      strokeColor: optionsOrColor,
+      strokeWidth: strokeWidth,
+      shape: 'die-cut'
+    };
+  } else {
+    opts = optionsOrColor;
+  }
+
   const { width, height } = getSourceDimensions(source);
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -146,26 +335,59 @@ export function renderStickerCanvas(
   }
 
   ctx.clearRect(0, 0, width, height);
-  drawStickerOutline(ctx, source, strokeColor, strokeWidth);
+  drawSticker(ctx, source, opts);
   return canvas;
 }
 
 /**
- * WhatsApp & Discord Sticker Export Engine:
- * Scales down the transparent stickered cutout into a strictly square 512x512 canvas
- * with 16px safety padding (subject contained within 480x480).
+ * Bulletproof WhatsApp Sticker Export Pipeline strictly at 512x512 pixels:
+ * Computes contain-fit with 16px safety padding (480px usable box), centers the subject,
+ * and outputs an official transparent PNG blob.
+ */
+export function exportWhatsAppSticker(sourceCanvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    try {
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = 512;
+      outCanvas.height = 512;
+      const ctx = outCanvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas context unavailable');
+
+      // Calculate contain-fit with 16px safety padding
+      const maxDim = 512 - 32; // 480px usable
+      const scale = Math.min(maxDim / sourceCanvas.width, maxDim / sourceCanvas.height);
+      const w = Math.round(sourceCanvas.width * scale);
+      const h = Math.round(sourceCanvas.height * scale);
+      const x = Math.round((512 - w) / 2);
+      const y = Math.round((512 - h) / 2);
+
+      ctx.clearRect(0, 0, 512, 512);
+      ctx.drawImage(sourceCanvas, x, y, w, h);
+
+      outCanvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Blob conversion failed'));
+      }, 'image/png');
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+/**
+ * WhatsApp & Discord Sticker Canvas Generator (Legacy-compatible wrapper).
  */
 export function createWhatsAppStickerCanvas(
   source: StickerSource,
   strokeColor: string = '#FFFFFF',
   strokeWidth: number = 14
 ): HTMLCanvasElement {
-  // 1. First render the sticker cutout at full native resolution
-  const stickerCanvas = renderStickerCanvas(source, strokeColor, strokeWidth);
-  const sw = stickerCanvas.width;
-  const sh = stickerCanvas.height;
+  const stickerCanvas = renderStickerCanvas(source, {
+    strokeColor,
+    strokeWidth,
+    shape: 'die-cut'
+  });
 
-  // 2. Setup standard 512x512 canvas with 16px safety margins
   const targetSize = 512;
   const padding = 16;
   const maxContentDim = targetSize - padding * 2; // 480px
@@ -179,17 +401,13 @@ export function createWhatsAppStickerCanvas(
     throw new Error('Failed to acquire 2D context for WhatsApp sticker export');
   }
 
-  // Ensure fully transparent background
   outCtx.clearRect(0, 0, targetSize, targetSize);
   outCtx.imageSmoothingEnabled = true;
   outCtx.imageSmoothingQuality = 'high';
 
-  // 3. Contain fit inside 480x480 box
-  const fitScale = Math.min(maxContentDim / sw, maxContentDim / sh);
-  const dw = Math.round(sw * fitScale);
-  const dh = Math.round(sh * fitScale);
-
-  // 4. Center within the 512x512 canvas respecting safety margins
+  const fitScale = Math.min(maxContentDim / stickerCanvas.width, maxContentDim / stickerCanvas.height);
+  const dw = Math.round(stickerCanvas.width * fitScale);
+  const dh = Math.round(stickerCanvas.height * fitScale);
   const dx = Math.round(padding + (maxContentDim - dw) / 2);
   const dy = Math.round(padding + (maxContentDim - dh) / 2);
 
@@ -198,7 +416,7 @@ export function createWhatsAppStickerCanvas(
 }
 
 /**
- * Generates an official WhatsApp 512x512 PNG Blob from an image or blob source.
+ * Generates an official WhatsApp 512x512 PNG Blob from an image, canvas, or blob source.
  */
 export async function createWhatsAppStickerBlob(
   source: StickerSource | Blob,
@@ -225,15 +443,11 @@ export async function createWhatsAppStickerBlob(
     stickerSource = source;
   }
 
-  const wsCanvas = createWhatsAppStickerCanvas(stickerSource, strokeColor, strokeWidth);
-
-  return new Promise((resolve, reject) => {
-    wsCanvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-      } else {
-        reject(new Error('Failed to generate WhatsApp 512x512 PNG blob'));
-      }
-    }, 'image/png');
+  const renderedCanvas = renderStickerCanvas(stickerSource, {
+    strokeColor,
+    strokeWidth,
+    shape: 'die-cut'
   });
+
+  return exportWhatsAppSticker(renderedCanvas);
 }
