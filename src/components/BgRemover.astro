@@ -346,22 +346,22 @@ const {
       </div>
 
       {defaultMode === 'sticker' && (
-        <!-- SINGLE ELEGANT CARD-BASED INSPECTOR (LINEAR / CANVA GRADE) -->
+        <!-- STRUCTURED 2-ROW STICKER INSPECTOR (ZERO OVERFLOW, SAAS-GRADE) -->
         <div
           id="sticker-inspector-card"
-          class="w-full max-w-3xl mx-auto mt-5 bg-white dark:bg-[#16161a] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
+          class="w-full max-w-3xl mx-auto mt-5 space-y-3"
         >
-          <!-- Section A: Outline & Shape Engine -->
-          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-            <!-- Shape Switcher Pill Group -->
-            <div class="flex items-center gap-2 shrink-0">
+          <!-- Row 1: Shapes & Outline Engine -->
+          <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
+            <!-- Left Group (Shapes): Pill group -->
+            <div class="flex items-center gap-2">
               <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Shape:</span>
-              <div class="inline-flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 gap-1 shadow-inner">
+              <div class="inline-flex items-center p-1 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 gap-1 shadow-inner">
                 <button
                   type="button"
                   data-sticker-shape="die-cut"
                   title="Exact subject contour with smooth die-cut outline"
-                  class="sticker-shape-btn active py-1.5 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-900 dark:text-white bg-white dark:bg-slate-700 shadow-xs cursor-pointer border border-slate-200/80 dark:border-slate-600"
+                  class="sticker-shape-btn active py-1.5 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-700 shadow-xs cursor-pointer border border-slate-200/80 dark:border-slate-600"
                 >
                   <span>✂️</span>
                   <span>Die-Cut</span>
@@ -396,59 +396,68 @@ const {
               </div>
             </div>
 
-            <!-- Border Thickness Range Slider (0px to 30px) -->
-            <div class="flex-1 flex items-center gap-2.5 min-w-[160px]">
+            <!-- Center Group (Border Slider) -->
+            <div class="flex items-center gap-2 min-w-[180px]">
               <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">Border:</span>
               <input
                 type="range"
                 id="sticker-stroke-slider"
                 min="0"
-                max="30"
+                max="32"
                 value="14"
                 step="1"
                 class="flex-1 h-1.5 accent-[#E5A93C] cursor-pointer bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none"
-                title="Adjust sticker border thickness (0-30px)"
+                title="Adjust sticker border thickness (0-32px)"
               />
-              <span id="sticker-stroke-label" class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono font-bold bg-[#E5A93C]/15 text-[#b47818] dark:text-[#E5A93C] border border-[#E5A93C]/30 min-w-[38px] text-center">14px</span>
+              <span id="sticker-stroke-label" class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono font-bold bg-[#E5A93C]/15 text-[#b47818] dark:text-[#E5A93C] border border-[#E5A93C]/30 min-w-[42px] text-center">14px</span>
             </div>
 
-            <!-- 5 Tactile Circular Color Swatches -->
-            <div class="flex items-center gap-2 shrink-0">
+            <!-- Right Group (Color Swatches) -->
+            <div class="flex items-center gap-2">
               <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Color:</span>
-              <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700">
-                <!-- Pure White (#FFFFFF) -->
+              <div class="flex items-center gap-2 p-1 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700">
+                <!-- White (#FFF) -->
                 <button
                   type="button"
                   data-sticker-color="#FFFFFF"
-                  title="Pure White (#FFFFFF)"
+                  title="White (#FFF)"
                   class="sticker-color-btn active w-6 h-6 rounded-full bg-white border-2 border-[#E5A93C] shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
                 >
                   <span class="w-1.5 h-1.5 rounded-full bg-slate-900"></span>
                 </button>
-                <!-- Pure Black (#000000) -->
+                <!-- Black (#000) -->
                 <button
                   type="button"
                   data-sticker-color="#000000"
-                  title="Pure Black (#000000)"
+                  title="Black (#000)"
                   class="sticker-color-btn w-6 h-6 rounded-full bg-black border border-slate-300 dark:border-slate-600 shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
                 >
                   <span class="hidden w-1.5 h-1.5 rounded-full bg-white"></span>
                 </button>
-                <!-- Vibrant Yellow (#FACC15) -->
+                <!-- Yellow (#FACC15) -->
                 <button
                   type="button"
                   data-sticker-color="#FACC15"
-                  title="Vibrant Yellow (#FACC15)"
+                  title="Yellow (#FACC15)"
                   class="sticker-color-btn w-6 h-6 rounded-full bg-[#FACC15] border border-amber-400 shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
                 >
                   <span class="hidden w-1.5 h-1.5 rounded-full bg-slate-900"></span>
                 </button>
-                <!-- Neon Cyan (#06B6D4) -->
+                <!-- Cyan (#06B6D4) -->
                 <button
                   type="button"
                   data-sticker-color="#06B6D4"
-                  title="Neon Cyan (#06B6D4)"
+                  title="Cyan (#06B6D4)"
                   class="sticker-color-btn w-6 h-6 rounded-full bg-[#06B6D4] border border-cyan-400 shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
+                >
+                  <span class="hidden w-1.5 h-1.5 rounded-full bg-white"></span>
+                </button>
+                <!-- Purple (#A855F7) -->
+                <button
+                  type="button"
+                  data-sticker-color="#A855F7"
+                  title="Purple (#A855F7)"
+                  class="sticker-color-btn w-6 h-6 rounded-full bg-[#A855F7] border border-purple-400 shadow-xs cursor-pointer hover:scale-110 transition-transform relative flex items-center justify-center shrink-0"
                 >
                   <span class="hidden w-1.5 h-1.5 rounded-full bg-white"></span>
                 </button>
@@ -464,13 +473,13 @@ const {
             </div>
           </div>
 
-          <!-- Section B: Draggable Sticker Caption Studio (Toggle Activated) -->
-          <div class="space-y-3">
+          <!-- Row 2: Draggable Text Caption Studio (Collapsible Toggle) -->
+          <div class="rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 p-4 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
                   <span>🔤</span>
-                  <span>Add Text Caption</span>
+                  <span>Add Sticker Caption</span>
                 </span>
                 <span class="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline">• Drag freely on canvas</span>
               </div>
@@ -485,28 +494,28 @@ const {
             <!-- Expandable Typography Strip -->
             <div
               id="sticker-caption-panel"
-              class="hidden pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3"
+              class="hidden pt-3 border-t border-slate-200/80 dark:border-slate-700/80 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3"
             >
               <!-- Input Box -->
               <div class="flex-1 min-w-0">
                 <input
                   type="text"
                   id="sticker-caption-input"
-                  placeholder="Enter sticker text..."
+                  placeholder="Type sticker caption..."
                   maxlength="32"
-                  class="w-full h-9 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C] shadow-inner font-bold tracking-wide transition-all"
+                  class="w-full h-9 px-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C] shadow-inner font-bold tracking-wide transition-all"
                 />
               </div>
 
               <!-- Typography Style Controls -->
               <div class="flex items-center gap-2 flex-wrap shrink-0">
                 <!-- Bold / Italic -->
-                <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 gap-0.5">
+                <div class="inline-flex items-center p-0.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 gap-0.5">
                   <button
                     type="button"
                     id="sticker-text-bold-btn"
                     title="Bold Typography"
-                    class="active w-7 h-7 rounded-md text-xs font-bold transition-all text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-slate-700 shadow-xs cursor-pointer flex items-center justify-center"
+                    class="active w-7 h-7 rounded-md text-xs font-bold transition-all text-[#b47818] dark:text-[#E5A93C] bg-slate-100 dark:bg-slate-700 shadow-xs cursor-pointer flex items-center justify-center"
                   >
                     <b>B</b>
                   </button>
@@ -520,30 +529,30 @@ const {
                   </button>
                 </div>
 
-                <!-- Font Size Slider (18px to 60px) -->
-                <div class="flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700">
+                <!-- Font Size Slider (16px to 60px) -->
+                <div class="flex items-center gap-1.5 px-2.5 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700">
                   <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Size:</span>
                   <input
                     type="range"
                     id="sticker-text-size-slider"
-                    min="18"
+                    min="16"
                     max="60"
                     value="32"
                     step="2"
                     class="w-16 sm:w-20 h-1.5 accent-[#E5A93C] cursor-pointer"
-                    title="Adjust font size (18-60px)"
+                    title="Adjust font size (16-60px)"
                   />
                   <span id="sticker-text-size-label" class="w-8 text-right text-[11px] font-mono font-semibold text-[#b47818] dark:text-[#E5A93C]">32px</span>
                 </div>
 
                 <!-- Text Theme (White text with black outline vs Black text with white outline) -->
-                <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 gap-0.5">
+                <div class="inline-flex items-center p-0.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 gap-0.5">
                   <button
                     type="button"
                     id="sticker-caption-color-white"
                     data-caption-color="#FFFFFF"
-                    title="White text with black contrast outline"
-                    class="sticker-caption-color-btn active px-2 h-7 rounded-md text-xs font-semibold flex items-center gap-1 text-[#b47818] dark:text-[#E5A93C] bg-white dark:bg-slate-700 shadow-xs cursor-pointer transition-all"
+                    title="White text with black contrast stroke"
+                    class="sticker-caption-color-btn active px-2 h-7 rounded-md text-xs font-semibold flex items-center gap-1 text-[#b47818] dark:text-[#E5A93C] bg-slate-100 dark:bg-slate-700 shadow-xs cursor-pointer transition-all"
                   >
                     <span class="w-2.5 h-2.5 rounded-full bg-white border border-slate-400"></span>
                     <span>White</span>
@@ -552,7 +561,7 @@ const {
                     type="button"
                     id="sticker-caption-color-black"
                     data-caption-color="#000000"
-                    title="Black text with white contrast outline"
+                    title="Black text with white contrast stroke"
                     class="sticker-caption-color-btn px-2 h-7 rounded-md text-xs font-medium flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-all"
                   >
                     <span class="w-2.5 h-2.5 rounded-full bg-black border border-slate-700"></span>
@@ -564,8 +573,8 @@ const {
                 <button
                   type="button"
                   id="sticker-text-center-btn"
-                  title="Center text horizontally on canvas"
-                  class="h-8 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-[#b47818] dark:hover:text-[#E5A93C] bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-750 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shadow-xs shrink-0"
+                  title="Snap text back to center"
+                  class="h-8 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-[#b47818] dark:hover:text-[#E5A93C] bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shadow-xs shrink-0"
                 >
                   <span>↔</span>
                   <span>Center</span>
@@ -1248,13 +1257,13 @@ const {
       <div class="pt-2">
         {defaultMode === 'sticker' ? (
           <!-- Balanced Professional Sticker Action Dock -->
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 w-full">
             <!-- Left Group: Secondary Actions -->
-            <div class="flex items-center gap-2.5 w-full sm:w-auto">
+            <div class="flex items-center gap-2.5 w-full lg:w-auto shrink-0">
               <button
                 id="upload-another-btn"
                 type="button"
-                class="flex-1 sm:flex-none h-11 px-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#cfcdc4] dark:hover:border-[#3e3e44] text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] whitespace-nowrap"
+                class="flex-1 lg:flex-none h-11 px-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#cfcdc4] dark:hover:border-[#3e3e44] text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] whitespace-nowrap shrink-0"
               >
                 <svg class="w-4 h-4 text-[#807d72] dark:text-[#a09c92] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -1267,7 +1276,7 @@ const {
               <button
                 id="copy-clipboard-btn"
                 type="button"
-                class="flex-1 sm:flex-none h-11 px-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#E5A93C] text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] hover:text-[#b47818] dark:hover:text-[#E5A93C] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] whitespace-nowrap"
+                class="flex-1 lg:flex-none h-11 px-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] hover:border-[#E5A93C] text-xs sm:text-sm font-semibold text-[#26251e] dark:text-[#ededed] hover:text-[#b47818] dark:hover:text-[#E5A93C] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] whitespace-nowrap shrink-0"
                 title="Copy sticker cutout to clipboard"
               >
                 <svg class="w-4 h-4 text-[#E5A93C] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1279,12 +1288,12 @@ const {
             </div>
 
             <!-- Right Group: Downloads -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto shrink-0">
               <!-- Tactile Emerald WhatsApp Button -->
               <button
                 id="download-whatsapp-btn"
                 type="button"
-                class="h-11 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_2px_12px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_20px_rgba(16,185,129,0.45)] active:scale-[0.99] whitespace-nowrap"
+                class="flex-1 sm:flex-none h-11 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_2px_12px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_20px_rgba(16,185,129,0.45)] active:scale-[0.99] whitespace-nowrap shrink-0"
                 title="Download official WhatsApp Sticker (512x512 PNG with 16px safety padding)"
               >
                 <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -1297,7 +1306,7 @@ const {
               <button
                 id="download-hd-btn"
                 type="button"
-                class="h-11 px-6 rounded-xl bg-gradient-to-r from-[#E5A93C] to-[#D49B28] hover:from-[#D49B28] hover:to-[#c28c20] text-zinc-950 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-[0_2px_12px_rgba(229,169,60,0.35)] hover:shadow-[0_4px_20px_rgba(229,169,60,0.5)] cursor-pointer active:scale-[0.99] whitespace-nowrap"
+                class="flex-1 sm:flex-none h-11 px-6 rounded-xl bg-gradient-to-r from-[#E5A93C] to-[#D49B28] hover:from-[#D49B28] hover:to-[#c28c20] text-zinc-950 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-[0_2px_12px_rgba(229,169,60,0.35)] hover:shadow-[0_4px_20px_rgba(229,169,60,0.5)] cursor-pointer active:scale-[0.99] whitespace-nowrap shrink-0"
               >
                 <svg class="w-4 h-4 text-zinc-950 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -2458,17 +2467,39 @@ const {
   }
 
   function updateStickerShapeUI(selectedShape: StickerShape) {
-    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold', 'shadow-xs', 'border-[#E5A93C]/30'];
-    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
-
     stickerShapeBtns.forEach(btn => {
       const s = btn.getAttribute('data-sticker-shape') as StickerShape;
-      if (s === selectedShape) {
-        btn.classList.add(...activeClasses);
-        btn.classList.remove(...inactiveClasses);
+      const isActive = s === selectedShape;
+      btn.classList.toggle('active', isActive);
+
+      if (btn.classList.contains('rounded-lg')) {
+        // Card inspector styling
+        btn.classList.toggle('bg-slate-100', isActive);
+        btn.classList.toggle('dark:bg-slate-700', isActive);
+        btn.classList.toggle('text-slate-900', isActive);
+        btn.classList.toggle('dark:text-white', isActive);
+        btn.classList.toggle('font-semibold', isActive);
+        btn.classList.toggle('border-slate-200/80', isActive);
+        btn.classList.toggle('dark:border-slate-600', isActive);
+        btn.classList.toggle('shadow-xs', isActive);
+
+        btn.classList.toggle('text-slate-600', !isActive);
+        btn.classList.toggle('dark:text-slate-300', !isActive);
+        btn.classList.toggle('font-medium', !isActive);
+        btn.classList.toggle('border-transparent', !isActive);
       } else {
-        btn.classList.remove(...activeClasses);
-        btn.classList.add(...inactiveClasses);
+        // Tab strip styling
+        btn.classList.toggle('bg-white', isActive);
+        btn.classList.toggle('dark:bg-[#242428]', isActive);
+        btn.classList.toggle('text-[#b47818]', isActive);
+        btn.classList.toggle('dark:text-[#E5A93C]', isActive);
+        btn.classList.toggle('font-semibold', isActive);
+        btn.classList.toggle('shadow-xs', isActive);
+        btn.classList.toggle('border-[#E5A93C]/30', isActive);
+
+        btn.classList.toggle('text-[#5a5852]', !isActive);
+        btn.classList.toggle('dark:text-[#a09c92]', !isActive);
+        btn.classList.toggle('border-transparent', !isActive);
       }
     });
   }
@@ -2484,17 +2515,34 @@ const {
   });
 
   function updateStickerSwatchUI(selectedColor: string) {
-    const activeClasses = ['active', 'bg-white', 'dark:bg-[#242428]', 'text-[#b47818]', 'dark:text-[#E5A93C]', 'font-semibold', 'shadow-xs', 'border-[#E5A93C]/30'];
-    const inactiveClasses = ['text-[#5a5852]', 'dark:text-[#a09c92]', 'border-transparent'];
-
     stickerColorBtns.forEach(b => {
       const c = b.getAttribute('data-sticker-color');
-      if (c && c.toUpperCase() === selectedColor.toUpperCase()) {
-        b.classList.add(...activeClasses);
-        b.classList.remove(...inactiveClasses);
+      const isActive = !!(c && c.toUpperCase() === selectedColor.toUpperCase());
+      b.classList.toggle('active', isActive);
+
+      if (b.classList.contains('rounded-full')) {
+        // Circular swatch in card inspector
+        b.classList.toggle('border-2', isActive);
+        b.classList.toggle('border-[#E5A93C]', isActive);
+        b.classList.toggle('scale-110', isActive);
+
+        const innerDot = b.querySelector('span');
+        if (innerDot) {
+          innerDot.classList.toggle('hidden', !isActive);
+        }
       } else {
-        b.classList.remove(...activeClasses);
-        b.classList.add(...inactiveClasses);
+        // Tab strip button
+        b.classList.toggle('bg-white', isActive);
+        b.classList.toggle('dark:bg-[#242428]', isActive);
+        b.classList.toggle('text-[#b47818]', isActive);
+        b.classList.toggle('dark:text-[#E5A93C]', isActive);
+        b.classList.toggle('font-semibold', isActive);
+        b.classList.toggle('shadow-xs', isActive);
+        b.classList.toggle('border-[#E5A93C]/30', isActive);
+
+        b.classList.toggle('text-[#5a5852]', !isActive);
+        b.classList.toggle('dark:text-[#a09c92]', !isActive);
+        b.classList.toggle('border-transparent', !isActive);
       }
     });
 
@@ -2884,7 +2932,7 @@ const {
         const isOver = checkPointerOverStickerText(e.clientX, e.clientY);
         if (isOver) {
           isDraggingStickerText = true;
-          if (stageBox) stageBox.style.cursor = 'grabbing';
+          if (stageBox) stageBox.style.cursor = 'move';
           try {
             (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
           } catch (_) {}
@@ -2905,7 +2953,7 @@ const {
     if (isBrushModeActive) return;
     if (currentBgTab === 'sticker') {
       if (isDraggingStickerText && isStickerCaptionActive) {
-        if (stageBox) stageBox.style.cursor = 'grabbing';
+        if (stageBox) stageBox.style.cursor = 'move';
         updateStickerTextFromClient(e.clientX, e.clientY);
         return;
       }
@@ -2913,7 +2961,7 @@ const {
         const isOver = checkPointerOverStickerText(e.clientX, e.clientY);
         if (isOver !== isPointerOverStickerText) {
           isPointerOverStickerText = isOver;
-          if (stageBox) stageBox.style.cursor = isOver ? 'grab' : 'default';
+          if (stageBox) stageBox.style.cursor = isOver ? 'move' : 'default';
           scheduleStickerRender();
         }
       } else {
@@ -2936,7 +2984,7 @@ const {
         (e.currentTarget as HTMLElement)?.releasePointerCapture?.(e.pointerId);
       } catch (_) {}
       if (stageBox) {
-        stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
+        stageBox.style.cursor = isPointerOverStickerText ? 'move' : 'default';
       }
       scheduleStickerRender();
     }
@@ -3068,7 +3116,7 @@ const {
   window.addEventListener('pointerup', () => {
     if (isDraggingStickerText) {
       isDraggingStickerText = false;
-      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
+      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'move' : 'default';
       scheduleStickerRender();
     }
     if (isDraggingSlider) isDraggingSlider = false;
@@ -3076,7 +3124,7 @@ const {
   window.addEventListener('pointercancel', () => {
     if (isDraggingStickerText) {
       isDraggingStickerText = false;
-      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
+      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'move' : 'default';
       scheduleStickerRender();
     }
     if (isDraggingSlider) isDraggingSlider = false;
