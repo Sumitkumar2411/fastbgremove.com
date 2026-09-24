@@ -7,10 +7,10 @@ const isVsRemoveBg = currentPath.startsWith("/remove-bg-alternative") || current
 ---
 
 <header class="w-full border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 grid grid-cols-3 items-center">
-    <!-- Left Column (Brand Logo) -->
-    <div class="flex items-center justify-start">
-      <a href="/" class="flex items-center gap-2 sm:gap-2.5 shrink-0 select-none">
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- 1. LEFT: Brand Logo (z-10 ensures it stays clickable) -->
+    <div class="flex items-center z-10">
+      <a href="/" class="flex items-center gap-2.5 text-slate-900 dark:text-white font-extrabold text-xl tracking-tight select-none">
         <img 
           src="/logo.png" 
           alt="FastBgRemove logo" 
@@ -21,58 +21,56 @@ const isVsRemoveBg = currentPath.startsWith("/remove-bg-alternative") || current
       </a>
     </div>
 
-    <!-- Center Column (True Centered Tool Navigation Pills) -->
-    <div class="flex items-center justify-center">
-      <nav class="hidden md:inline-flex items-center gap-1.5 p-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs">
-        <a
-          href="/sticker-maker"
-          class:list={[
-            "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
-            isSticker
-              ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-              : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-          ]}
-        >
-          Sticker Maker
-        </a>
-        <a
-          href="/passport-photo"
-          class:list={[
-            "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
-            isPassport
-              ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-              : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-          ]}
-        >
-          Passport Photo
-        </a>
-        <a
-          href="/signature"
-          class:list={[
-            "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
-            isSignature
-              ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-              : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-          ]}
-        >
-          Signature
-        </a>
-        <a
-          href="/vs-remove-bg"
-          class:list={[
-            "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
-            isVsRemoveBg
-              ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-              : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-          ]}
-        >
-          vs Remove.bg
-        </a>
-      </nav>
-    </div>
+    <!-- 2. TRUE DEAD CENTER: Navigation Pills (Mathematically Centered) -->
+    <nav class="hidden md:flex items-center gap-1 p-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
+      <a
+        href="/sticker-maker"
+        class:list={[
+          "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
+          isSticker
+            ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+            : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+        ]}
+      >
+        Sticker Maker
+      </a>
+      <a
+        href="/passport-photo"
+        class:list={[
+          "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
+          isPassport
+            ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+            : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+        ]}
+      >
+        Passport Photo
+      </a>
+      <a
+        href="/signature"
+        class:list={[
+          "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
+          isSignature
+            ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+            : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+        ]}
+      >
+        Signature
+      </a>
+      <a
+        href="/vs-remove-bg"
+        class:list={[
+          "px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap",
+          isVsRemoveBg
+            ? "font-semibold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+            : "font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+        ]}
+      >
+        vs Remove.bg
+      </a>
+    </nav>
 
-    <!-- Right Column (Theme Switcher) -->
-    <div class="flex items-center justify-end">
+    <!-- 3. RIGHT: Theme Mode Switcher Alone (z-10) -->
+    <div class="flex items-center justify-end z-10">
       <button
         id="theme-toggle-btn"
         type="button"
