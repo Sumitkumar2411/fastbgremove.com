@@ -36,6 +36,8 @@ export interface ExportOptions {
   stickerStrokeColor?: string;
   stickerStrokeWidth?: number;
   stickerShape?: StickerShape;
+  stickerPanX?: number;
+  stickerPanY?: number;
   stickerCaptionText?: string;
   stickerCaptionColor?: string;
   stickerTextNormX?: number;
@@ -379,6 +381,8 @@ export async function renderCompositeCanvas(
       shape: options.stickerShape || 'die-cut',
       strokeColor: options.stickerStrokeColor || '#FFFFFF',
       strokeWidth: options.stickerStrokeWidth ?? 14,
+      panX: options.stickerPanX,
+      panY: options.stickerPanY,
       captionText: options.stickerCaptionText,
       captionColor: options.stickerCaptionColor || '#FFFFFF',
       textNormX: options.stickerTextNormX,

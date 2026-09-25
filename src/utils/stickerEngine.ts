@@ -11,6 +11,8 @@ export interface StickerRenderOptions {
   shape?: StickerShape;
   strokeColor?: string;
   strokeWidth?: number;
+  panX?: number;
+  panY?: number;
   captionText?: string;
   captionColor?: string;
   textNormX?: number;
@@ -368,20 +370,29 @@ export function drawSticker(
   const shape = options.shape || 'die-cut';
   const strokeColor = options.strokeColor || '#FFFFFF';
   const strokeWidth = options.strokeWidth !== undefined ? options.strokeWidth : 14;
+  const panX = options.panX || 0;
+  const panY = options.panY || 0;
+  const defaultX = 0;
+  const defaultY = 0;
+  const drawWidth = width;
+  const drawHeight = height;
+
+  // 1. Clear canvas buffer
+  ctx.clearRect(0, 0, width, height);
 
   if (shape === 'circle') {
     const minSide = Math.min(width, height);
-    const cx = width / 2;
-    const cy = height / 2;
+    const centerX = width / 2;
+    const centerY = height / 2;
     const pad = strokeWidth > 0 ? strokeWidth / 2 : 0;
     const radius = Math.max(1, minSide / 2 - pad);
 
-    // 1. Circular clipping mask
+    // 1. Circular clipping mask & draw segmented cutout with pan offsets
     ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(source, 0, 0, width, height);
+    ctx.drawImage(source, defaultX + panX, defaultY + panY, drawWidth, drawHeight);
     ctx.restore();
 
     // 2. Outer stroke border
@@ -390,23 +401,23 @@ export function drawSticker(
       ctx.strokeStyle = strokeColor;
       ctx.lineWidth = strokeWidth;
       ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }
   } else if (shape === 'square') {
     const minSide = Math.min(width, height);
     const pad = strokeWidth > 0 ? strokeWidth / 2 : 0;
-    const side = Math.max(1, minSide - pad * 2);
-    const sx = Math.round((width - side) / 2);
-    const sy = Math.round((height - side) / 2);
+    const size = Math.max(1, minSide - pad * 2);
+    const frameX = Math.round((width - size) / 2);
+    const frameY = Math.round((height - size) / 2);
 
-    // 1. Sharp 1:1 square clipping mask (ctx.rect)
+    // 1. Sharp 1:1 square clipping mask & draw segmented cutout with pan offsets
     ctx.save();
     ctx.beginPath();
-    ctx.rect(sx, sy, side, side);
+    ctx.rect(frameX, frameY, size, size);
     ctx.clip();
-    ctx.drawImage(source, 0, 0, width, height);
+    ctx.drawImage(source, defaultX + panX, defaultY + panY, drawWidth, drawHeight);
     ctx.restore();
 
     // 2. Outer stroke border with sharp 90-degree miter corners
@@ -416,24 +427,24 @@ export function drawSticker(
       ctx.lineWidth = strokeWidth;
       ctx.lineJoin = 'miter';
       ctx.beginPath();
-      ctx.rect(sx, sy, side, side);
+      ctx.rect(frameX, frameY, size, size);
       ctx.stroke();
       ctx.restore();
     }
   } else if (shape === 'rounded') {
     const pad = strokeWidth > 0 ? strokeWidth / 2 : 0;
-    const rx = pad;
-    const ry = pad;
-    const rw = width - pad * 2;
-    const rh = height - pad * 2;
-    const borderRadius = Math.max(8, Math.round(Math.min(rw, rh) * 0.12));
+    const frameX = pad;
+    const frameY = pad;
+    const frameWidth = width - pad * 2;
+    const frameHeight = height - pad * 2;
+    const radius = Math.max(8, Math.round(Math.min(frameWidth, frameHeight) * 0.12));
 
-    // 1. Rounded rectangle clipping mask
+    // 1. Rounded rectangle clipping mask & draw segmented cutout with pan offsets
     ctx.save();
     ctx.beginPath();
-    drawRoundRect(ctx, rx, ry, rw, rh, borderRadius);
+    drawRoundRect(ctx, frameX, frameY, frameWidth, frameHeight, radius);
     ctx.clip();
-    ctx.drawImage(source, 0, 0, width, height);
+    ctx.drawImage(source, defaultX + panX, defaultY + panY, drawWidth, drawHeight);
     ctx.restore();
 
     // 2. Outer stroke border
@@ -443,7 +454,7 @@ export function drawSticker(
       ctx.lineWidth = strokeWidth;
       ctx.lineJoin = 'round';
       ctx.beginPath();
-      drawRoundRect(ctx, rx, ry, rw, rh, borderRadius);
+      drawRoundRect(ctx, frameX, frameY, frameWidth, frameHeight, radius);
       ctx.stroke();
       ctx.restore();
     }

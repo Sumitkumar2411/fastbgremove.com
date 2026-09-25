@@ -230,6 +230,14 @@ const {
         id="preview-container"
         class="w-full relative min-h-[440px] sm:min-h-[500px] rounded-lg border border-[#e6e5e0] dark:border-[#2e2e33] flex items-center justify-center overflow-hidden bg-[#efeee8]/50 dark:bg-[#151518] transition-colors select-none p-3 sm:p-4"
       >
+        <!-- Tiny non-intrusive micro-badge above the canvas when a shape is selected -->
+        <div
+          id="sticker-pan-hint"
+          class="hidden absolute top-2.5 left-1/2 -translate-x-1/2 z-30 pointer-events-none select-none transition-opacity duration-200"
+        >
+          <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium bg-white/90 dark:bg-[#1c1c1f]/90 px-2.5 py-1 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-xs backdrop-blur-xs flex items-center gap-1">💡 Drag photo inside the frame to adjust position</span>
+        </div>
+
         <!-- Bounding Stage Box for Ratio Containment & Dragging -->
         <div
           id="stage-box"
@@ -287,8 +295,8 @@ const {
             <!-- Live Sticker Outline Canvas (Zero-lag 60fps die-cut preview) -->
             <canvas
               id="sticker-canvas"
-              class="hidden max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 pointer-events-none select-none drop-shadow-xs transition-none"
-              style="will-change: filter, transform; transform: translateZ(0);"
+              class="hidden max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 pointer-events-auto select-none drop-shadow-xs transition-none"
+              style="will-change: filter, transform; transform: translateZ(0); touch-action: none;"
             ></canvas>
 
             <!-- Interactive Brush Canvas (overlay / active drawing surface) -->
@@ -1658,6 +1666,13 @@ const {
   let isPointerOverStickerText: boolean = false;
   let stickerRafId: number | null = null;
 
+  // Sticker Image Panning State (Circle, Square, Rounded frames)
+  let panX: number = 0;
+  let panY: number = 0;
+  let isPanning: boolean = false;
+  let startX: number = 0;
+  let startY: number = 0;
+
   const blurControlWrapper = document.getElementById('blur-control-wrapper') as HTMLElement;
   const backdropBlurSlider = document.getElementById('backdrop-blur-slider') as HTMLInputElement;
   const blurValueLabel = document.getElementById('blur-value-label') as HTMLElement;
@@ -2245,7 +2260,12 @@ const {
     clearMagicStatus();
     if (magicPromptInput) magicPromptInput.value = '';
 
-    // Reset Sticker Outline state
+    // Reset Sticker Outline & Pan state
+    panX = 0;
+    panY = 0;
+    isPanning = false;
+    startX = 0;
+    startY = 0;
     stickerStrokeWidth = 14;
     stickerStrokeColor = '#FFFFFF';
     currentStickerShape = 'die-cut';
@@ -2258,7 +2278,8 @@ const {
     isPointerOverStickerText = false;
     if (stickerTextToggleCheckbox) stickerTextToggleCheckbox.checked = false;
     if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
-    if (stageBox) stageBox.style.cursor = 'default';
+    updateCanvasCursor();
+    updatePanHintUI();
     if (stickerCanvas) {
       stickerCanvas.classList.add('hidden');
       const sCtx = stickerCanvas.getContext('2d');
@@ -2380,11 +2401,13 @@ const {
       if (stageBox) {
         stageBox.style.setProperty('--slider-pos', '0%');
         stageBox.classList.remove('cursor-ew-resize');
-        stageBox.style.cursor = isPointerOverStickerText ? 'grab' : 'default';
       }
+      updateCanvasCursor();
+      updatePanHintUI();
       renderLiveStickerPreview();
     } else {
       if (stickerCanvas) stickerCanvas.classList.add('hidden');
+      updatePanHintUI();
       if (!isBrushModeActive && previewCutoutImg) {
         previewCutoutImg.classList.remove('hidden');
       }
@@ -2413,6 +2436,57 @@ const {
   // STICKER MAKER OUTLINE & PREVIEW ENGINE
   // ==========================================
 
+  function getNaturalPanOffsets(): { naturalPanX: number; naturalPanY: number } {
+    if (!imageNaturalWidth || !imageNaturalHeight) {
+      return { naturalPanX: panX, naturalPanY: panY };
+    }
+    const targetEl = (stickerCanvas && stickerCanvas.getBoundingClientRect().width > 0)
+      ? stickerCanvas
+      : ((previewCutoutImg && previewCutoutImg.getBoundingClientRect().width > 0) ? previewCutoutImg : stageBox);
+
+    if (!targetEl) {
+      return { naturalPanX: panX, naturalPanY: panY };
+    }
+    const rect = targetEl.getBoundingClientRect();
+    if (rect.width <= 0) {
+      return { naturalPanX: panX, naturalPanY: panY };
+    }
+    const scale = imageNaturalWidth / rect.width;
+    return {
+      naturalPanX: Math.round(panX * scale),
+      naturalPanY: Math.round(panY * scale)
+    };
+  }
+
+  function updateCanvasCursor() {
+    if (currentBgTab !== 'sticker') {
+      if (stageBox && !isBrushModeActive) {
+        stageBox.style.cursor = '';
+      }
+      return;
+    }
+
+    let cursor = 'default';
+    if (isDraggingStickerText || isPointerOverStickerText) {
+      cursor = 'move';
+    } else if (currentStickerShape !== 'die-cut') {
+      cursor = isPanning ? 'grabbing' : 'grab';
+    }
+
+    if (stickerCanvas) stickerCanvas.style.cursor = cursor;
+    if (stageBox) stageBox.style.cursor = cursor;
+  }
+
+  function updatePanHintUI() {
+    const hint = document.getElementById('sticker-pan-hint');
+    if (!hint) return;
+    if (currentBgTab === 'sticker' && currentStickerShape !== 'die-cut') {
+      hint.classList.remove('hidden');
+    } else {
+      hint.classList.add('hidden');
+    }
+  }
+
   function renderLiveStickerPreview() {
     if (!stickerCanvas || !previewCutoutImg) return;
 
@@ -2434,10 +2508,13 @@ const {
         sCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
         const source = (isBrushModeActive && brushCanvas) ? brushCanvas : previewCutoutImg;
         const showBoundingBox = isStickerCaptionActive && (isDraggingStickerText || isPointerOverStickerText);
+        const { naturalPanX, naturalPanY } = getNaturalPanOffsets();
         drawSticker(sCtx, source, {
           shape: currentStickerShape,
           strokeColor: stickerStrokeColor,
           strokeWidth: stickerStrokeWidth,
+          panX: currentStickerShape !== 'die-cut' ? naturalPanX : 0,
+          panY: currentStickerShape !== 'die-cut' ? naturalPanY : 0,
           captionText: isStickerCaptionActive ? stickerCaptionText : undefined,
           captionColor: stickerCaptionColor,
           textNormX: stickerTextNormX,
@@ -2502,6 +2579,8 @@ const {
         btn.classList.toggle('border-transparent', !isActive);
       }
     });
+    updatePanHintUI();
+    updateCanvasCursor();
   }
 
   stickerShapeBtns.forEach(btn => {
@@ -2933,12 +3012,25 @@ const {
         if (isOver) {
           isDraggingStickerText = true;
           if (stageBox) stageBox.style.cursor = 'move';
+          if (stickerCanvas) stickerCanvas.style.cursor = 'move';
           try {
             (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
           } catch (_) {}
           updateStickerTextFromClient(e.clientX, e.clientY);
           scheduleStickerRender();
+          return;
         }
+      }
+
+      if (currentStickerShape !== 'die-cut') {
+        isPanning = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        if (stageBox) stageBox.style.cursor = 'grabbing';
+        if (stickerCanvas) stickerCanvas.style.cursor = 'grabbing';
+        try {
+          (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
+        } catch (_) {}
       }
       return;
     }
@@ -2954,21 +3046,32 @@ const {
     if (currentBgTab === 'sticker') {
       if (isDraggingStickerText && isStickerCaptionActive) {
         if (stageBox) stageBox.style.cursor = 'move';
+        if (stickerCanvas) stickerCanvas.style.cursor = 'move';
         updateStickerTextFromClient(e.clientX, e.clientY);
+        return;
+      }
+      if (isPanning && currentStickerShape !== 'die-cut') {
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        if (stageBox) stageBox.style.cursor = 'grabbing';
+        if (stickerCanvas) stickerCanvas.style.cursor = 'grabbing';
+        scheduleStickerRender();
         return;
       }
       if (isStickerCaptionActive && stickerCaptionText.trim()) {
         const isOver = checkPointerOverStickerText(e.clientX, e.clientY);
         if (isOver !== isPointerOverStickerText) {
           isPointerOverStickerText = isOver;
-          if (stageBox) stageBox.style.cursor = isOver ? 'move' : 'default';
+          updateCanvasCursor();
           scheduleStickerRender();
         }
       } else {
         if (isPointerOverStickerText) {
           isPointerOverStickerText = false;
-          if (stageBox) stageBox.style.cursor = 'default';
+          updateCanvasCursor();
           scheduleStickerRender();
+        } else {
+          updateCanvasCursor();
         }
       }
       return;
@@ -2983,9 +3086,15 @@ const {
       try {
         (e.currentTarget as HTMLElement)?.releasePointerCapture?.(e.pointerId);
       } catch (_) {}
-      if (stageBox) {
-        stageBox.style.cursor = isPointerOverStickerText ? 'move' : 'default';
-      }
+      updateCanvasCursor();
+      scheduleStickerRender();
+    }
+    if (isPanning) {
+      isPanning = false;
+      try {
+        (e.currentTarget as HTMLElement)?.releasePointerCapture?.(e.pointerId);
+      } catch (_) {}
+      updateCanvasCursor();
       scheduleStickerRender();
     }
     if (isDraggingSlider) {
@@ -3001,15 +3110,22 @@ const {
     if (isBrushModeActive) return;
     if (e.touches && e.touches.length > 0) {
       if (currentBgTab === 'sticker') {
+        const touch = e.touches[0];
         if (isStickerCaptionActive && stickerCaptionText.trim()) {
-          const touch = e.touches[0];
           const isOver = checkPointerOverStickerText(touch.clientX, touch.clientY);
           if (isOver) {
             isDraggingStickerText = true;
             if (e.cancelable) e.preventDefault();
             updateStickerTextFromClient(touch.clientX, touch.clientY);
             scheduleStickerRender();
+            return;
           }
+        }
+        if (currentStickerShape !== 'die-cut') {
+          isPanning = true;
+          startX = touch.clientX - panX;
+          startY = touch.clientY - panY;
+          if (e.cancelable) e.preventDefault();
         }
         return;
       }
@@ -3022,9 +3138,18 @@ const {
     if (isBrushModeActive) return;
     if (e.touches && e.touches.length > 0) {
       if (currentBgTab === 'sticker') {
+        const touch = e.touches[0];
         if (isDraggingStickerText && isStickerCaptionActive) {
           if (e.cancelable) e.preventDefault();
-          updateStickerTextFromClient(e.touches[0].clientX, e.touches[0].clientY);
+          updateStickerTextFromClient(touch.clientX, touch.clientY);
+          return;
+        }
+        if (isPanning && currentStickerShape !== 'die-cut') {
+          if (e.cancelable) e.preventDefault();
+          panX = touch.clientX - startX;
+          panY = touch.clientY - startY;
+          scheduleStickerRender();
+          return;
         }
         return;
       }
@@ -3037,6 +3162,10 @@ const {
   function onTouchEnd() {
     if (isDraggingStickerText) {
       isDraggingStickerText = false;
+      scheduleStickerRender();
+    }
+    if (isPanning) {
+      isPanning = false;
       scheduleStickerRender();
     }
     if (isDraggingSlider) {
@@ -3054,7 +3183,15 @@ const {
           isDraggingStickerText = true;
           updateStickerTextFromClient(e.clientX, e.clientY);
           scheduleStickerRender();
+          return;
         }
+      }
+      if (currentStickerShape !== 'die-cut') {
+        isPanning = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        if (stageBox) stageBox.style.cursor = 'grabbing';
+        if (stickerCanvas) stickerCanvas.style.cursor = 'grabbing';
       }
       return;
     }
@@ -3066,6 +3203,10 @@ const {
     if (currentBgTab === 'sticker') {
       if (isDraggingStickerText && isStickerCaptionActive) {
         updateStickerTextFromClient(e.clientX, e.clientY);
+      } else if (isPanning && currentStickerShape !== 'die-cut') {
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        scheduleStickerRender();
       }
       return;
     }
@@ -3076,6 +3217,12 @@ const {
   function onMouseUp() {
     if (isDraggingStickerText) {
       isDraggingStickerText = false;
+      updateCanvasCursor();
+      scheduleStickerRender();
+    }
+    if (isPanning) {
+      isPanning = false;
+      updateCanvasCursor();
       scheduleStickerRender();
     }
     if (isDraggingSlider) isDraggingSlider = false;
@@ -3090,7 +3237,7 @@ const {
     stageBox.addEventListener('pointerleave', () => {
       if (!isDraggingStickerText && isPointerOverStickerText) {
         isPointerOverStickerText = false;
-        if (stageBox) stageBox.style.cursor = 'default';
+        updateCanvasCursor();
         scheduleStickerRender();
       }
     });
@@ -3105,26 +3252,54 @@ const {
     stageBox.addEventListener('mousedown', onMouseDown);
   }
 
+  if (stickerCanvas) {
+    stickerCanvas.addEventListener('pointerdown', onPointerDown);
+    stickerCanvas.addEventListener('pointermove', onPointerMove);
+    stickerCanvas.addEventListener('pointerup', onPointerUp);
+    stickerCanvas.addEventListener('pointercancel', onPointerUp);
+    stickerCanvas.addEventListener('pointerleave', () => {
+      if (!isDraggingStickerText && isPointerOverStickerText) {
+        isPointerOverStickerText = false;
+        updateCanvasCursor();
+        scheduleStickerRender();
+      }
+    });
+  }
+
   // Global window listeners for drag continuation outside container
   window.addEventListener('pointermove', (e: PointerEvent) => {
     if (isDraggingStickerText && isStickerCaptionActive) {
       updateStickerTextFromClient(e.clientX, e.clientY);
+    } else if (isPanning && currentStickerShape !== 'die-cut') {
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      scheduleStickerRender();
     } else if (isDraggingSlider) {
       updateSliderFromClientX(e.clientX);
     }
   });
   window.addEventListener('pointerup', () => {
+    if (isPanning) {
+      isPanning = false;
+      updateCanvasCursor();
+      scheduleStickerRender();
+    }
     if (isDraggingStickerText) {
       isDraggingStickerText = false;
-      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'move' : 'default';
+      updateCanvasCursor();
       scheduleStickerRender();
     }
     if (isDraggingSlider) isDraggingSlider = false;
   });
   window.addEventListener('pointercancel', () => {
+    if (isPanning) {
+      isPanning = false;
+      updateCanvasCursor();
+      scheduleStickerRender();
+    }
     if (isDraggingStickerText) {
       isDraggingStickerText = false;
-      if (stageBox) stageBox.style.cursor = isPointerOverStickerText ? 'move' : 'default';
+      updateCanvasCursor();
       scheduleStickerRender();
     }
     if (isDraggingSlider) isDraggingSlider = false;
@@ -3134,6 +3309,11 @@ const {
     if (isDraggingStickerText && isStickerCaptionActive && e.touches && e.touches.length > 0) {
       if (e.cancelable) e.preventDefault();
       updateStickerTextFromClient(e.touches[0].clientX, e.touches[0].clientY);
+    } else if (isPanning && currentStickerShape !== 'die-cut' && e.touches && e.touches.length > 0) {
+      if (e.cancelable) e.preventDefault();
+      panX = e.touches[0].clientX - startX;
+      panY = e.touches[0].clientY - startY;
+      scheduleStickerRender();
     } else if (isDraggingSlider && e.touches && e.touches.length > 0) {
       if (e.cancelable) e.preventDefault();
       updateSliderFromClientX(e.touches[0].clientX);
@@ -3409,6 +3589,12 @@ const {
 
       const mbSize = (resultBlob.size / (1024 * 1024)).toFixed(2);
       metaSizeBadge.textContent = `${mbSize} MB PNG`;
+
+      panX = 0;
+      panY = 0;
+      isPanning = false;
+      startX = 0;
+      startY = 0;
 
       if (initialDefaultMode === 'sticker') {
         switchBgTab('sticker');
@@ -4095,6 +4281,7 @@ const {
             currentStickerShape !== 'die-cut' ||
             (isStickerCaptionActive && stickerCaptionText.trim().length > 0));
 
+        const { naturalPanX, naturalPanY } = getNaturalPanOffsets();
         const exportOpts: ExportOptions = {
           ratio: currentRatio,
           backgroundColor: isStickerActive ? 'transparent' : currentBgColor,
@@ -4108,6 +4295,8 @@ const {
           stickerStrokeColor: stickerStrokeColor,
           stickerStrokeWidth: stickerStrokeWidth,
           stickerShape: currentStickerShape,
+          stickerPanX: currentStickerShape !== 'die-cut' ? naturalPanX : 0,
+          stickerPanY: currentStickerShape !== 'die-cut' ? naturalPanY : 0,
           stickerCaptionText: isStickerCaptionActive ? stickerCaptionText : '',
           stickerCaptionColor: stickerCaptionColor,
           stickerTextNormX: stickerTextNormX,
@@ -4147,6 +4336,7 @@ const {
             currentStickerShape !== 'die-cut' ||
             (isStickerCaptionActive && stickerCaptionText.trim().length > 0));
 
+        const { naturalPanX, naturalPanY } = getNaturalPanOffsets();
         const exportOpts: ExportOptions = {
           ratio: currentRatio,
           backgroundColor: isStickerActive ? '#FFFFFF' : currentBgColor,
@@ -4160,6 +4350,8 @@ const {
           stickerStrokeColor: stickerStrokeColor,
           stickerStrokeWidth: stickerStrokeWidth,
           stickerShape: currentStickerShape,
+          stickerPanX: currentStickerShape !== 'die-cut' ? naturalPanX : 0,
+          stickerPanY: currentStickerShape !== 'die-cut' ? naturalPanY : 0,
           stickerCaptionText: isStickerCaptionActive ? stickerCaptionText : '',
           stickerCaptionColor: stickerCaptionColor,
           stickerTextNormX: stickerTextNormX,
@@ -4203,6 +4395,7 @@ const {
             currentStickerShape !== 'die-cut' ||
             (isStickerCaptionActive && stickerCaptionText.trim().length > 0));
 
+        const { naturalPanX, naturalPanY } = getNaturalPanOffsets();
         const exportOpts: ExportOptions = {
           ratio: currentRatio,
           backgroundColor: isStickerActive ? 'transparent' : currentBgColor,
@@ -4216,6 +4409,8 @@ const {
           stickerStrokeColor: stickerStrokeColor,
           stickerStrokeWidth: stickerStrokeWidth,
           stickerShape: currentStickerShape,
+          stickerPanX: currentStickerShape !== 'die-cut' ? naturalPanX : 0,
+          stickerPanY: currentStickerShape !== 'die-cut' ? naturalPanY : 0,
           stickerCaptionText: isStickerCaptionActive ? stickerCaptionText : '',
           stickerCaptionColor: stickerCaptionColor,
           stickerTextNormX: stickerTextNormX,
@@ -4265,11 +4460,15 @@ const {
       const shapeToUse = currentBgTab === 'sticker' ? currentStickerShape : 'die-cut';
       const textToUse = (currentBgTab === 'sticker' && isStickerCaptionActive) ? stickerCaptionText : '';
 
+      const { naturalPanX, naturalPanY } = getNaturalPanOffsets();
+
       // 1. Render full-resolution sticker canvas with shape, stroke & typography text
       const renderedSourceCanvas = renderStickerCanvas(source, {
         shape: shapeToUse,
         strokeColor: stickerStrokeColor,
         strokeWidth: widthToUse,
+        panX: shapeToUse !== 'die-cut' ? naturalPanX : 0,
+        panY: shapeToUse !== 'die-cut' ? naturalPanY : 0,
         captionText: textToUse,
         captionColor: stickerCaptionColor,
         textNormX: stickerTextNormX,
