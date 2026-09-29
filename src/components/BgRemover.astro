@@ -6,6 +6,7 @@ interface Props {
   cardMaxWidth?: string;
   defaultBg?: 'transparent' | 'white' | 'passport-blue';
   defaultMode?: 'default' | 'sticker';
+  isStickerMode?: boolean;
 }
 
 const {
@@ -14,11 +15,14 @@ const {
   featurePill,
   defaultBg = "transparent",
   defaultMode = "default",
-  cardMaxWidth = (Astro.props.defaultMode === 'sticker' ? 'max-w-4xl' : 'max-w-3xl')
+  isStickerMode,
+  cardMaxWidth = (Astro.props.defaultMode === 'sticker' || Astro.props.isStickerMode ? 'max-w-4xl' : 'max-w-3xl')
 } = Astro.props;
+
+const isSticker = isStickerMode ?? (defaultMode === 'sticker' || Astro.url.pathname.startsWith('/sticker-maker'));
 ---
 
-<section class="w-full flex flex-col items-center justify-center pt-3 sm:pt-6 pb-6 sm:pb-8" data-default-bg={defaultBg} data-default-mode={defaultMode}>
+<section class="w-full flex flex-col items-center justify-center pt-3 sm:pt-6 pb-6 sm:pb-8" data-default-bg={defaultBg} data-default-mode={isSticker ? 'sticker' : 'default'}>
   <!-- Desktop Hero Heading (Clean & Bold Typography) -->
   <div class="text-center max-w-3xl mx-auto mb-6 sm:mb-8 space-y-3">
     {featurePill && (
@@ -1267,7 +1271,7 @@ const {
 
       <!-- Action Bar: Prominent Primary Button & Secondary Actions -->
       <div class="mt-4 -mx-3.5 sm:-mx-7 -mb-3.5 sm:-mb-7">
-        {defaultMode === 'sticker' ? (
+        {isSticker ? (
           <!-- Balanced Professional Sticker Action Dock -->
           <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 w-full p-4 rounded-b-2xl bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
             <!-- Left Group: Secondary Actions -->
@@ -1311,7 +1315,7 @@ const {
                 <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
                 </svg>
-                <span>WhatsApp Sticker (512x512)</span>
+                <span>Download WhatsApp Sticker (512x512 PNG)</span>
               </button>
 
               <!-- Solid Primary HD Download Button -->
@@ -1362,7 +1366,7 @@ const {
               </button>
             </div>
 
-            <!-- Right Group: [ ⬇ Download PNG (Transparent) ] | [ ⬇ JPG (<100KB) ] -->
+            <!-- Right Group: [ ⬇ Download Full HD PNG ] | [ ⬇ JPG (<100KB) ] -->
             <div class="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
               <!-- Solid Primary Download Button -->
               <button
@@ -1375,7 +1379,7 @@ const {
                   <polyline points="7 10 12 15 17 10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                <span>Download PNG (Transparent)</span>
+                <span>Download Full HD PNG</span>
               </button>
 
               <!-- Dual Export Trigger: JPG (<100KB) Dropdown / Secondary -->
@@ -3701,6 +3705,53 @@ const {
     if (submitUrlText) submitUrlText.textContent = 'Import Image';
   }
 
+  function tryDirectBrowserImageLoad(url: string): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      const timeoutId = setTimeout(() => {
+        img.onload = null;
+        img.onerror = null;
+        reject(new Error('Browser image load timed out'));
+      }, 10000);
+
+      img.onload = () => {
+        clearTimeout(timeoutId);
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          if (!canvas.width || !canvas.height) {
+            reject(new Error('Zero dimension image'));
+            return;
+          }
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Canvas context not available'));
+            return;
+          }
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob((b) => {
+            if (b && b.size > 0) {
+              resolve(b);
+            } else {
+              reject(new Error('Canvas export failed'));
+            }
+          }, 'image/png');
+        } catch (err) {
+          reject(err);
+        }
+      };
+
+      img.onerror = (e) => {
+        clearTimeout(timeoutId);
+        reject(new Error('Direct image load error'));
+      };
+
+      img.src = url;
+    });
+  }
+
   async function fetchAndProcessImageUrl(url: string) {
     try {
       switchView('processing');
@@ -3708,19 +3759,42 @@ const {
       if (processingSubtitle) processingSubtitle.textContent = 'Connecting through secure proxy...';
       if (progressBarFill) progressBarFill.style.width = '15%';
 
-      const res = await fetch(`/api/fetch-image?url=${encodeURIComponent(url)}`);
-      if (!res.ok) {
-        let errMsg = `Failed to fetch image (HTTP ${res.status})`;
-        try {
-          const errJson = await res.json();
-          if (errJson?.error) errMsg = errJson.error;
-        } catch (_) {}
-        throw new Error(errMsg);
+      let blob: Blob | null = null;
+      let proxyFailed = false;
+
+      try {
+        const res = await fetch(`/api/fetch-image?url=${encodeURIComponent(url)}`);
+        if (res.ok) {
+          const resBlob = await res.blob();
+          if (resBlob && resBlob.size > 0) {
+            blob = resBlob;
+          } else {
+            proxyFailed = true;
+          }
+        } else {
+          proxyFailed = true;
+        }
+      } catch (_) {
+        proxyFailed = true;
       }
 
-      const blob = await res.blob();
+      // If proxy returned 403 or failed, attempt direct browser fallback
+      if (proxyFailed || !blob) {
+        if (processingSubtitle) processingSubtitle.textContent = 'Attempting direct browser connection...';
+        try {
+          blob = await tryDirectBrowserImageLoad(url);
+        } catch (directErr) {
+          // Both proxy and direct browser load were blocked (e.g. host CORS/403)
+          switchView('upload');
+          const friendlyMsg = 'Unable to fetch this specific URL due to host restrictions. Try saving the image and dragging it here.';
+          showToast(friendlyMsg);
+          showError(friendlyMsg);
+          return;
+        }
+      }
+
       if (!blob || blob.size === 0) {
-        throw new Error('Received empty image response from URL.');
+        throw new Error('Unable to extract image data from the provided URL.');
       }
 
       await processImage(blob);

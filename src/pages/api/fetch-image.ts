@@ -8,6 +8,18 @@ const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
+const BROWSER_FETCH_HEADERS: Record<string, string> = {
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+  'Accept':
+    'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Sec-Fetch-Dest': 'image',
+  'Sec-Fetch-Mode': 'no-cors',
+  'Sec-Fetch-Site': 'cross-site',
+};
+
+
 function jsonError(message: string, status = 400): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,
@@ -112,12 +124,8 @@ export const GET: APIRoute = async (context) => {
     try {
       upstreamRes = await fetch(targetUrl, {
         method: 'GET',
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept':
-            'image/avif,image/webp,image/apng,image/svg+xml,image/*,text/html;q=0.9,*/*;q=0.8',
-        },
+        headers: BROWSER_FETCH_HEADERS,
+        redirect: 'follow',
         signal: controller.signal,
       });
     } catch (fetchErr: any) {
@@ -179,11 +187,8 @@ export const GET: APIRoute = async (context) => {
       try {
         imgRes = await fetch(resolvedUrl.href, {
           method: 'GET',
-          headers: {
-            'User-Agent':
-              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          },
+          headers: BROWSER_FETCH_HEADERS,
+          redirect: 'follow',
           signal: imageController.signal,
         });
       } catch (err: any) {
