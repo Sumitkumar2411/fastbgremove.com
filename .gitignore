@@ -26,3 +26,5 @@ pnpm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+!.dev.vars.example

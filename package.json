@@ -6,11 +6,12 @@
     "dev": "astro dev --host",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "deploy": "wrangler pages deploy dist --project-name=fastbgremove --branch=main"
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.6.4",
+    "@astrojs/cloudflare": "12",
     "@astrojs/sitemap": "^3.7.4",
     "@imgly/background-removal": "^1.7.0",
     "@tailwindcss/vite": "^4.0.9",
@@ -19,6 +20,6 @@
   },
   "devDependencies": {
     "typescript": "^5.7.3",
-    "wrangler": "^4.135.0"
+    "wrangler": "^4.146.0"
   }
 }
