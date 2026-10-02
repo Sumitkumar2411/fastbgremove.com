@@ -12,9 +12,13 @@ interface Props {
   structuredData?: Record<string, any> | Record<string, any>[];
 }
 
-const props = Astro.props;
+const {
+  title = "FastBgRemove — 100% Free AI Background Remover (HD & No Upload)",
+  ogTitle = "FastBgRemove — 100% Free AI Background Remover (HD & No Upload)",
+  ...restProps
+} = Astro.props;
 ---
 
-<BaseLayout {...props}>
+<BaseLayout title={title} ogTitle={ogTitle} {...restProps}>
   <slot />
 </BaseLayout>

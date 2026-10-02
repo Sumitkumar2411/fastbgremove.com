@@ -16,7 +16,7 @@ interface Props {
 }
 
 const {
-  title = "fastbgremove.com – 100% Free HD Background Remover (Zero Upload, Unlimited)",
+  title = "FastBgRemove — 100% Free AI Background Remover (HD & No Upload)",
   description = "Instant, 100% in-browser background removal with zero server uploads. Download full original resolution HD PNGs with no watermarks and no sign-up.",
   canonicalPath = "",
   ogType = "website",
@@ -34,7 +34,12 @@ const cleanPath = canonicalPath
 const canonicalUrl = new URL(cleanPath, "https://fastbgremove.com").href;
 
 const isHomepage = cleanPath === '/' || cleanPath === '';
-const finalOgTitle = ogTitle || (isHomepage ? "fastbgremove.com – Free In-Browser Background Remover" : title);
+const defaultBrandTitle = "FastBgRemove — 100% Free AI Background Remover (HD & No Upload)";
+const finalPageTitle = (isHomepage && (!title || title.includes("fastbgremove.com – 100% Free HD Background Remover")))
+  ? defaultBrandTitle
+  : (title || defaultBrandTitle);
+
+const finalOgTitle = ogTitle || (isHomepage ? defaultBrandTitle : finalPageTitle);
 const finalOgDescription = ogDescription || (isHomepage ? "Remove image backgrounds instantly in HD. 100% private, no sign-up, zero watermarks." : description);
 const finalOgUrl = canonicalUrl;
 
@@ -92,7 +97,7 @@ const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStr
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    <title>{finalPageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
     {noindex ? (

@@ -286,15 +286,22 @@ const faqSchema = {
               </div>
             </div>
 
-            <!-- Subject Segmentation Progress Overlay (Non-blocking) -->
+            <!-- Soft Pulsing Scanline Shimmer Overlay (Active During Processing) -->
+            <div
+              id="scanline-overlay"
+              class="hidden absolute inset-0 pointer-events-none overflow-hidden rounded-xl z-25"
+            >
+              <div class="w-full h-28 bg-gradient-to-b from-transparent via-[#E5A93C]/20 to-transparent animate-scanline"></div>
+            </div>
+
+            <!-- Subject Segmentation Progress Overlay (Modern Centered Glassmorphic) -->
             <div
               id="segmentation-banner"
-              class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-30 px-3.5 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-[#E5A93C]/40 text-white text-xs font-medium flex items-center gap-2.5 shadow-xl transition-all"
+              class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-300"
             >
-              <div class="w-3.5 h-3.5 border-2 border-[#E5A93C] border-t-transparent rounded-full animate-spin"></div>
-              <span id="segmentation-banner-text">Isolating subject for portrait bokeh...</span>
-              <div class="w-16 bg-white/20 h-1.5 rounded-full overflow-hidden">
-                <div id="segmentation-progress-fill" class="bg-[#E5A93C] h-full w-1/3 transition-all duration-300"></div>
+              <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-xs font-medium shadow-xl">
+                <svg class="animate-spin h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                <span>Analyzing portrait depth...</span>
               </div>
             </div>
           </div>
@@ -420,28 +427,31 @@ const faqSchema = {
 
           <!-- Right: Format Selector & Download CTA -->
           <div class="flex items-center gap-2.5 w-full sm:w-auto">
-            <!-- Format Choice -->
-            <select
-              id="export-format"
-              class="h-10 px-3 rounded-lg bg-white dark:bg-[#242428] border border-[#cfcdc4] dark:border-[#3e3e44] text-xs font-mono font-medium text-[#26251e] dark:text-[#ededed] focus:outline-none focus:border-[#E5A93C] cursor-pointer shadow-xs"
-              aria-label="Export file format"
-            >
-              <option value="png">PNG (Lossless)</option>
-              <option value="jpeg">JPG (Photo)</option>
-            </select>
+            <!-- Format Segmented Pill Switch -->
+            <div class="inline-flex p-1 bg-[#efeee8] dark:bg-[#242428] rounded-xl border border-[#cfcdc4]/60 dark:border-[#3e3e44]/60 shrink-0">
+              <button
+                type="button"
+                id="format-png-btn"
+                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-white dark:bg-[#1c1c1f] text-[#b47818] dark:text-[#E5A93C] shadow-xs border border-[#D49B28]/30 dark:border-[#E5A93C]/30"
+              >
+                PNG (Lossless)
+              </button>
+              <button
+                type="button"
+                id="format-jpg-btn"
+                class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer"
+              >
+                JPG (Web)
+              </button>
+            </div>
 
             <!-- Download Button -->
             <button
               type="button"
               id="download-btn"
-              class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg bg-[#E5A93C] hover:bg-[#D49B28] active:bg-[#c28c20] text-zinc-950 text-xs sm:text-sm font-bold shadow-md hover:shadow-[0_4px_16px_rgba(229,169,60,0.4)] transition-all cursor-pointer active:scale-95 shrink-0"
+              class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
             >
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              <span>Download Full HD Image</span>
+              <span>⬇ Download Full HD</span>
             </button>
           </div>
         </div>
@@ -632,6 +642,21 @@ const faqSchema = {
   </article>
 </BaseLayout>
 
+<!-- SCANLINE ANIMATION STYLE -->
+<style>
+  @keyframes scanline {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(450%);
+    }
+  }
+  .animate-scanline {
+    animation: scanline 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+</style>
+
 <!-- CLIENT-SIDE BLUR & CENSOR ENGINE SCRIPT -->
 <script>
   interface CensorBox {
@@ -658,6 +683,7 @@ const faqSchema = {
   let censorStartY: number = 0;
   let censorCurrentX: number = 0;
   let censorCurrentY: number = 0;
+  let selectedFormat: 'png' | 'jpeg' = 'png';
   let rafId: number | null = null;
 
   // DOM Elements
@@ -686,21 +712,58 @@ const faqSchema = {
   const statusPill = document.getElementById('status-pill') as HTMLDivElement;
   const statusText = document.getElementById('status-text') as HTMLSpanElement;
   const dimensionsBadge = document.getElementById('dimensions-badge') as HTMLSpanElement;
+  const scanlineOverlay = document.getElementById('scanline-overlay') as HTMLDivElement;
   const segmentationBanner = document.getElementById('segmentation-banner') as HTMLDivElement;
-  const segmentationBannerText = document.getElementById('segmentation-banner-text') as HTMLSpanElement;
-  const segmentationProgressFill = document.getElementById('segmentation-progress-fill') as HTMLDivElement;
   const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
   const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
-  const exportFormat = document.getElementById('export-format') as HTMLSelectElement;
+  const formatPngBtn = document.getElementById('format-png-btn') as HTMLButtonElement;
+  const formatJpgBtn = document.getElementById('format-jpg-btn') as HTMLButtonElement;
   const presetButtons = document.querySelectorAll('.preset-btn');
 
-  // Aperture Text Mapping
-  function getApertureDescription(radius: number): string {
-    if (radius <= 2) return '(f/11 Sharp Focus)';
-    if (radius <= 6) return '(f/4.0 Subtle Softness)';
-    if (radius <= 14) return '(f/2.0 Realistic Bokeh)';
-    if (radius <= 24) return '(f/1.4 Creamy Portrait)';
-    return '(f/0.95 Dreamy Max)';
+  // Presets Configuration
+  const PRESET_VALUES = [4, 12, 22, 36];
+  const PRESET_DESCRIPTIONS: Record<number, string> = {
+    4: '(f/4.0 Subtle Softness)',
+    12: '(f/2.0 Realistic Bokeh)',
+    22: '(f/1.4 Creamy Portrait)',
+    36: '(f/0.95 Dreamy Max)'
+  };
+
+  const PRESET_INACTIVE_CLASS = 'preset-btn px-2.5 py-1 rounded-md text-xs font-medium bg-white dark:bg-[#1c1c1f] text-[#26251e] dark:text-[#ededed] border border-[#cfcdc4] dark:border-[#3e3e44] hover:border-[#E5A93C] hover:text-[#b47818] dark:hover:text-[#E5A93C] transition-all cursor-pointer shadow-xs active:scale-95';
+  const PRESET_ACTIVE_CLASS = 'preset-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/10 dark:bg-amber-500/15 text-[#b47818] dark:text-[#E5A93C] border border-[#D49B28] dark:border-[#E5A93C] shadow-xs active:scale-95 transition-all cursor-pointer ring-1 ring-[#D49B28]/50 dark:ring-[#E5A93C]/50';
+
+  // Synchronize Preset Buttons & Dynamic Label
+  function syncPresetState(val: number, isPresetClick = false) {
+    let matchedPreset = false;
+
+    presetButtons.forEach((btn) => {
+      const btnVal = parseInt((btn as HTMLButtonElement).dataset.preset || '0', 10);
+      if (btnVal === val && (isPresetClick || PRESET_VALUES.includes(val))) {
+        (btn as HTMLButtonElement).className = PRESET_ACTIVE_CLASS;
+        matchedPreset = true;
+      } else {
+        (btn as HTMLButtonElement).className = PRESET_INACTIVE_CLASS;
+      }
+    });
+
+    if (blurDisplayVal) blurDisplayVal.textContent = `${val}px`;
+
+    if (matchedPreset && PRESET_DESCRIPTIONS[val]) {
+      if (apertureLabel) apertureLabel.textContent = PRESET_DESCRIPTIONS[val];
+    } else {
+      if (apertureLabel) apertureLabel.textContent = `Blur Radius: ${val}px (Custom)`;
+    }
+  }
+
+  // Update Format Segmented Pill Buttons
+  function updateFormatUI() {
+    const activeClass = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-white dark:bg-[#1c1c1f] text-[#b47818] dark:text-[#E5A93C] shadow-xs border border-[#D49B28]/30 dark:border-[#E5A93C]/30';
+    const inactiveClass = 'px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer';
+
+    if (formatPngBtn && formatJpgBtn) {
+      formatPngBtn.className = selectedFormat === 'png' ? activeClass : inactiveClass;
+      formatJpgBtn.className = selectedFormat === 'jpeg' ? activeClass : inactiveClass;
+    }
   }
 
   // Update Status Pill
@@ -770,9 +833,9 @@ const faqSchema = {
     isSegmenting = true;
     updateModeUI();
 
+    if (scanlineOverlay) scanlineOverlay.classList.remove('hidden');
     if (segmentationBanner) segmentationBanner.classList.remove('hidden');
-    if (segmentationProgressFill) segmentationProgressFill.style.width = '20%';
-    if (segmentationBannerText) segmentationBannerText.textContent = 'Isolating portrait subject...';
+    queueRender();
 
     try {
       const { removeBackground } = await import('@imgly/background-removal');
@@ -782,12 +845,6 @@ const faqSchema = {
           format: 'image/png',
           quality: 1.0,
           type: 'foreground'
-        },
-        progress: (_key: string, current: number, total: number) => {
-          if (total > 0 && segmentationProgressFill) {
-            const pct = Math.min(95, Math.round((current / total) * 100));
-            segmentationProgressFill.style.width = `${pct}%`;
-          }
         }
       });
 
@@ -798,6 +855,7 @@ const faqSchema = {
         segmentationDone = true;
         isSegmenting = false;
         if (segmentationBanner) segmentationBanner.classList.add('hidden');
+        if (scanlineOverlay) scanlineOverlay.classList.add('hidden');
         updateModeUI();
         queueRender();
       };
@@ -809,6 +867,7 @@ const faqSchema = {
       console.warn('AI Segmentation error or fallback:', err);
       isSegmenting = false;
       if (segmentationBanner) segmentationBanner.classList.add('hidden');
+      if (scanlineOverlay) scanlineOverlay.classList.add('hidden');
       setStatus('Fallback: Blurring entire image', 'warning');
       currentMode = 'entire';
       updateModeUI();
@@ -822,6 +881,9 @@ const faqSchema = {
     segmentationDone = false;
     foregroundImage = null;
     censorBoxes = [];
+    blurRadius = 12;
+    if (blurSlider) blurSlider.value = '12';
+    syncPresetState(12, true);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -904,6 +966,16 @@ const faqSchema = {
 
     // CASE 2: MODE-SPECIFIC RENDERING
     if (currentMode === 'portrait') {
+      if (isSegmenting) {
+        // Retain source image on canvas with soft skeleton shimmer / opacity-80 during segmentation
+        ctx.save();
+        ctx.globalAlpha = 0.8;
+        ctx.filter = 'none';
+        ctx.drawImage(originalImage, 0, 0, W, H);
+        ctx.restore();
+        return;
+      }
+
       // 1. Draw Blurred Background Layer with Edge Bleed
       const bleed = Math.ceil(blurRadius * 2.5);
       ctx.save();
@@ -1054,9 +1126,8 @@ const faqSchema = {
       offCtx.restore();
     }
 
-    const format = exportFormat ? exportFormat.value : 'png';
-    const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-    const extension = format === 'jpeg' ? 'jpg' : 'png';
+    const mimeType = selectedFormat === 'jpeg' ? 'image/jpeg' : 'image/png';
+    const extension = selectedFormat === 'jpeg' ? 'jpg' : 'png';
 
     offscreen.toBlob(
       (blob) => {
@@ -1083,6 +1154,13 @@ const faqSchema = {
     isSegmenting = false;
     isSplitActive = false;
     censorBoxes = [];
+    selectedFormat = 'png';
+    blurRadius = 12;
+    if (blurSlider) blurSlider.value = '12';
+    syncPresetState(12, true);
+    updateFormatUI();
+    if (scanlineOverlay) scanlineOverlay.classList.add('hidden');
+    if (segmentationBanner) segmentationBanner.classList.add('hidden');
     if (splitDivider) splitDivider.classList.add('hidden');
     if (splitToggleText) splitToggleText.textContent = 'Split View';
     if (editorView) editorView.classList.add('hidden');
@@ -1190,8 +1268,7 @@ const faqSchema = {
     blurSlider.addEventListener('input', (e) => {
       const target = e.target as HTMLInputElement;
       blurRadius = parseInt(target.value, 10);
-      if (blurDisplayVal) blurDisplayVal.textContent = `${blurRadius}px`;
-      if (apertureLabel) apertureLabel.textContent = getApertureDescription(blurRadius);
+      syncPresetState(blurRadius, false);
       queueRender();
     });
   }
@@ -1203,8 +1280,7 @@ const faqSchema = {
       const val = parseInt(target.dataset.preset || '12', 10);
       blurRadius = val;
       if (blurSlider) blurSlider.value = val.toString();
-      if (blurDisplayVal) blurDisplayVal.textContent = `${val}px`;
-      if (apertureLabel) apertureLabel.textContent = getApertureDescription(val);
+      syncPresetState(val, true);
       queueRender();
     });
   });
@@ -1374,6 +1450,21 @@ const faqSchema = {
   // Action Dock Buttons
   if (resetBtn) resetBtn.addEventListener('click', resetStudio);
   if (downloadBtn) downloadBtn.addEventListener('click', downloadFullHd);
+
+  // Format Segmented Pill Buttons
+  if (formatPngBtn) {
+    formatPngBtn.addEventListener('click', () => {
+      selectedFormat = 'png';
+      updateFormatUI();
+    });
+  }
+
+  if (formatJpgBtn) {
+    formatJpgBtn.addEventListener('click', () => {
+      selectedFormat = 'jpeg';
+      updateFormatUI();
+    });
+  }
 
   // Resize Listener
   window.addEventListener('resize', () => {
