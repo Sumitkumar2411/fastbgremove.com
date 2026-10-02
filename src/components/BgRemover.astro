@@ -348,6 +348,20 @@ const isSticker = isStickerPage !== undefined
             style="width: 25px; height: 25px;"
           ></div>
 
+          <!-- Sticker Studio Segmentation Loading Overlay -->
+          <div
+            id="sticker-segmentation-overlay"
+            class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none p-4"
+          >
+            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 dark:bg-[#1c1c1f]/95 border border-[#E5A93C]/30 shadow-lg backdrop-blur-md">
+              <svg class="w-4 h-4 text-[#E5A93C] animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span class="text-xs font-semibold text-[#26251e] dark:text-[#ededed] font-sans">Segmenting foreground in browser RAM...</span>
+            </div>
+          </div>
+
           <!-- CENTER DRAGGABLE DIVIDER -->
           <div
             id="slider-divider"
@@ -1288,47 +1302,40 @@ const isSticker = isStickerPage !== undefined
       <div class="mt-4 -mx-3.5 sm:-mx-7 -mb-3.5 sm:-mb-7">
         {isSticker ? (
           <!-- Sticker Maker Bottom Dock -->
-          <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-b-2xl bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-            <!-- Left Side -->
-            <div class="flex items-center gap-2">
-              <button
-                id="upload-another-btn"
-                type="button"
-                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-              >
-                ↺ Select New Image
-              </button>
-              <button
-                id="copy-clipboard-btn"
-                type="button"
-                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-                title="Copy sticker cutout to clipboard"
-              >
-                📋 <span id="copy-btn-text">Copy PNG</span>
-              </button>
-            </div>
-
-            <!-- Right Side -->
-            <div class="flex items-center gap-2">
-              <button
-                id="download-whatsapp-btn"
-                type="button"
-                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white transition-colors shadow-2xs flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                title="Download official WhatsApp Sticker (512x512 PNG with 16px safety padding)"
-              >
-                <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
-                </svg>
-                <span>🟢 WhatsApp Sticker (512x512)</span>
-              </button>
-              <button
-                id="download-hd-btn"
-                type="button"
-                class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
-              >
-                ⬇ Download Full HD PNG
-              </button>
-            </div>
+          <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-3 mt-6 p-4 rounded-b-2xl bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+            <button
+              id="upload-another-btn"
+              type="button"
+              class="h-11 px-4 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-2 shrink-0"
+            >
+              ↺ Select New Image
+            </button>
+            <button
+              id="copy-clipboard-btn"
+              type="button"
+              class="h-11 px-4 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-2 shrink-0"
+              title="Copy sticker cutout to clipboard"
+            >
+              📋 <span id="copy-btn-text">Copy PNG</span>
+            </button>
+            <button
+              id="download-whatsapp-btn"
+              type="button"
+              class="h-11 px-5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white transition-colors shadow-2xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shrink-0"
+              title="Download official WhatsApp Sticker (512x512 PNG with 16px safety padding)"
+            >
+              <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
+              </svg>
+              <span>WhatsApp Sticker (512x512)</span>
+            </button>
+            <button
+              id="download-hd-btn"
+              type="button"
+              class="h-11 px-6 rounded-xl text-xs sm:text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shrink-0"
+            >
+              ⬇ Download Full HD PNG
+            </button>
           </div>
         ) : (
           <!-- Homepage Bottom Dock -->
@@ -1586,6 +1593,7 @@ const isSticker = isStickerPage !== undefined
 
   // Sticker Outline, Shape & Caption Elements & State
   const stickerCanvas = document.getElementById('sticker-canvas') as HTMLCanvasElement;
+  const stickerSegmentationOverlay = document.getElementById('sticker-segmentation-overlay') as HTMLElement | null;
   const bgTabBtnSticker = document.getElementById('bg-tab-btn-sticker') as HTMLButtonElement;
   const bgTabContentSticker = document.getElementById('bg-tab-content-sticker') as HTMLElement;
   const stickerShapeBtns = document.querySelectorAll('.sticker-shape-btn');
@@ -1609,6 +1617,8 @@ const isSticker = isStickerPage !== undefined
   const downloadWhatsappBtn = document.getElementById('download-whatsapp-btn') as HTMLButtonElement | null;
 
   let currentBgTab: 'color' | 'photo' | 'magic' | 'sticker' = initialDefaultMode === 'sticker' ? 'sticker' : 'color';
+  let isSegmenting: boolean = false;
+  let isCaptionFocused: boolean = false;
   let stickerStrokeWidth: number = 14;
   let stickerStrokeColor: string = '#FFFFFF';
   let currentStickerShape: StickerShape = 'die-cut';
@@ -2231,14 +2241,18 @@ const isSticker = isStickerPage !== undefined
     if (stickerStrokeSlider) stickerStrokeSlider.value = '14';
     if (stickerStrokeLabel) stickerStrokeLabel.textContent = '14px';
     updateStickerSwatchUI('#FFFFFF');
+    isSegmenting = false;
+    isCaptionFocused = false;
     isStickerCaptionActive = false;
     isDraggingStickerText = false;
     isPointerOverStickerText = false;
+    if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
     if (stickerTextToggleCheckbox) stickerTextToggleCheckbox.checked = false;
     if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
     updateCanvasCursor();
     updatePanHintUI();
     if (stickerCanvas) {
+      stickerCanvas.classList.remove('animate-pulse');
       stickerCanvas.classList.add('hidden');
       const sCtx = stickerCanvas.getContext('2d');
       if (sCtx) sCtx.clearRect(0, 0, stickerCanvas.width, stickerCanvas.height);
@@ -2446,6 +2460,7 @@ const isSticker = isStickerPage !== undefined
   }
 
   function renderLiveStickerPreview() {
+    if (isSegmenting) return;
     if (!stickerCanvas || !previewCutoutImg) return;
 
     const hasStickerActive =
@@ -2465,7 +2480,7 @@ const isSticker = isStickerPage !== undefined
       if (sCtx) {
         sCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
         const source = (isBrushModeActive && brushCanvas) ? brushCanvas : previewCutoutImg;
-        const showBoundingBox = isStickerCaptionActive && (isDraggingStickerText || isPointerOverStickerText);
+        const showBoundingBox = isStickerCaptionActive && (isDraggingStickerText || isPointerOverStickerText || isCaptionFocused);
         const { naturalPanX, naturalPanY } = getNaturalPanOffsets();
         drawSticker(sCtx, source, {
           shape: currentStickerShape,
@@ -2622,11 +2637,17 @@ const isSticker = isStickerPage !== undefined
       if (isStickerCaptionActive) {
         if (stickerCaptionPanel) stickerCaptionPanel.classList.remove('hidden');
         if (stickerCaptionInput) {
+          if (!stickerCaptionInput.value.trim()) {
+            stickerCaptionInput.value = 'My Sticker';
+          }
           stickerCaptionInput.focus();
           stickerCaptionText = stickerCaptionInput.value;
+          isCaptionFocused = true;
+          isPointerOverStickerText = true;
         }
       } else {
         if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
+        isCaptionFocused = false;
         isPointerOverStickerText = false;
         isDraggingStickerText = false;
         if (stageBox) stageBox.style.cursor = 'default';
@@ -2647,13 +2668,19 @@ const isSticker = isStickerPage !== undefined
         stickerTextToggleBtn.classList.remove(...inactiveClasses);
         if (stickerCaptionPanel) stickerCaptionPanel.classList.remove('hidden');
         if (stickerCaptionInput) {
+          if (!stickerCaptionInput.value.trim()) {
+            stickerCaptionInput.value = 'My Sticker';
+          }
           stickerCaptionInput.focus();
           stickerCaptionText = stickerCaptionInput.value;
+          isCaptionFocused = true;
+          isPointerOverStickerText = true;
         }
       } else {
         stickerTextToggleBtn.classList.remove(...activeClasses);
         stickerTextToggleBtn.classList.add(...inactiveClasses);
         if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
+        isCaptionFocused = false;
         isPointerOverStickerText = false;
         isDraggingStickerText = false;
         if (stageBox) stageBox.style.cursor = 'default';
@@ -2663,6 +2690,14 @@ const isSticker = isStickerPage !== undefined
   }
 
   if (stickerCaptionInput) {
+    stickerCaptionInput.addEventListener('focus', () => {
+      isCaptionFocused = true;
+      scheduleStickerRender();
+    });
+    stickerCaptionInput.addEventListener('blur', () => {
+      isCaptionFocused = false;
+      scheduleStickerRender();
+    });
     ['input', 'keyup'].forEach(evt => {
       stickerCaptionInput.addEventListener(evt, () => {
         stickerCaptionText = stickerCaptionInput.value;
@@ -3425,18 +3460,53 @@ const isSticker = isStickerPage !== undefined
         imgProbe.onerror = () => resolve(null);
       });
 
-      switchView('processing');
-      progressBarFill.style.width = '15%';
-      processingTitle.textContent = 'Initializing in-browser neural engine...';
-      processingSubtitle.textContent = 'Loading WebAssembly runtime...';
+      const isStickerStudio = initialDefaultMode === 'sticker' || currentBgTab === 'sticker';
+      if (isStickerStudio) {
+        isSegmenting = true;
+        switchView('result');
+        if (stageBgLayer) stageBgLayer.classList.add('bg-checkerboard');
+        if (sliderDivider) sliderDivider.classList.add('hidden');
+        if (originalBadge) originalBadge.classList.add('hidden');
+        if (cutoutBadge) cutoutBadge.classList.add('hidden');
+        if (previewCutoutImg) previewCutoutImg.classList.add('hidden');
+        if (stickerCanvas && originalImageObj) {
+          stickerCanvas.width = imageNaturalWidth;
+          stickerCanvas.height = imageNaturalHeight;
+          const sCtx = stickerCanvas.getContext('2d');
+          if (sCtx) {
+            sCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
+            sCtx.save();
+            sCtx.globalAlpha = 0.6;
+            sCtx.drawImage(originalImageObj, 0, 0, imageNaturalWidth, imageNaturalHeight);
+            sCtx.restore();
+          }
+          stickerCanvas.classList.remove('hidden');
+          stickerCanvas.classList.add('animate-pulse');
+        }
+        if (stickerSegmentationOverlay) {
+          stickerSegmentationOverlay.classList.remove('hidden');
+        }
+      } else {
+        switchView('processing');
+        progressBarFill.style.width = '15%';
+        processingTitle.textContent = 'Initializing in-browser neural engine...';
+        processingSubtitle.textContent = 'Loading WebAssembly runtime...';
+      }
 
       const { removeBackground } = await import('@imgly/background-removal');
 
-      if (isCancelled) return;
+      if (isCancelled) {
+        isSegmenting = false;
+        if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+        if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
+        return;
+      }
 
-      progressBarFill.style.width = '35%';
-      processingTitle.textContent = 'Segmenting foreground...';
-      processingSubtitle.textContent = 'Calculating pixel contours in browser RAM...';
+      if (!isStickerStudio) {
+        progressBarFill.style.width = '35%';
+        processingTitle.textContent = 'Segmenting foreground...';
+        processingSubtitle.textContent = 'Calculating pixel contours in browser RAM...';
+      }
 
       let rawBlob: Blob;
       try {
@@ -3474,7 +3544,12 @@ const isSticker = isStickerPage !== undefined
         });
       }
 
-      if (isCancelled) return;
+      if (isCancelled) {
+        isSegmenting = false;
+        if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+        if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
+        return;
+      }
 
       progressBarFill.style.width = '97%';
       processingTitle.textContent = 'Refining alpha contours & edge feathering...';
@@ -3482,7 +3557,12 @@ const isSticker = isStickerPage !== undefined
 
       const resultBlob = await refineAlphaMask(rawBlob, file);
 
-      if (isCancelled) return;
+      if (isCancelled) {
+        isSegmenting = false;
+        if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+        if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
+        return;
+      }
 
       progressBarFill.style.width = '100%';
       processingTitle.textContent = 'Compositing full HD PNG...';
@@ -3564,6 +3644,10 @@ const isSticker = isStickerPage !== undefined
       applyBlurEffect();
       applyShadowEffect();
 
+      isSegmenting = false;
+      if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+      if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
+
       setTimeout(() => {
         if (!isCancelled) {
           switchView('result');
@@ -3575,6 +3659,9 @@ const isSticker = isStickerPage !== undefined
 
     } catch (err: any) {
       console.error('Background removal error:', err);
+      isSegmenting = false;
+      if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+      if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
       if (!isCancelled) {
         switchView('upload');
         let errMsg = 'Processing failed. Please check your image format.';

@@ -16,7 +16,7 @@ interface Props {
 }
 
 const {
-  title = "FastBgRemove — 100% Free AI Background Remover (HD & No Upload)",
+  title = "FastBgRemove — 100% Free AI Background Remover & Sticker Studio",
   description = "Instant, 100% in-browser background removal with zero server uploads. Download full original resolution HD PNGs with no watermarks and no sign-up.",
   canonicalPath = "",
   ogType = "website",
@@ -34,8 +34,8 @@ const cleanPath = canonicalPath
 const canonicalUrl = new URL(cleanPath, "https://fastbgremove.com").href;
 
 const isHomepage = cleanPath === '/' || cleanPath === '';
-const defaultBrandTitle = "FastBgRemove — 100% Free AI Background Remover (HD & No Upload)";
-const finalPageTitle = (isHomepage && (!title || title.includes("fastbgremove.com – 100% Free HD Background Remover")))
+const defaultBrandTitle = "FastBgRemove — 100% Free AI Background Remover & Sticker Studio";
+const finalPageTitle = (isHomepage && (!title || title.includes("fastbgremove.com – 100% Free HD Background Remover") || title.includes("FastBgRemove — 100% Free AI Background Remover")))
   ? defaultBrandTitle
   : (title || defaultBrandTitle);
 
