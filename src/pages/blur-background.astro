@@ -2,31 +2,43 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FaqAccordion from '../components/FaqAccordion.astro';
 
-const pageTitle = "Blur Image Background Online Free — Instant DSLR Bokeh Effect";
-const pageDescription = "Easily blur image backgrounds or entire photos online directly in your browser. Professional DSLR bokeh effect with 100% privacy and instant HD export.";
+const pageTitle = "Blur Image Online Free — DSLR Background Blur & Photo Censoring";
+const pageDescription = "Free in-browser tool to blur photo backgrounds with DSLR bokeh or censor sensitive details in screenshots. 100% private, instant, and runs locally on your device.";
 const canonicalPath = "/blur-background";
 
 const faqs = [
   {
-    question: "How can I blur the background of a photo without blurring the person?",
-    answer: "FastBgRemove uses in-browser neural segmentation to automatically detect and isolate human subjects, products, or pets. The AI protects the foreground subject while applying a realistic DSLR bokeh blur exclusively to the background—creating professional portrait mode photos directly in your browser."
+    question: "How do I blur the background of a photo online for free?",
+    answer: "Upload your photo to FastBgRemove and select 'Blur Background'. The in-browser AI automatically detects and isolates the human subject, product, or pet, keeping it razor-sharp while applying a realistic optical DSLR bokeh blur to the background. You can adjust blur intensity from subtle f/4.0 softness to creamy f/1.4 depth and download your full-resolution HD photo instantly for free."
   },
   {
-    question: "Is my photo uploaded to any server when I blur the background?",
-    answer: "No. Unlike PineTools, Fotor, or Canva, FastBgRemove runs 100% locally on your device using WebAssembly and client-side HTML5 Canvas. Your photos never leave your device, ensuring complete privacy for personal portraits, IDs, and sensitive documents."
+    question: "How can I blur sensitive text or numbers in a screenshot?",
+    answer: "Select the 'Censor Area / Box Blur' mode in our interactive studio. Click and drag your cursor over any confidential details—such as credit card numbers, passwords, API keys, addresses, or faces—to draw an irreversible privacy blur box. You can create multiple censor boxes across receipts, bank statements, or chat logs before exporting."
   },
   {
-    question: "Can I download full-resolution HD blurred images for free?",
-    answer: "Yes. FastBgRemove provides unlimited full-resolution HD exports without watermarks, credit paywalls, or account sign-ups. Your exported image retains its original camera resolution and aspect ratio."
+    question: "Does blurring an image upload my photos to an external server?",
+    answer: "No. FastBgRemove operates on a strict 100% client-side privacy architecture using HTML5 Canvas and local WebAssembly. All pixel processing, neural subject detection, and blur computations occur entirely in your device's memory (RAM). Your files never touch external servers or cloud databases, making it fully safe for sensitive corporate documents and personal IDs."
+  },
+  {
+    question: "How do I blur an image on iPhone or Android mobile without installing an app?",
+    answer: "Open fastbgremove.com/blur-background directly in Safari, Chrome, or any mobile browser. Tap to upload or take a photo, select your blur mode, use touch controls to adjust bokeh or drag censor boxes, and tap 'Download Full HD Image'. No App Store download, no account creation, and zero storage space required."
+  },
+  {
+    question: "What is the difference between full image blur and DSLR portrait bokeh?",
+    answer: "Full image blur applies a uniform Gaussian blur across every single pixel, which is ideal for obscuring an entire background graphic, sensitive document, or privacy thumbnail. In contrast, DSLR portrait bokeh utilizes neural subject isolation to separate the foreground subject from the background, simulating a physical 50mm f/1.4 prime lens where the subject remains crisp while only the background melts away."
+  },
+  {
+    question: "Can I blur photos without losing original HD resolution?",
+    answer: "Yes. FastBgRemove exports images at their native camera resolution (up to 4K+). While other online tools downscale free exports to low-resolution 0.25MP previews or compress them heavily, our pipeline renders full-fidelity exports directly on an offscreen canvas matching your original pixel dimensions with zero watermarks."
   }
 ];
 
 const softwareSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "FastBgRemove Blur Background Studio",
+  "name": "FastBgRemove Blur Studio",
   "url": "https://fastbgremove.com/blur-background",
-  "applicationCategory": "PhotoEditing",
+  "applicationCategory": "MultimediaApplication",
   "operatingSystem": "All",
   "browserRequirements": "Requires WebAssembly & HTML5 Canvas support",
   "offers": {
@@ -37,9 +49,10 @@ const softwareSchema = {
   "description": pageDescription,
   "featureList": [
     "AI Portrait Bokeh background blur with subject protection",
-    "Full photo blur mode for privacy and sensitive data masking",
+    "Selective Censor Area / Box Blur for redacting text and faces in screenshots",
+    "Full photo blur mode for privacy and background graphics",
     "Live adjustable blur intensity slider (0-40px)",
-    "Interactive before/after split slider and instant toggle",
+    "Interactive before/after split slider and instant preview toggle",
     "100% client-side WebAssembly execution with zero server uploads",
     "Full original resolution HD export with zero watermarks"
   ]
@@ -67,16 +80,18 @@ const faqSchema = {
   ogDescription={pageDescription}
   structuredData={[softwareSchema, faqSchema]}
 >
+  <meta name="keywords" content="blur image online, blur photo online free, photo background blur online, blur something in a picture, how to blur in a screenshot, dslr bokeh online" slot="head" />
+
   <!-- HERO SECTION (Clean & Above-the-fold) -->
   <section class="w-full flex flex-col items-center justify-center pt-2 sm:pt-4 pb-4 sm:pb-6 text-center">
     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 dark:bg-amber-500/15 border border-[#D49B28]/30 dark:border-[#E5A93C]/30 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] shadow-xs mb-3">
       <span>⚡ Instant In-Browser Blur · 100% Private</span>
     </div>
     <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-      Blur Image Background Online
+      Blur Image Online Free
     </h1>
-    <p class="mt-2.5 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-      Create DSLR-quality portrait bokeh or apply smooth image blur in seconds. Free, unlimited, and runs locally on your device.
+    <p class="mt-2.5 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+      Create DSLR-quality portrait bokeh, censor sensitive details in screenshots, or apply smooth photo blur in seconds. Free, unlimited, and runs locally on your device.
     </p>
   </section>
 
@@ -154,16 +169,16 @@ const faqSchema = {
             AI Subject Isolation
           </span>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#efeee8]/60 dark:bg-[#242428]/60 border border-[#cfcdc4]/50 dark:border-[#3e3e44]/50 font-medium">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
-            Realistic Bokeh Aperture
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+            Censor Box Redaction
           </span>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#efeee8]/60 dark:bg-[#242428]/60 border border-[#cfcdc4]/50 dark:border-[#3e3e44]/50 font-medium">
             <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
-            100% In-Browser Isolation
+            100% In-Browser Privacy
           </span>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#efeee8]/60 dark:bg-[#242428]/60 border border-[#cfcdc4]/50 dark:border-[#3e3e44]/50 font-medium">
-            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-            Native Resolution HD Export
+            <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
+            Native Full HD Export
           </span>
         </div>
       </div>
@@ -171,30 +186,37 @@ const faqSchema = {
       <!-- STATE 2: INTERACTIVE BLUR STUDIO VIEW (Initially Hidden) -->
       <div id="editor-view" class="hidden flex-col gap-4">
         <!-- Top Toolbar: Mode Selector & Status -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-[#e6e5e0] dark:border-[#2e2e33]">
-          <!-- Mode Selector Tabs -->
-          <div class="flex items-center p-1 bg-[#efeee8] dark:bg-[#242428] rounded-xl border border-[#cfcdc4]/60 dark:border-[#3e3e44]/60 w-full sm:w-auto">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-[#e6e5e0] dark:border-[#2e2e33]">
+          <!-- Mode Selector Tabs: 3 Modes -->
+          <div class="flex items-center p-1 bg-[#efeee8] dark:bg-[#242428] rounded-xl border border-[#cfcdc4]/60 dark:border-[#3e3e44]/60 w-full lg:w-auto overflow-x-auto no-scrollbar">
             <button
               type="button"
               id="mode-portrait-btn"
-              class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-white dark:bg-[#1c1c1f] text-[#b47818] dark:text-[#E5A93C] shadow-xs border border-[#D49B28]/30 dark:border-[#E5A93C]/30"
+              class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-white dark:bg-[#1c1c1f] text-[#b47818] dark:text-[#E5A93C] shadow-xs border border-[#D49B28]/30 dark:border-[#E5A93C]/30 shrink-0"
             >
               <span>🎯</span>
               <span>Blur Background</span>
-              <span class="hidden md:inline text-[10px] px-1 rounded bg-[#E5A93C]/20 text-[#b47818] dark:text-[#E5A93C] font-mono">Bokeh</span>
+            </button>
+            <button
+              type="button"
+              id="mode-censor-btn"
+              class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer shrink-0"
+            >
+              <span>🔲</span>
+              <span>Censor Area / Box Blur</span>
             </button>
             <button
               type="button"
               id="mode-entire-btn"
-              class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer"
+              class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer shrink-0"
             >
-              <span>🔲</span>
-              <span>Blur Entire Image</span>
+              <span>🌐</span>
+              <span>Full Blur</span>
             </button>
           </div>
 
           <!-- Status & Metadata Badges -->
-          <div class="flex items-center gap-2 self-end sm:self-center">
+          <div class="flex items-center gap-2 self-end lg:self-center">
             <div id="status-pill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-medium">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span id="status-text">Ready</span>
@@ -205,12 +227,45 @@ const faqSchema = {
           </div>
         </div>
 
+        <!-- CENSOR MODE HELPER BAR (Only visible in censor mode) -->
+        <div id="censor-controls-bar" class="hidden items-center justify-between p-2.5 px-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-[#D49B28]/30 dark:border-[#E5A93C]/30 text-xs text-[#b47818] dark:text-[#E5A93C]">
+          <div class="flex items-center gap-2 font-medium">
+            <span>💡</span>
+            <span>Click & drag across sensitive text, faces, or numbers to draw censor blur boxes.</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="censor-count-badge" class="font-mono text-[11px] px-2 py-0.5 rounded bg-white dark:bg-[#1c1c1f] border border-[#D49B28]/30 dark:border-[#E5A93C]/30 font-semibold">
+              0 boxes
+            </span>
+            <button
+              type="button"
+              id="censor-undo-btn"
+              class="px-2 py-0.5 rounded bg-white dark:bg-[#1c1c1f] border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[11px] font-medium cursor-pointer transition-all active:scale-95"
+            >
+              ↶ Undo
+            </button>
+            <button
+              type="button"
+              id="censor-clear-btn"
+              class="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 text-[11px] font-semibold cursor-pointer transition-all active:scale-95"
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+
         <!-- Interactive Preview Stage with Before/After Split Viewer -->
         <div class="relative w-full rounded-xl overflow-hidden bg-checkerboard dark:bg-[#121212] border border-[#e6e5e0] dark:border-[#2e2e33] flex items-center justify-center min-h-[300px] sm:min-h-[440px] max-h-[580px] select-none shadow-inner">
           <!-- Canvas Container -->
-          <div id="canvas-container" class="relative max-w-full max-h-[560px] flex items-center justify-center overflow-hidden">
+          <div id="canvas-container" class="relative max-w-full max-h-[560px] flex items-center justify-center overflow-hidden touch-none">
             <!-- Main Render Canvas -->
             <canvas id="preview-canvas" class="max-w-full max-h-[560px] object-contain shadow-md block"></canvas>
+
+            <!-- Censor Box Dragging Overlay Indicator -->
+            <div
+              id="censor-drag-box"
+              class="hidden absolute border-2 border-dashed border-[#E5A93C] bg-[#E5A93C]/20 pointer-events-none z-20"
+            ></div>
 
             <!-- Split Divider Line (Active in Split Comparison Mode) -->
             <div
@@ -224,7 +279,7 @@ const faqSchema = {
               </div>
               <!-- Floating Pill Indicators -->
               <div class="absolute top-3 right-3 px-2 py-0.5 rounded bg-black/75 text-white text-[10px] font-mono whitespace-nowrap pointer-events-none">
-                Blurred Bokeh
+                Processed
               </div>
               <div class="absolute top-3 left-3 -translate-x-full px-2 py-0.5 rounded bg-black/75 text-white text-[10px] font-mono whitespace-nowrap pointer-events-none">
                 Original
@@ -275,7 +330,7 @@ const faqSchema = {
         </div>
 
         <!-- Controls Toolbar: Blur Intensity & Presets -->
-        <div class="p-4 sm:p-5 rounded-xl bg-[#f7f7f4] dark:bg-[#242428] border border-[#e6e5e0] dark:border-[#2e2e33] space-y-4">
+        <div id="slider-container" class="p-4 sm:p-5 rounded-xl bg-[#f7f7f4] dark:bg-[#242428] border border-[#e6e5e0] dark:border-[#2e2e33] space-y-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <label for="blur-slider" class="text-xs sm:text-sm font-bold text-[#26251e] dark:text-white">
@@ -394,202 +449,202 @@ const faqSchema = {
     </div>
   </div>
 
-  <!-- BELOW-THE-FOLD SEMANTIC SEO GUIDE -->
-  <section class="mt-16 sm:mt-24 pt-12 border-t border-[#e6e5e0] dark:border-[#2e2e33] max-w-5xl mx-auto px-4">
-    <!-- 3-Step Guide Header -->
-    <div class="max-w-3xl mx-auto text-center mb-12 space-y-2">
+  <!-- BELOW-THE-FOLD HIGH-INTENT SEMANTIC SEO GUIDE (1,000+ Words) -->
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 py-16 text-slate-700 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800 space-y-16">
+    <!-- Section 1: Workflow -->
+    <section class="space-y-5">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] font-mono">
         <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
-        <span>Zero Server Latency · In-Browser WebAssembly</span>
+        <span>Precision In-Browser Processing</span>
       </div>
-      <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-        How to Blur Photo Background in 3 Clicks
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        How to Blur Image Backgrounds Online Without Losing Subject Sharpness
       </h2>
-      <p class="text-sm sm:text-base text-zinc-600 dark:text-[#A7A7A7] max-w-2xl mx-auto leading-relaxed">
-        Achieve shallow depth-of-field and creamy DSLR bokeh straight from your browser—no Photoshop subscriptions, no registration, and no software installations.
+      <p>
+        Traditional online image blur tools face a major limitation: they apply a blunt, uniform Gaussian convolution across the entire rectangular canvas. When users attempt to soften an unappealing room background, messy office space, or crowded public street behind a portrait, standard tools indiscriminately blur the subject’s eyes, hair contours, facial features, and clothing along with the backdrop.
       </p>
-    </div>
+      <p>
+        FastBgRemove solves this problem by combining client-side <strong>WebAssembly neural network segmentation</strong> with accelerated HTML5 Canvas rendering. By isolating the foreground silhouette into an independent high-fidelity alpha mask, our engine lets you apply rich, creamy depth-of-field blur strictly to the background layer while preserving 100% of your subject's crisp detail.
+      </p>
 
-    <!-- 3 Steps Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-      <div class="p-6 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-3 relative group hover:border-[#E5A93C]/50 transition-colors">
-        <div class="w-9 h-9 rounded-lg bg-[#E5A93C]/10 text-[#b47818] dark:text-[#E5A93C] font-bold text-sm font-mono flex items-center justify-center">
-          01
+      <!-- 3-Step Interactive Process Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-3">
+        <div class="p-5 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-[#E5A93C]/10 text-[#b47818] dark:text-[#E5A93C] font-mono font-bold text-sm flex items-center justify-center">01</div>
+          <h3 class="text-base font-bold text-zinc-900 dark:text-white">1. Upload Image</h3>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400">
+            Drop your JPG, PNG, or WebP photo into the studio or press Ctrl+V. The image loads directly into your browser's local sandbox memory with zero transmission across the internet.
+          </p>
         </div>
-        <h3 class="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
-          Drop or Paste Photo
-        </h3>
-        <p class="text-xs sm:text-sm text-zinc-600 dark:text-[#a09c92] leading-relaxed">
-          Upload any portrait, selfie, pet, or product shot in JPG, PNG, or WebP up to 25MB. Your image is loaded straight into local device RAM with 100% privacy.
-        </p>
-      </div>
-
-      <div class="p-6 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-3 relative group hover:border-[#E5A93C]/50 transition-colors">
-        <div class="w-9 h-9 rounded-lg bg-[#E5A93C]/10 text-[#b47818] dark:text-[#E5A93C] font-bold text-sm font-mono flex items-center justify-center">
-          02
+        <div class="p-5 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-[#E5A93C]/10 text-[#b47818] dark:text-[#E5A93C] font-mono font-bold text-sm flex items-center justify-center">02</div>
+          <h3 class="text-base font-bold text-zinc-900 dark:text-white">2. Neural Separation</h3>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400">
+            The in-browser engine segments people, pets, or products in local RAM. Adjust the live slider from subtle f/4.0 softness (4px) to dramatic f/1.4 creamy bokeh (24px+).
+          </p>
         </div>
-        <h3 class="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
-          Select Bokeh & Adjust Slider
-        </h3>
-        <p class="text-xs sm:text-sm text-zinc-600 dark:text-[#a09c92] leading-relaxed">
-          Pick <strong>Blur Background</strong> to automatically isolate your subject with AI, or <strong>Blur Entire Image</strong> for privacy masking. Dial in your blur from 0px to 40px in real time.
-        </p>
-      </div>
-
-      <div class="p-6 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-3 relative group hover:border-[#E5A93C]/50 transition-colors">
-        <div class="w-9 h-9 rounded-lg bg-[#E5A93C]/10 text-[#b47818] dark:text-[#E5A93C] font-bold text-sm font-mono flex items-center justify-center">
-          03
+        <div class="p-5 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-[#E5A93C]/10 text-[#b47818] dark:text-[#E5A93C] font-mono font-bold text-sm flex items-center justify-center">03</div>
+          <h3 class="text-base font-bold text-zinc-900 dark:text-white">3. Native HD Export</h3>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400">
+            Compare before and after using the split comparison slider. Download your finished photo at native camera resolution (up to 4K+) with zero compression or watermarks.
+          </p>
         </div>
-        <h3 class="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
-          Export Native HD Photo
-        </h3>
-        <p class="text-xs sm:text-sm text-zinc-600 dark:text-[#a09c92] leading-relaxed">
-          Compare before and after using the split comparison slider, then download your full-resolution HD image. No watermarks, no credit paywalls, and zero compression.
-        </p>
       </div>
-    </div>
+    </section>
 
-    <!-- COMPARISON BOX: FastBgRemove vs PineTools & Basic Resizers -->
-    <div class="my-16 sm:my-20">
-      <div class="text-center max-w-3xl mx-auto mb-8 space-y-2">
-        <h3 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white">
-          Why FastBgRemove vs PineTools & Basic Resizers
-        </h3>
-        <p class="text-xs sm:text-sm text-zinc-600 dark:text-[#a09c92]">
-          Built from the ground up for modern creators who demand real portrait bokeh, native HD exports, and zero invasive ads.
-        </p>
+    <!-- Section 2: Screenshot & Censor Privacy -->
+    <section class="space-y-5">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
+        <span>Identity & Document Redaction</span>
       </div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        How to Blur Sensitive Information in Screenshots and Documents
+      </h2>
+      <p>
+        Whether sharing workplace bugs on GitHub, publishing receipts on social forums, posting chat transcripts on Reddit, or forwarding bank transfers to accountants, protecting Personally Identifiable Information (PII) is essential. Capturing screenshots often inadvertently leaks confidential data: credit card numbers, billing addresses, API authorization tokens, private Slack handles, and phone numbers.
+      </p>
+      <p>
+        Many users mistakenly rely on semi-transparent digital highlighter markers or basic pixelation utilities to redact text. However, cybersecurity researchers have demonstrated that low-frequency pixelation and translucent strokes can be systematically recovered using machine learning de-pixelation tools (such as Depix) or simple luminance contrast curve adjustments.
+      </p>
+      <div class="p-5 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] space-y-3">
+        <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Irreversible Redaction with Censor Box Mode
+        </h3>
+        <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          FastBgRemove's dedicated <strong>Censor Area / Box Blur</strong> feature applies mathematical Gaussian dispersion with edge clamping directly over your selected bounding box. The underlying character geometry is permanently averaged into surrounding pixel frequencies, completely destroying text edge topography so that OCR scanners and AI reconstruction models cannot recover the redacted data.
+        </p>
+        <ul class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 space-y-1.5 list-disc list-inside">
+          <li><strong>Financial Statements:</strong> Redact bank routing numbers, account balances, and credit card CVVs.</li>
+          <li><strong>Customer Support Screenshots:</strong> Conceal passwords, private customer emails, and session tokens.</li>
+          <li><strong>Identity Documents:</strong> Hide passport numbers, national IDs, and date of birth details before submission.</li>
+        </ul>
+      </div>
+    </section>
 
-      <div class="w-full overflow-x-auto rounded-xl border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] shadow-xs">
+    <!-- Section 3: DSLR Bokeh vs Gaussian Blur -->
+    <section class="space-y-5">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
+        <span>Optical Simulation Principles</span>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        DSLR Bokeh vs. Standard Gaussian Blur: Choosing the Right Depth
+      </h2>
+      <p>
+        In physical camera optics, <em>bokeh</em> (derived from the Japanese word <em>boke-aji</em>, meaning "blur quality") refers to the visual character of out-of-focus light points produced by lens apertures. When shooting with a prime lens—such as an 85mm f/1.4 or 50mm f/1.8—the physical iris creates a narrow depth of field (DoF) where only the focal plane remains sharp, causing specular background highlights to swell into smooth, creamy discs.
+      </p>
+      <p>
+        Standard digital blur algorithms, by contrast, apply a uniform mathematical Gaussian blur function where pixel values are computed as a weighted average of their neighbors. Without intelligent depth layering, this creates a flat "frosted shower door" effect rather than an authentic optical portrait look.
+      </p>
+      <div class="w-full overflow-x-auto rounded-xl border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f]">
         <table class="w-full text-left text-xs sm:text-sm border-collapse font-sans">
           <thead>
             <tr class="border-b border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#121212]">
-              <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-[#ededed]">Feature / Capability</th>
-              <th class="p-3.5 sm:p-4 font-bold text-[#26251e] dark:text-white bg-[#E5A93C]/10 dark:bg-[#E5A93C]/15 border-x border-[#e6e5e0] dark:border-[#2e2e33]">
-                <div class="flex items-center gap-1.5 font-mono text-xs">
-                  <span>FastBgRemove</span>
-                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#E5A93C] text-zinc-950 font-bold uppercase">Pro</span>
-                </div>
-              </th>
-              <th class="p-3.5 sm:p-4 font-medium text-[#807d72] dark:text-[#a09c92]">PineTools</th>
-              <th class="p-3.5 sm:p-4 font-medium text-[#807d72] dark:text-[#a09c92]">Basic Cloud Resizers</th>
+              <th class="p-3.5 font-semibold text-zinc-900 dark:text-white">Setting</th>
+              <th class="p-3.5 font-semibold text-zinc-900 dark:text-white">Aperture Equivalent</th>
+              <th class="p-3.5 font-semibold text-zinc-900 dark:text-white">Visual Character</th>
+              <th class="p-3.5 font-semibold text-zinc-900 dark:text-white">Best Used For</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#e6e5e0] dark:divide-[#2e2e33]">
-            <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
-              <td class="p-3.5 sm:p-4 font-medium text-[#26251e] dark:text-[#ededed]">
-                Subject Protection (AI Portrait Bokeh)
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#26251e] dark:text-white bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33] font-medium">
-                <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <span>✓</span>
-                  <span>AI isolates person; keeps face sharp</span>
-                </div>
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ✗ Blurs whole box (ruins face & eyes)
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ✗ Blurs entire rectangle only
-              </td>
+            <tr>
+              <td class="p-3.5 font-mono text-zinc-900 dark:text-white">4px – 6px</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">f/4.0 – f/5.6</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">Gentle, natural separation; background details remain identifiable.</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">LinkedIn headshots, environmental portraits, corporate bios.</td>
             </tr>
-            <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
-              <td class="p-3.5 sm:p-4 font-medium text-[#26251e] dark:text-[#ededed]">
-                Image Privacy & Security
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#26251e] dark:text-white bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33] font-medium">
-                <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <span>✓</span>
-                  <span>100% Local In-Browser RAM</span>
-                </div>
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ⚠ Uploads photos to remote servers
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ⚠ Stored on 3rd-party cloud buckets
-              </td>
+            <tr>
+              <td class="p-3.5 font-mono text-zinc-900 dark:text-white font-semibold">12px – 16px</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">f/2.0 – f/2.8</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">Classic DSLR prime lens aesthetic; background softly melts away.</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">Social media profile pictures, creator thumbnails, wedding photos.</td>
             </tr>
-            <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
-              <td class="p-3.5 sm:p-4 font-medium text-[#26251e] dark:text-[#ededed]">
-                Advertisements & Popups
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#26251e] dark:text-white bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33] font-medium">
-                <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <span>✓</span>
-                  <span>Zero Ads · Zero Interruptions</span>
-                </div>
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ✗ Heavy ad banners & flashing popups
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ✗ Interstitial ads & countdown timers
-              </td>
+            <tr>
+              <td class="p-3.5 font-mono text-zinc-900 dark:text-white">20px – 28px</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">f/1.4 – f/1.8</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">Creamy, cinematic blur; background shapes blur into abstract colors.</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">Ecommerce product showcases, artistic closeups, messy room cleanup.</td>
             </tr>
-            <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
-              <td class="p-3.5 sm:p-4 font-medium text-[#26251e] dark:text-[#ededed]">
-                Full HD Resolution Export
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#26251e] dark:text-white bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33] font-medium">
-                <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <span>✓</span>
-                  <span>100% Original Camera Resolution</span>
-                </div>
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ⚠ Downscaled or heavily compressed
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ✗ 0.25MP previews unless paying
-              </td>
-            </tr>
-            <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
-              <td class="p-3.5 sm:p-4 font-medium text-[#26251e] dark:text-[#ededed]">
-                Interactive Split Slider
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#26251e] dark:text-white bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33] font-medium">
-                <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <span>✓</span>
-                  <span>Live Before / After Slider</span>
-                </div>
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ✗ Static form; reload required
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                ✗ No live preview
-              </td>
+            <tr>
+              <td class="p-3.5 font-mono text-zinc-900 dark:text-white">32px – 40px</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">f/0.95 (Dreamy)</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">Maximum diffusion; background is completely unrecognizable.</td>
+              <td class="p-3.5 text-zinc-600 dark:text-zinc-400">Total privacy masking, abstract gradient backdrops, graphic design.</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
 
-    <!-- 3-QUESTION FAQ ACCORDION -->
-    <div class="my-16 sm:my-20">
-      <div class="max-w-2xl mx-auto text-center mb-8 space-y-2">
-        <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-          Frequently Asked Questions
-        </h3>
-        <p class="text-xs sm:text-sm text-zinc-600 dark:text-[#a09c92]">
-          Everything you need to know about our free, client-side blur engine.
+    <!-- Section 4: Privacy Architecture -->
+    <section class="space-y-5">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
+        <span>Zero-Trust Client Isolation</span>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        Browser-First Privacy: Why Local Image Blurring Matters
+      </h2>
+      <p>
+        The majority of free web utilities operate on cloud-hosted backends. When you upload an image to an online photo editor, your binary file is transmitted over the public web to remote cloud servers, stored on third-party object storage buckets (like AWS S3 or Google Cloud Storage), processed on cloud GPU clusters, and sent back across the network.
+      </p>
+      <p>
+        This conventional architecture introduces severe vulnerabilities for sensitive imagery. Photos can remain cached in cloud temporary directories, processed by unvetted logging pipelines, or accessed by third-party training scrapers.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+        <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1.5">
+          <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+            <span>✓</span>
+            <span>FastBgRemove: Local WebAssembly</span>
+          </div>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400">
+            Executes strictly inside your browser's V8 / JavaScript virtual machine. Images are decoded into local volatile RAM and purged the moment you close the tab. Zero bytes are uploaded to any server.
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1.5">
+          <div class="text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+            <span>✗</span>
+            <span>Cloud Photo Converters</span>
+          </div>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400">
+            Requires transmitting raw photos over public HTTP. Incurs server latency, exposes photos to cloud storage breaches, and enforces download quotas or watermark paywalls.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: PAA FAQ Accordion -->
+    <section class="space-y-6 pt-4">
+      <div class="space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+          Comprehensive FAQ (People Also Ask)
+        </h2>
+        <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+          Answers to the most common questions regarding in-browser background blurring, privacy redaction, and image fidelity.
         </p>
       </div>
 
-      <div class="max-w-3xl mx-auto">
-        <FaqAccordion items={faqs} />
-      </div>
-    </div>
-  </section>
+      <FaqAccordion items={faqs} />
+    </section>
+  </article>
 </BaseLayout>
 
-<!-- CLIENT-SIDE BLUR ENGINE SCRIPT -->
+<!-- CLIENT-SIDE BLUR & CENSOR ENGINE SCRIPT -->
 <script>
+  interface CensorBox {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  }
+
   let originalFile: File | null = null;
   let originalImage: HTMLImageElement | null = null;
   let foregroundImage: HTMLImageElement | null = null;
-  let currentMode: 'portrait' | 'entire' = 'portrait';
+  let currentMode: 'portrait' | 'censor' | 'entire' = 'portrait';
   let blurRadius: number = 12;
   let splitPercent: number = 50;
   let isSplitActive: boolean = false;
@@ -597,6 +652,12 @@ const faqSchema = {
   let isSegmenting: boolean = false;
   let segmentationDone: boolean = false;
   let isDraggingSplit: boolean = false;
+  let censorBoxes: CensorBox[] = [];
+  let isDrawingCensor: boolean = false;
+  let censorStartX: number = 0;
+  let censorStartY: number = 0;
+  let censorCurrentX: number = 0;
+  let censorCurrentY: number = 0;
   let rafId: number | null = null;
 
   // DOM Elements
@@ -607,6 +668,11 @@ const faqSchema = {
   const samplePortraitBtn = document.getElementById('sample-portrait-btn') as HTMLButtonElement;
   const previewCanvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
   const canvasContainer = document.getElementById('canvas-container') as HTMLDivElement;
+  const censorDragBox = document.getElementById('censor-drag-box') as HTMLDivElement;
+  const censorControlsBar = document.getElementById('censor-controls-bar') as HTMLDivElement;
+  const censorCountBadge = document.getElementById('censor-count-badge') as HTMLSpanElement;
+  const censorUndoBtn = document.getElementById('censor-undo-btn') as HTMLButtonElement;
+  const censorClearBtn = document.getElementById('censor-clear-btn') as HTMLButtonElement;
   const splitDivider = document.getElementById('split-divider') as HTMLDivElement;
   const splitToggleBtn = document.getElementById('split-toggle-btn') as HTMLButtonElement;
   const splitToggleText = document.getElementById('split-toggle-text') as HTMLSpanElement;
@@ -615,6 +681,7 @@ const faqSchema = {
   const blurDisplayVal = document.getElementById('blur-display-val') as HTMLSpanElement;
   const apertureLabel = document.getElementById('aperture-label') as HTMLSpanElement;
   const modePortraitBtn = document.getElementById('mode-portrait-btn') as HTMLButtonElement;
+  const modeCensorBtn = document.getElementById('mode-censor-btn') as HTMLButtonElement;
   const modeEntireBtn = document.getElementById('mode-entire-btn') as HTMLButtonElement;
   const statusPill = document.getElementById('status-pill') as HTMLDivElement;
   const statusText = document.getElementById('status-text') as HTMLSpanElement;
@@ -653,22 +720,47 @@ const faqSchema = {
     }
   }
 
-  // Update Mode Tabs Styling
+  // Update Mode UI & Tabs Styling
   function updateModeUI() {
-    if (currentMode === 'portrait') {
-      modePortraitBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-white dark:bg-[#1c1c1f] text-[#b47818] dark:text-[#E5A93C] shadow-xs border border-[#D49B28]/30 dark:border-[#E5A93C]/30';
-      modeEntireBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer';
-      if (segmentationDone) {
-        setStatus('Subject Protected (Bokeh)', 'active');
-      } else if (isSegmenting) {
-        setStatus('AI Isolating Subject...', 'processing');
-      } else {
-        setStatus('Portrait Mode', 'ready');
+    const activeClass = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-white dark:bg-[#1c1c1f] text-[#b47818] dark:text-[#E5A93C] shadow-xs border border-[#D49B28]/30 dark:border-[#E5A93C]/30 shrink-0';
+    const inactiveClass = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer shrink-0';
+
+    modePortraitBtn.className = currentMode === 'portrait' ? activeClass : inactiveClass;
+    modeCensorBtn.className = currentMode === 'censor' ? activeClass : inactiveClass;
+    modeEntireBtn.className = currentMode === 'entire' ? activeClass : inactiveClass;
+
+    if (currentMode === 'censor') {
+      if (censorControlsBar) {
+        censorControlsBar.classList.remove('hidden');
+        censorControlsBar.classList.add('flex');
       }
+      if (previewCanvas) previewCanvas.style.cursor = 'crosshair';
+      updateCensorBadge();
+      setStatus('Censor Mode: Drag on image', 'ready');
     } else {
-      modeEntireBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-white dark:bg-[#1c1c1f] text-[#b47818] dark:text-[#E5A93C] shadow-xs border border-[#D49B28]/30 dark:border-[#E5A93C]/30';
-      modePortraitBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer';
-      setStatus('Blurring Entire Image', 'ready');
+      if (censorControlsBar) {
+        censorControlsBar.classList.add('hidden');
+        censorControlsBar.classList.remove('flex');
+      }
+      if (previewCanvas) previewCanvas.style.cursor = 'default';
+
+      if (currentMode === 'portrait') {
+        if (segmentationDone) {
+          setStatus('Subject Protected (Bokeh)', 'active');
+        } else if (isSegmenting) {
+          setStatus('AI Isolating Subject...', 'processing');
+        } else {
+          setStatus('Portrait Mode', 'ready');
+        }
+      } else {
+        setStatus('Full Image Blur', 'ready');
+      }
+    }
+  }
+
+  function updateCensorBadge() {
+    if (censorCountBadge) {
+      censorCountBadge.textContent = `${censorBoxes.length} box${censorBoxes.length === 1 ? '' : 'es'}`;
     }
   }
 
@@ -729,6 +821,7 @@ const faqSchema = {
     originalFile = file;
     segmentationDone = false;
     foregroundImage = null;
+    censorBoxes = [];
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -765,7 +858,6 @@ const faqSchema = {
     const naturalWidth = originalImage.naturalWidth;
     const naturalHeight = originalImage.naturalHeight;
 
-    // Constrain preview canvas for crisp 60fps interaction
     const maxPreviewWidth = 1400;
     const maxPreviewHeight = 900;
     let width = naturalWidth;
@@ -810,22 +902,63 @@ const faqSchema = {
       return;
     }
 
-    // CASE 2: Normal Render (Portrait Bokeh or Entire Image)
-    // Draw Blurred Background Layer with Edge Bleed
-    const bleed = Math.ceil(blurRadius * 2.5);
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, 0, W, H);
-    ctx.clip(); // Eliminate edge darkening artifact
-    ctx.filter = blurRadius > 0 ? `blur(${blurRadius}px)` : 'none';
-    ctx.drawImage(originalImage, -bleed, -bleed, W + bleed * 2, H + bleed * 2);
-    ctx.restore();
+    // CASE 2: MODE-SPECIFIC RENDERING
+    if (currentMode === 'portrait') {
+      // 1. Draw Blurred Background Layer with Edge Bleed
+      const bleed = Math.ceil(blurRadius * 2.5);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, W, H);
+      ctx.clip(); // Eliminate edge darkening artifact
+      ctx.filter = blurRadius > 0 ? `blur(${blurRadius}px)` : 'none';
+      ctx.drawImage(originalImage, -bleed, -bleed, W + bleed * 2, H + bleed * 2);
+      ctx.restore();
 
-    // If Portrait Bokeh mode and foreground subject is isolated, draw subject sharp on top
-    if (currentMode === 'portrait' && foregroundImage) {
+      // 2. Draw Subject Sharp On Top
+      if (foregroundImage) {
+        ctx.save();
+        ctx.filter = 'none';
+        ctx.drawImage(foregroundImage, 0, 0, W, H);
+        ctx.restore();
+      }
+    } else if (currentMode === 'censor') {
+      // Draw sharp base image first
       ctx.save();
       ctx.filter = 'none';
-      ctx.drawImage(foregroundImage, 0, 0, W, H);
+      ctx.drawImage(originalImage, 0, 0, W, H);
+      ctx.restore();
+
+      // Render each censor blur box
+      const censorBlur = Math.max(16, blurRadius > 0 ? blurRadius : 20);
+      censorBoxes.forEach((box) => {
+        if (box.w <= 0 || box.h <= 0) return;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(box.x, box.y, box.w, box.h);
+        ctx.clip(); // Clip to the box
+
+        // Draw blurred version inside the clipped box with bleed
+        const bleed = Math.ceil(censorBlur * 2.5);
+        ctx.filter = `blur(${censorBlur}px)`;
+        ctx.drawImage(originalImage!, -bleed, -bleed, W + bleed * 2, H + bleed * 2);
+
+        // Add subtle privacy border around censor box
+        ctx.restore();
+        ctx.save();
+        ctx.strokeStyle = 'rgba(229, 169, 60, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(box.x + 0.5, box.y + 0.5, box.w - 1, box.h - 1);
+        ctx.restore();
+      });
+    } else {
+      // Full image blur mode
+      const bleed = Math.ceil(blurRadius * 2.5);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, W, H);
+      ctx.clip();
+      ctx.filter = blurRadius > 0 ? `blur(${blurRadius}px)` : 'none';
+      ctx.drawImage(originalImage, -bleed, -bleed, W + bleed * 2, H + bleed * 2);
       ctx.restore();
     }
 
@@ -859,26 +992,65 @@ const faqSchema = {
     const offCtx = offscreen.getContext('2d');
     if (!offCtx) return;
 
-    // Calculate scaled blur radius proportional to full camera resolution
     const previewW = previewCanvas.width || origW;
-    const scaleFactor = origW / previewW;
-    const fullBlurRadius = Math.round(blurRadius * scaleFactor);
+    const previewH = previewCanvas.height || origH;
+    const scaleFactorX = origW / previewW;
+    const scaleFactorY = origH / previewH;
+    const fullBlurRadius = Math.round(blurRadius * scaleFactorX);
 
-    // 1. Draw full resolution blurred background with edge bleed
-    const bleed = Math.ceil(fullBlurRadius * 2.5);
-    offCtx.save();
-    offCtx.beginPath();
-    offCtx.rect(0, 0, origW, origH);
-    offCtx.clip();
-    offCtx.filter = fullBlurRadius > 0 ? `blur(${fullBlurRadius}px)` : 'none';
-    offCtx.drawImage(originalImage, -bleed, -bleed, origW + bleed * 2, origH + bleed * 2);
-    offCtx.restore();
+    if (currentMode === 'portrait') {
+      // 1. Draw full-res blurred background with edge bleed
+      const bleed = Math.ceil(fullBlurRadius * 2.5);
+      offCtx.save();
+      offCtx.beginPath();
+      offCtx.rect(0, 0, origW, origH);
+      offCtx.clip();
+      offCtx.filter = fullBlurRadius > 0 ? `blur(${fullBlurRadius}px)` : 'none';
+      offCtx.drawImage(originalImage, -bleed, -bleed, origW + bleed * 2, origH + bleed * 2);
+      offCtx.restore();
 
-    // 2. Draw full resolution sharp foreground if in portrait mode
-    if (currentMode === 'portrait' && foregroundImage) {
+      // 2. Draw full-res sharp foreground
+      if (foregroundImage) {
+        offCtx.save();
+        offCtx.filter = 'none';
+        offCtx.drawImage(foregroundImage, 0, 0, origW, origH);
+        offCtx.restore();
+      }
+    } else if (currentMode === 'censor') {
+      // 1. Draw sharp full-res image
       offCtx.save();
       offCtx.filter = 'none';
-      offCtx.drawImage(foregroundImage, 0, 0, origW, origH);
+      offCtx.drawImage(originalImage, 0, 0, origW, origH);
+      offCtx.restore();
+
+      // 2. Scale each censor box to full resolution and blur
+      const censorFullBlur = Math.max(24, Math.round((blurRadius > 0 ? blurRadius : 20) * scaleFactorX));
+      const bleed = Math.ceil(censorFullBlur * 2.5);
+
+      censorBoxes.forEach((box) => {
+        const sx = Math.round(box.x * scaleFactorX);
+        const sy = Math.round(box.y * scaleFactorY);
+        const sw = Math.round(box.w * scaleFactorX);
+        const sh = Math.round(box.h * scaleFactorY);
+        if (sw <= 0 || sh <= 0) return;
+
+        offCtx.save();
+        offCtx.beginPath();
+        offCtx.rect(sx, sy, sw, sh);
+        offCtx.clip();
+        offCtx.filter = `blur(${censorFullBlur}px)`;
+        offCtx.drawImage(originalImage!, -bleed, -bleed, origW + bleed * 2, origH + bleed * 2);
+        offCtx.restore();
+      });
+    } else {
+      // Full image blur
+      const bleed = Math.ceil(fullBlurRadius * 2.5);
+      offCtx.save();
+      offCtx.beginPath();
+      offCtx.rect(0, 0, origW, origH);
+      offCtx.clip();
+      offCtx.filter = fullBlurRadius > 0 ? `blur(${fullBlurRadius}px)` : 'none';
+      offCtx.drawImage(originalImage, -bleed, -bleed, origW + bleed * 2, origH + bleed * 2);
       offCtx.restore();
     }
 
@@ -890,7 +1062,7 @@ const faqSchema = {
       (blob) => {
         if (!blob) return;
         const link = document.createElement('a');
-        link.download = `fastbgremove-blurred-${Date.now()}.${extension}`;
+        link.download = `fastbgremove-${currentMode}-blurred-${Date.now()}.${extension}`;
         link.href = URL.createObjectURL(blob);
         document.body.appendChild(link);
         link.click();
@@ -910,12 +1082,40 @@ const faqSchema = {
     segmentationDone = false;
     isSegmenting = false;
     isSplitActive = false;
+    censorBoxes = [];
     if (splitDivider) splitDivider.classList.add('hidden');
     if (splitToggleText) splitToggleText.textContent = 'Split View';
     if (editorView) editorView.classList.add('hidden');
     if (uploadView) uploadView.classList.remove('hidden');
     if (fileInput) fileInput.value = '';
     setStatus('Ready', 'ready');
+  }
+
+  // Censor Drag Selection Handlers
+  function getCanvasCoords(clientX: number, clientY: number) {
+    const rect = previewCanvas.getBoundingClientRect();
+    const scaleX = previewCanvas.width / rect.width;
+    const scaleY = previewCanvas.height / rect.height;
+    const x = Math.max(0, Math.min(previewCanvas.width, (clientX - rect.left) * scaleX));
+    const y = Math.max(0, Math.min(previewCanvas.height, (clientY - rect.top) * scaleY));
+    return { x, y, rect };
+  }
+
+  function updateDragBoxDisplay(clientX: number, clientY: number) {
+    if (!censorDragBox || !canvasContainer) return;
+    const containerRect = canvasContainer.getBoundingClientRect();
+    const currentContainerX = clientX - containerRect.left;
+    const currentContainerY = clientY - containerRect.top;
+
+    const left = Math.min(censorStartX, currentContainerX);
+    const top = Math.min(censorStartY, currentContainerY);
+    const width = Math.abs(currentContainerX - censorStartX);
+    const height = Math.abs(currentContainerY - censorStartY);
+
+    censorDragBox.style.left = `${left}px`;
+    censorDragBox.style.top = `${top}px`;
+    censorDragBox.style.width = `${width}px`;
+    censorDragBox.style.height = `${height}px`;
   }
 
   // Event Listeners: Dropzone & File Input
@@ -935,7 +1135,6 @@ const faqSchema = {
       }
     });
 
-    // Drag and drop highlights
     ['dragenter', 'dragover'].forEach((eventName) => {
       dropzone.addEventListener(eventName, (e) => {
         e.preventDefault();
@@ -1024,6 +1223,15 @@ const faqSchema = {
     });
   }
 
+  if (modeCensorBtn) {
+    modeCensorBtn.addEventListener('click', () => {
+      if (currentMode === 'censor') return;
+      currentMode = 'censor';
+      updateModeUI();
+      queueRender();
+    });
+  }
+
   if (modeEntireBtn) {
     modeEntireBtn.addEventListener('click', () => {
       if (currentMode === 'entire') return;
@@ -1031,6 +1239,100 @@ const faqSchema = {
       updateModeUI();
       queueRender();
     });
+  }
+
+  // Censor Actions: Clear & Undo
+  if (censorClearBtn) {
+    censorClearBtn.addEventListener('click', () => {
+      censorBoxes = [];
+      updateCensorBadge();
+      queueRender();
+    });
+  }
+
+  if (censorUndoBtn) {
+    censorUndoBtn.addEventListener('click', () => {
+      censorBoxes.pop();
+      updateCensorBadge();
+      queueRender();
+    });
+  }
+
+  // Canvas Mouse & Touch Interactions for Split Slider AND Censor Box Drawing
+  if (canvasContainer) {
+    canvasContainer.addEventListener('pointerdown', (e) => {
+      if (isSplitActive) {
+        isDraggingSplit = true;
+        handleSplitMove(e.clientX);
+        return;
+      }
+
+      if (currentMode === 'censor' && previewCanvas) {
+        isDrawingCensor = true;
+        const coords = getCanvasCoords(e.clientX, e.clientY);
+        censorCurrentX = coords.x;
+        censorCurrentY = coords.y;
+
+        const containerRect = canvasContainer.getBoundingClientRect();
+        censorStartX = e.clientX - containerRect.left;
+        censorStartY = e.clientY - containerRect.top;
+
+        if (censorDragBox) {
+          censorDragBox.style.left = `${censorStartX}px`;
+          censorDragBox.style.top = `${censorStartY}px`;
+          censorDragBox.style.width = '0px';
+          censorDragBox.style.height = '0px';
+          censorDragBox.classList.remove('hidden');
+        }
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (isDraggingSplit && isSplitActive) {
+        handleSplitMove(e.clientX);
+      } else if (isDrawingCensor && currentMode === 'censor') {
+        updateDragBoxDisplay(e.clientX, e.clientY);
+      }
+    });
+
+    window.addEventListener('pointerup', (e) => {
+      if (isDraggingSplit) {
+        isDraggingSplit = false;
+      }
+
+      if (isDrawingCensor && currentMode === 'censor') {
+        isDrawingCensor = false;
+        if (censorDragBox) censorDragBox.classList.add('hidden');
+
+        const coords = getCanvasCoords(e.clientX, e.clientY);
+        const x1 = censorCurrentX;
+        const y1 = censorCurrentY;
+        const x2 = coords.x;
+        const y2 = coords.y;
+
+        const boxX = Math.round(Math.min(x1, x2));
+        const boxY = Math.round(Math.min(y1, y2));
+        const boxW = Math.round(Math.abs(x2 - x1));
+        const boxH = Math.round(Math.abs(y2 - y1));
+
+        // Add box if at least 8x8 pixels
+        if (boxW >= 8 && boxH >= 8) {
+          censorBoxes.push({ x: boxX, y: boxY, w: boxW, h: boxH });
+          updateCensorBadge();
+          queueRender();
+        }
+      }
+    });
+  }
+
+  function handleSplitMove(clientX: number) {
+    if (!isSplitActive) return;
+    const rect = previewCanvas.getBoundingClientRect();
+    if (rect.width === 0) return;
+    const offsetX = clientX - rect.left;
+    const pct = Math.max(0, Math.min(100, (offsetX / rect.width) * 100));
+    splitPercent = pct;
+    queueRender();
   }
 
   // Split Comparison Slider Toggle
@@ -1067,35 +1369,6 @@ const faqSchema = {
       startHolding();
     });
     holdOriginalBtn.addEventListener('touchend', stopHolding);
-  }
-
-  // Split Slider Dragging Support
-  if (canvasContainer) {
-    const handleSplitMove = (clientX: number) => {
-      if (!isSplitActive) return;
-      const rect = previewCanvas.getBoundingClientRect();
-      if (rect.width === 0) return;
-      const offsetX = clientX - rect.left;
-      const pct = Math.max(0, Math.min(100, (offsetX / rect.width) * 100));
-      splitPercent = pct;
-      queueRender();
-    };
-
-    canvasContainer.addEventListener('pointerdown', (e) => {
-      if (!isSplitActive) return;
-      isDraggingSplit = true;
-      handleSplitMove(e.clientX);
-    });
-
-    window.addEventListener('pointermove', (e) => {
-      if (isDraggingSplit && isSplitActive) {
-        handleSplitMove(e.clientX);
-      }
-    });
-
-    window.addEventListener('pointerup', () => {
-      isDraggingSplit = false;
-    });
   }
 
   // Action Dock Buttons
