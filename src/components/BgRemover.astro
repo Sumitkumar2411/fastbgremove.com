@@ -50,6 +50,13 @@ const isSticker = isStickerPage !== undefined
 
     <!-- STATE 1: UPLOAD DROPZONE VIEW (HERO ELEMENT) -->
     <div id="upload-view" class="flex flex-col items-center justify-center">
+      {isSticker && (
+        <div class="flex flex-wrap items-center justify-center gap-2 mb-4 text-xs font-semibold text-slate-600 dark:text-slate-300">
+          <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">✓ No Sign-Up Required</span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">✓ Zero Watermarks</span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">✓ 100% In-Browser Private</span>
+        </div>
+      )}
       <div
         id="main-upload-dropzone"
         tabindex="0"
@@ -625,6 +632,46 @@ const isSticker = isStickerPage !== undefined
                   <span>Center</span>
                 </button>
               </div>
+            </div>
+          </div>
+
+          <!-- Row 3: One-Click Platform Presets (Under Canvas Controls) -->
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
+            <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <span class="text-sm">🎯</span>
+              <span>Platform Preset:</span>
+            </div>
+            <div class="inline-flex items-center p-1 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 gap-1.5 shadow-inner flex-wrap">
+              <button
+                type="button"
+                id="preset-whatsapp-btn"
+                data-platform-preset="whatsapp"
+                class="platform-preset-btn active py-1.5 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/60 shadow-xs cursor-pointer"
+                title="WhatsApp 512x512 PNG with 16px safety padding"
+              >
+                <span>🟢</span>
+                <span>WhatsApp (512x512)</span>
+              </button>
+              <button
+                type="button"
+                id="preset-telegram-btn"
+                data-platform-preset="telegram"
+                class="platform-preset-btn py-1.5 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 border border-transparent cursor-pointer"
+                title="Telegram 512x512 PNG with transparent background"
+              >
+                <span>🔵</span>
+                <span>Telegram (512x512)</span>
+              </button>
+              <button
+                type="button"
+                id="preset-discord-btn"
+                data-platform-preset="discord"
+                class="platform-preset-btn py-1.5 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 border border-transparent cursor-pointer"
+                title="Discord 128x128 PNG (Optimized for custom emotes & reactions)"
+              >
+                <span>🟣</span>
+                <span>Discord (128x128)</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1324,10 +1371,8 @@ const isSticker = isStickerPage !== undefined
               class="h-11 px-5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white transition-colors shadow-2xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shrink-0"
               title="Download official WhatsApp Sticker (512x512 PNG with 16px safety padding)"
             >
-              <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/>
-              </svg>
-              <span>WhatsApp Sticker (512x512)</span>
+              <span id="download-platform-icon" class="text-sm">🟢</span>
+              <span id="download-platform-text">WhatsApp Sticker (512x512)</span>
             </button>
             <button
               id="download-hd-btn"
@@ -1495,7 +1540,10 @@ const isSticker = isStickerPage !== undefined
     drawStickerOutline,
     drawSticker,
     renderStickerCanvas,
-    computeTextHitTest
+    computeTextHitTest,
+    exportPlatformSticker,
+    PLATFORM_SPECS,
+    type PlatformPreset
   } from '../utils/stickerEngine';
 
   // Global state
@@ -1615,7 +1663,11 @@ const isSticker = isStickerPage !== undefined
   const stickerTextSizeLabel = document.getElementById('sticker-text-size-label') as HTMLElement | null;
   const stickerTextCenterBtn = document.getElementById('sticker-text-center-btn') as HTMLButtonElement | null;
   const downloadWhatsappBtn = document.getElementById('download-whatsapp-btn') as HTMLButtonElement | null;
+  const downloadPlatformIcon = document.getElementById('download-platform-icon') as HTMLElement | null;
+  const downloadPlatformText = document.getElementById('download-platform-text') as HTMLElement | null;
+  const platformPresetBtns = document.querySelectorAll('.platform-preset-btn');
 
+  let currentPlatformPreset: PlatformPreset = 'whatsapp';
   let currentBgTab: 'color' | 'photo' | 'magic' | 'sticker' = initialDefaultMode === 'sticker' ? 'sticker' : 'color';
   let isSegmenting: boolean = false;
   let isCaptionFocused: boolean = false;
@@ -2251,6 +2303,7 @@ const isSticker = isStickerPage !== undefined
     if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
     updateCanvasCursor();
     updatePanHintUI();
+    setPlatformPreset('whatsapp');
     if (stickerCanvas) {
       stickerCanvas.classList.remove('animate-pulse');
       stickerCanvas.classList.add('hidden');
@@ -2777,6 +2830,86 @@ const isSticker = isStickerPage !== undefined
       stickerCaptionColor = color;
       updateStickerCaptionColorUI(color);
       scheduleStickerRender();
+    });
+  });
+  // One-Click Platform Preset Handlers (WhatsApp, Telegram, Discord)
+  function setPlatformPreset(preset: PlatformPreset) {
+    currentPlatformPreset = preset;
+    setCanvasRatio('1:1');
+
+    platformPresetBtns.forEach(btn => {
+      const p = btn.getAttribute('data-platform-preset');
+      const isActive = p === preset;
+      btn.classList.toggle('active', isActive);
+
+      if (p === 'whatsapp') {
+        btn.classList.toggle('font-bold', isActive);
+        btn.classList.toggle('text-emerald-700', isActive);
+        btn.classList.toggle('dark:text-emerald-400', isActive);
+        btn.classList.toggle('bg-emerald-50', isActive);
+        btn.classList.toggle('dark:bg-emerald-950/40', isActive);
+        btn.classList.toggle('border-emerald-300', isActive);
+        btn.classList.toggle('dark:border-emerald-700/60', isActive);
+        btn.classList.toggle('shadow-xs', isActive);
+        btn.classList.toggle('text-slate-600', !isActive);
+        btn.classList.toggle('dark:text-slate-300', !isActive);
+        btn.classList.toggle('border-transparent', !isActive);
+        btn.classList.toggle('font-medium', !isActive);
+      } else if (p === 'telegram') {
+        btn.classList.toggle('font-bold', isActive);
+        btn.classList.toggle('text-sky-700', isActive);
+        btn.classList.toggle('dark:text-sky-400', isActive);
+        btn.classList.toggle('bg-sky-50', isActive);
+        btn.classList.toggle('dark:bg-sky-950/40', isActive);
+        btn.classList.toggle('border-sky-300', isActive);
+        btn.classList.toggle('dark:border-sky-700/60', isActive);
+        btn.classList.toggle('shadow-xs', isActive);
+        btn.classList.toggle('text-slate-600', !isActive);
+        btn.classList.toggle('dark:text-slate-300', !isActive);
+        btn.classList.toggle('border-transparent', !isActive);
+        btn.classList.toggle('font-medium', !isActive);
+      } else if (p === 'discord') {
+        btn.classList.toggle('font-bold', isActive);
+        btn.classList.toggle('text-purple-700', isActive);
+        btn.classList.toggle('dark:text-purple-400', isActive);
+        btn.classList.toggle('bg-purple-50', isActive);
+        btn.classList.toggle('dark:bg-purple-950/40', isActive);
+        btn.classList.toggle('border-purple-300', isActive);
+        btn.classList.toggle('dark:border-purple-700/60', isActive);
+        btn.classList.toggle('shadow-xs', isActive);
+        btn.classList.toggle('text-slate-600', !isActive);
+        btn.classList.toggle('dark:text-slate-300', !isActive);
+        btn.classList.toggle('border-transparent', !isActive);
+        btn.classList.toggle('font-medium', !isActive);
+      }
+    });
+
+    if (downloadWhatsappBtn) {
+      if (preset === 'whatsapp') {
+        downloadWhatsappBtn.className = "h-11 px-5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white transition-colors shadow-2xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shrink-0";
+        downloadWhatsappBtn.title = "Download official WhatsApp Sticker (512x512 PNG with 16px safety padding)";
+        if (downloadPlatformIcon) downloadPlatformIcon.textContent = "🟢";
+        if (downloadPlatformText) downloadPlatformText.textContent = "WhatsApp Sticker (512x512)";
+      } else if (preset === 'telegram') {
+        downloadWhatsappBtn.className = "h-11 px-5 rounded-xl text-xs sm:text-sm font-bold bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white transition-colors shadow-2xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shrink-0";
+        downloadWhatsappBtn.title = "Download official Telegram Sticker (512x512 PNG transparent)";
+        if (downloadPlatformIcon) downloadPlatformIcon.textContent = "🔵";
+        if (downloadPlatformText) downloadPlatformText.textContent = "Telegram Sticker (512x512)";
+      } else if (preset === 'discord') {
+        downloadWhatsappBtn.className = "h-11 px-5 rounded-xl text-xs sm:text-sm font-bold bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white transition-colors shadow-2xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shrink-0";
+        downloadWhatsappBtn.title = "Download Discord Sticker / Emote (128x128 PNG transparent)";
+        if (downloadPlatformIcon) downloadPlatformIcon.textContent = "🟣";
+        if (downloadPlatformText) downloadPlatformText.textContent = "Discord Sticker (128x128)";
+      }
+    }
+    showToast(`Configured: ${PLATFORM_SPECS[preset].label} (${PLATFORM_SPECS[preset].size}×${PLATFORM_SPECS[preset].size})`);
+    scheduleStickerRender();
+  }
+
+  platformPresetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.getAttribute('data-platform-preset') as PlatformPreset;
+      if (preset) setPlatformPreset(preset);
     });
   });
 
@@ -4593,12 +4726,13 @@ const isSticker = isStickerPage !== undefined
         fontSize: stickerFontSize
       });
 
-      // 2. Export strictly at 512x512 PNG with 16px safety padding using bulletproof pipeline
-      const finalBlob = await exportWhatsAppSticker(renderedSourceCanvas);
+      // 2. Export strictly at target platform dimensions (512x512 WhatsApp/Telegram or 128x128 Discord)
+      const spec = PLATFORM_SPECS[currentPlatformPreset] || PLATFORM_SPECS.whatsapp;
+      const finalBlob = await exportPlatformSticker(renderedSourceCanvas, currentPlatformPreset);
 
       const originalName = currentFile instanceof File ? currentFile.name.replace(/\.[^/.]+$/, "") : 'sticker';
-      triggerDownload(finalBlob, `${originalName}-whatsapp-512x512.png`);
-      showToast('WhatsApp sticker downloaded (512x512 PNG)');
+      triggerDownload(finalBlob, `${originalName}-${currentPlatformPreset}-${spec.size}x${spec.size}.png`);
+      showToast(`${spec.label} sticker downloaded (${spec.size}×${spec.size} PNG)`);
     } catch (err) {
       console.error('WhatsApp export error:', err);
       showError('Failed to export WhatsApp sticker.');

@@ -512,36 +512,55 @@ export function renderStickerCanvas(
   return canvas;
 }
 
+export type PlatformPreset = 'whatsapp' | 'telegram' | 'discord';
+
+export interface PlatformPresetConfig {
+  size: number;
+  padding: number;
+  label: string;
+}
+
+export const PLATFORM_SPECS: Record<PlatformPreset, PlatformPresetConfig> = {
+  whatsapp: { size: 512, padding: 16, label: 'WhatsApp' },
+  telegram: { size: 512, padding: 8, label: 'Telegram' },
+  discord: { size: 128, padding: 4, label: 'Discord' }
+};
+
 /**
- * Bulletproof WhatsApp Sticker Export Pipeline strictly at 512x512 pixels:
- * Computes contain-fit with 16px safety padding (480px usable box), centers the subject,
- * and outputs an official transparent PNG blob.
+ * Universal Platform Sticker Export Pipeline (WhatsApp 512x512, Telegram 512x512, Discord 128x128):
+ * Computes aspect-ratio contain-fit with target safety padding, centers subject, and outputs PNG blob.
  */
-export function exportWhatsAppSticker(sourceCanvas: HTMLCanvasElement): Promise<Blob> {
+export function exportPlatformSticker(
+  sourceCanvas: HTMLCanvasElement,
+  preset: PlatformPreset = 'whatsapp'
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     try {
       if (!sourceCanvas || sourceCanvas.width <= 0 || sourceCanvas.height <= 0) {
-        throw new Error('Invalid source canvas dimensions for WhatsApp export');
+        throw new Error('Invalid source canvas dimensions for platform sticker export');
       }
 
+      const spec = PLATFORM_SPECS[preset] || PLATFORM_SPECS.whatsapp;
+      const targetSize = spec.size;
+      const padding = spec.padding;
+
       const outCanvas = document.createElement('canvas');
-      outCanvas.width = 512;
-      outCanvas.height = 512;
+      outCanvas.width = targetSize;
+      outCanvas.height = targetSize;
       const ctx = outCanvas.getContext('2d');
       if (!ctx) throw new Error('Canvas context unavailable');
 
-      ctx.clearRect(0, 0, 512, 512);
+      ctx.clearRect(0, 0, targetSize, targetSize);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
 
-      // Calculate aspect-ratio contained fit with 16px safety padding
-      const padding = 16;
-      const maxDim = 512 - padding * 2; // 480px usable box
+      // Calculate aspect-ratio contained fit with safety padding
+      const maxDim = targetSize - padding * 2;
       const scale = Math.min(maxDim / sourceCanvas.width, maxDim / sourceCanvas.height);
       const w = Math.max(1, Math.round(sourceCanvas.width * scale));
       const h = Math.max(1, Math.round(sourceCanvas.height * scale));
-      const x = Math.round((512 - w) / 2);
-      const y = Math.round((512 - h) / 2);
+      const x = Math.round((targetSize - w) / 2);
+      const y = Math.round((targetSize - h) / 2);
 
       ctx.drawImage(sourceCanvas, x, y, w, h);
 
@@ -561,7 +580,7 @@ export function exportWhatsAppSticker(sourceCanvas: HTMLCanvasElement): Promise<
             }
             resolve(new Blob([u8arr], { type: 'image/png' }));
           } catch (dataUrlErr) {
-            reject(new Error('WhatsApp sticker blob conversion failed'));
+            reject(new Error(`${spec.label} sticker blob conversion failed`));
           }
         }
       }, 'image/png');
@@ -569,6 +588,15 @@ export function exportWhatsAppSticker(sourceCanvas: HTMLCanvasElement): Promise<
       reject(err);
     }
   });
+}
+
+/**
+ * Bulletproof WhatsApp Sticker Export Pipeline strictly at 512x512 pixels:
+ * Computes contain-fit with 16px safety padding (480px usable box), centers the subject,
+ * and outputs an official transparent PNG blob.
+ */
+export function exportWhatsAppSticker(sourceCanvas: HTMLCanvasElement): Promise<Blob> {
+  return exportPlatformSticker(sourceCanvas, 'whatsapp');
 }
 
 /**

@@ -13,6 +13,7 @@ interface Props {
   ogImage?: string;
   structuredData?: Record<string, any> | Record<string, any>[];
   noindex?: boolean;
+  keywords?: string;
 }
 
 const {
@@ -24,7 +25,8 @@ const {
   ogDescription,
   ogImage = "https://fastbgremove.com/logo.png",
   structuredData,
-  noindex = false
+  noindex = false,
+  keywords
 } = Astro.props;
 
 // Self-referencing canonical URL matching sitemap directory structure
@@ -99,6 +101,7 @@ const schemas = structuredData ? (Array.isArray(structuredData) ? [...defaultStr
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{finalPageTitle}</title>
     <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
     <link rel="canonical" href={canonicalUrl} />
     {noindex ? (
       <meta name="robots" content="noindex, nofollow" />

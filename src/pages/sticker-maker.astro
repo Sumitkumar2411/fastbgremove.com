@@ -3,91 +3,124 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import BgRemover from '../components/BgRemover.astro';
 import FaqAccordion from '../components/FaqAccordion.astro';
 
-const pageTitle = "Free Photo Sticker Maker Online — Create Custom Cutout & WhatsApp Stickers";
-const pageDescription = "Turn any photo into custom cutout stickers with white borders in seconds. 100% free, in-browser background removal with Die-cut, Circle, Square frames, and WhatsApp 512x512 export.";
+const pageTitle = "Online Photo Sticker Maker Free — Create WhatsApp & Custom Stickers";
+const pageDescription = "Turn any photo into custom stickers with white borders in seconds. Instant 512x512 export for WhatsApp, Telegram & Discord. 100% free, no sign-up, no watermark.";
 const canonicalPath = "/sticker-maker";
+const pageKeywords = "online sticker maker for whatsapp, free online sticker maker from photo, make whatsapp sticker online, sticker maker from image free, custom photo stickers online";
 
-const appComparison = [
+const competitorComparison = [
   {
-    feature: "App Installation",
-    fastbg: "None (Zero storage used)",
-    traditional: "Requires 50MB+ download"
+    feature: "Account Registration",
+    fastbg: "Zero sign-up required (Instant access)",
+    photoroom: "Mandatory email / Google sign-in",
+    kapwing: "Mandatory account to download"
   },
   {
-    feature: "Privacy",
-    fastbg: "100% Local in Browser",
-    traditional: "Uploads photos to third-party clouds"
+    feature: "Watermarks on Exports",
+    fastbg: "100% Watermark-Free forever",
+    photoroom: "Photoroom watermark on free plan",
+    kapwing: "Large Kapwing watermark on free tier"
   },
   {
-    feature: "Ads & Popups",
-    fastbg: "Clean, Zero Interruptions",
-    traditional: "Video ads before every export"
+    feature: "Export Limits & Paywalls",
+    fastbg: "Unlimited free sticker downloads",
+    photoroom: "Daily download caps & Pro paywalls",
+    kapwing: "720p limit, monthly export caps"
   },
   {
-    feature: "Quality & Specs",
-    fastbg: "True 512x512 with outline",
-    traditional: "Downscaled, blurry compression"
+    feature: "Privacy & File Security",
+    fastbg: "100% Local in-browser RAM (Zero upload)",
+    photoroom: "Uploads photos to cloud servers",
+    kapwing: "Uploads media to remote cloud storage"
+  },
+  {
+    feature: "Export Quality & Scaling",
+    fastbg: "Lossless Full HD + Exact 512×512",
+    photoroom: "Downscaled resolution on free tier",
+    kapwing: "Compressed with lossy artifacts"
+  },
+  {
+    feature: "White Die-Cut Outline",
+    fastbg: "Built-in free (0–32px contour slider)",
+    photoroom: "Basic border with preset styles",
+    kapwing: "Requires complex manual canvas effects"
   }
 ];
 
 const stickerDimensions = [
   {
     platform: "WhatsApp Stickers",
-    resolution: "512 × 512 px (Square)",
-    format: "Transparent PNG / WebP",
+    badge: "Official Chat Spec",
+    badgeColor: "bg-[#25D366]/10 text-[#128C7E] dark:text-[#25D366] border-[#25D366]/30",
+    resolution: "512 × 512 px (1:1 Square)",
+    format: "Transparent WebP / PNG",
     sizeLimit: "< 100 KB per sticker",
-    safetyPadding: "16 px safety margin",
-    useCase: "Personal chats, WhatsApp sticker packs, community stickers"
-  },
-  {
-    platform: "Discord Custom Stickers",
-    resolution: "320 × 320 px (Square)",
-    format: "Transparent PNG / APNG",
-    sizeLimit: "< 512 KB per sticker",
-    safetyPadding: "8 px margin recommended",
-    useCase: "Server custom stickers, Nitro emotes, thread reactions"
+    transparency: "Full alpha channel transparency; 16px safety margin around subject to avoid clipping",
+    useCase: "WhatsApp private chats, group discussions, and WASticker custom packs"
   },
   {
     platform: "Telegram Stickers",
-    resolution: "512 × 512 px (Max)",
+    badge: "Bot & Pack Ready",
+    badgeColor: "bg-[#0088cc]/10 text-[#0088cc] border-[#0088cc]/30",
+    resolution: "512 × 512 px (Max bound)",
     format: "Transparent PNG / WebP",
     sizeLimit: "< 512 KB per sticker",
-    safetyPadding: "One side 512px, other ≤ 512px",
-    useCase: "Public sticker sets via @Stickers bot, custom emoji packs"
+    transparency: "Full alpha transparency; 8px safety margin; one dimension must be exactly 512px",
+    useCase: "Telegram public channels, @Stickers bot sets, and custom animated/static sets"
+  },
+  {
+    platform: "Discord Custom Stickers",
+    badge: "Server & Nitro",
+    badgeColor: "bg-[#5865F2]/10 text-[#5865F2] border-[#5865F2]/30",
+    resolution: "128 × 128 px / 320 × 320 px",
+    format: "Transparent PNG / APNG",
+    sizeLimit: "< 100 KB (Emote) / < 512 KB (Sticker)",
+    transparency: "High-contrast transparent cutout; 4px margin recommended for dark/light theme visibility",
+    useCase: "Server custom stickers, Nitro reaction emojis, and community threads"
   },
   {
     platform: "Printable Die-Cut Vinyl",
-    resolution: "Original HD (300+ DPI)",
-    format: "Lossless PNG",
-    sizeLimit: "No limit (Full resolution)",
-    safetyPadding: "2-4 mm white die-cut bleed",
-    useCase: "Cricut, Silhouette vinyl cutters, laptop stickers, merchandise"
+    badge: "Physical Craft",
+    badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
+    resolution: "Original Camera HD (300+ DPI)",
+    format: "Lossless 32-bit Transparent PNG",
+    sizeLimit: "No limit (Full lossless resolution)",
+    transparency: "Transparent background with 2–4mm white contour bleed for optical cutter blade registration",
+    useCase: "Cricut & Silhouette vinyl cutters, laptop decals, water bottles, and physical merchandise"
   }
 ];
 
 const faqs = [
   {
-    question: "How do I turn a photo into a custom sticker?",
-    answer: "Simply drop or upload your photo into the sticker maker. The AI instantly removes the background in your browser. Then, pick a shape like Die-Cut, adjust the white outline border slider to your preferred thickness, add optional text captions, and download your finished cutout sticker."
+    question: "How do I make WhatsApp stickers from my photos online for free?",
+    answer: "Simply drag and drop or upload any photo into FastBgRemove. Our in-browser WebAssembly AI automatically removes the background in under 3 seconds. Next, select the Die-Cut frame to add a classic white outline border, adjust the thickness slider, and add optional text captions. Finally, click the 'WhatsApp (512x512)' preset chip and press Download to save an officially formatted 512×512 px transparent PNG with 16px safety padding ready for WhatsApp."
   },
   {
-    question: "Can I make WhatsApp stickers without installing an app?",
-    answer: "Yes. FastBgRemove runs 100% in your mobile or desktop browser with zero app installation. Simply click 'WhatsApp Sticker (512x512)' to export an officially formatted 512×512 px transparent PNG with 16px safety padding, ready to add to any chat."
+    question: "Why do other sticker tools require sign-up or leave watermarks?",
+    answer: "Most commercial sticker tools like Photoroom, Kapwing, or mobile sticker apps process your photos on costly remote cloud servers with heavy GPU bills. To recoup infrastructure expenses, they mandate account sign-ups, enforce daily export limits, or slap intrusive watermarks on free downloads to push users into monthly subscriptions. FastBgRemove operates 100% inside your device's browser using client-side WebAssembly and HTML5 Canvas, completely eliminating cloud server costs so we can offer permanent zero-watermark, sign-up-free exports."
   },
   {
-    question: "What shapes and frames are available?",
-    answer: "You can choose from four distinct frame presets: Die-Cut contour (hugs the exact subject silhouette), Round circle (circular badge clipping), Sharp square (classic 1:1 square frame), and Rounded (modern rounded rectangle). Each shape supports customizable border widths (0–32px) and vibrant outline colors."
+    question: "What are the exact dimensions required for WhatsApp stickers?",
+    answer: "WhatsApp strictly requires custom stickers to have exact dimensions of 512 × 512 pixels in transparent PNG or WebP format, with a file size strictly under 100 KB. Additionally, WhatsApp developer guidelines mandate a 16-pixel safety margin between the sticker content and the edges of the canvas to prevent the image from clipping against chat bubbles. FastBgRemove's one-click WhatsApp preset automatically applies these exact proportions and safety margins."
   },
   {
-    question: "Is this sticker maker free for high-resolution downloads?",
-    answer: "Yes, it is 100% free with zero watermarks, no account signup, and no export limits. You can download lossless Full HD PNG stickers at original resolution—ideal for Cricut vinyl cutting, Silhouette cutters, Discord emotes, and physical merchandise printing."
+    question: "Can I add custom white outline borders and text captions to my stickers?",
+    answer: "Yes! FastBgRemove provides native client-side controls for custom white die-cut outline strokes with adjustable thickness from 0px to 32px, along with custom color swatches. You can also add anchored text captions, choose from modern typography styles (such as Impact Meme, Inter Modern, or Outfit), and apply contrasting black/white text stroke borders for crystal-clear readability on both dark and light chat themes."
+  },
+  {
+    question: "Are my private photos uploaded to a cloud server?",
+    answer: "No. FastBgRemove follows a strict zero-trust client architecture. Your images, personal portraits, and sensitive photos are never sent over the internet or saved to any remote server or database. All background segmentation, contour stroke calculations, and canvas drawing execute entirely inside your device's local browser memory (RAM) and disappear the moment you close or refresh the tab."
+  },
+  {
+    question: "How do I export stickers for Telegram or Discord?",
+    answer: "Select the desired platform chip under the canvas controls. Click 'Telegram (512x512)' to export a 512×512 sticker with 8px margin optimized for Telegram's @Stickers bot (<512KB). For Discord, click 'Discord (128x128)' to export an ultra-crisp 128×128 pixel transparent emote/sticker sized perfectly for Discord community servers (<256KB). Both presets download in 1 click with zero compression artifacts."
   }
 ];
 
 const softwareSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "FastBgRemove Online Photo Sticker Maker",
+  "name": "FastBgRemove Sticker Studio",
   "url": "https://fastbgremove.com/sticker-maker",
   "applicationCategory": "DesignApplication",
   "operatingSystem": "All",
@@ -99,15 +132,16 @@ const softwareSchema = {
   },
   "description": pageDescription,
   "featureList": [
-    "Online photo to custom cutout sticker maker",
-    "Zero app download (100% in-browser HTML5 Canvas engine)",
-    "Automatic client-side background removal",
-    "Multiple frame shapes: Die-Cut contour, Circular badge, Square, and Rounded rectangle",
-    "Adjustable white die-cut border outline (0-32px)",
-    "Draggable text caption studio with custom typography and contrasting stroke",
-    "Compliant 512x512 WhatsApp sticker export with 16px safety padding",
-    "Full original resolution HD sticker export for vinyl cutting and high-res printing",
-    "100% client-side privacy with zero server uploads"
+    "Online photo to custom sticker maker with zero sign-up",
+    "Zero watermarks and 100% free unlimited exports",
+    "Automatic client-side background removal without server uploads",
+    "Die-cut white outline border with 0-32px adjustable thickness",
+    "Circular badge, square, and rounded rectangular sticker frames",
+    "Anchored text captions with contrasting outline strokes",
+    "One-click 512x512 WhatsApp sticker export with 16px safety padding",
+    "One-click Telegram 512x512 and Discord 128x128 sticker presets",
+    "Full original resolution HD PNG export for printable vinyl stickers and Cricut cutting",
+    "100% private in-browser WebAssembly processing"
   ]
 };
 
@@ -131,12 +165,13 @@ const faqSchema = {
   canonicalPath={canonicalPath}
   ogTitle={pageTitle}
   ogDescription={pageDescription}
+  keywords={pageKeywords}
   structuredData={[softwareSchema, faqSchema]}
 >
   <!-- Hero Section & In-Browser Sticker Engine -->
   <BgRemover
     heading="Online Photo Sticker Maker"
-    subheading="Create custom cutout stickers with clean white borders instantly. 100% private, free, and optimized for WhatsApp, Discord, or print ready HD PNG."
+    subheading="Turn any photo into custom stickers with white borders in seconds. Instant 512x512 export for WhatsApp, Telegram & Discord. 100% free, no sign-up, no watermark."
     defaultMode="sticker"
     isStickerMode={true}
     isStickerPage={true}
@@ -147,11 +182,11 @@ const faqSchema = {
   <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 my-6 sm:my-8 max-w-4xl mx-auto px-4">
     <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] text-xs font-semibold text-[#26251e] dark:text-[#ededed] shadow-xs">
       <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-      <span>✂️ Die-Cut Outline</span>
+      <span>✂️ Die-Cut White Outline</span>
     </div>
     <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] text-xs font-semibold text-[#26251e] dark:text-[#ededed] shadow-xs">
       <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
-      <span>⚪ Circle & Square Frames</span>
+      <span>⚪ Circle, Square & Rounded Frames</span>
     </div>
     <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] text-xs font-semibold text-[#26251e] dark:text-[#ededed] shadow-xs">
       <span class="w-1.5 h-1.5 rounded-full bg-[#25D366]"></span>
@@ -163,174 +198,270 @@ const faqSchema = {
     </div>
   </div>
 
-  <!-- Semantic SEO Guide: How It Works & Specs -->
-  <section class="mt-14 sm:mt-20 pt-12 border-t border-zinc-200 dark:border-[#232326] max-w-5xl mx-auto px-4">
-    <!-- 3-Step Feature Cards -->
-    <div class="max-w-3xl mx-auto text-center mb-12 space-y-3">
+  <!-- Semantic SEO Guide: Crawlable Below-The-Fold Article -->
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 py-16 space-y-16 border-t border-zinc-200 dark:border-[#232326]">
+    
+    <!-- SECTION 1: How to Make Custom Photo Stickers in 3 Simple Steps -->
+    <section class="space-y-6">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] font-mono">
         <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
-        <span>Zero-Lag Canvas 2D Engine</span>
+        <span>Zero-Friction In-Browser Workflow</span>
       </div>
-      <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-        Convert Any Photo to a Custom Sticker in 3 Steps
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        How to Make Custom Photo Stickers in 3 Simple Steps
       </h2>
-      <p class="text-sm sm:text-base text-zinc-600 dark:text-[#A7A7A7] max-w-2xl mx-auto leading-relaxed">
-        Create physical sticker pack cutouts, Discord reaction stickers, or WhatsApp chat stickers directly in your browser without Photoshop or Illustrator.
+      <p class="text-sm sm:text-base text-zinc-600 dark:text-[#A7A7A7] leading-relaxed">
+        Creating high-impact, professional custom stickers no longer requires complicated desktop graphic suites like Photoshop or Illustrator, nor sketchy mobile apps packed with video advertisements. With FastBgRemove's accelerated WebAssembly canvas engine, you can transform personal selfies, pet photos, group portraits, or ecommerce merchandise into chat-ready stickers in under ten seconds.
       </p>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-      <div class="p-6 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs relative">
-        <div class="absolute -top-[1px] -left-[1px] w-2 h-2 rounded-tl-lg bg-[#E5A93C]"></div>
-        <div class="w-10 h-10 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 flex items-center justify-center text-[#E5A93C] font-bold text-sm mb-4">
-          01
+      <!-- 3-Step Process Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+        <div class="p-6 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs relative flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-lg bg-[#E5A93C]/10 border border-[#E5A93C]/20 flex items-center justify-center text-[#b47818] dark:text-[#E5A93C] font-mono font-bold text-sm">
+              01
+            </div>
+            <h3 class="text-base font-bold text-zinc-900 dark:text-white">
+              1. Upload Photo & Auto AI Cutout
+            </h3>
+            <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Drop any JPG, PNG, or WebP portrait into the workspace or press <kbd class="px-1.5 py-0.5 text-[10px] font-mono bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-300 dark:border-zinc-700">Ctrl+V</kbd>. Our client-side WebAssembly neural engine automatically isolates the foreground subject in under 3 seconds without uploading your file to a cloud server.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+            <span>✓</span> <span>Automatic edge detection</span>
+          </div>
         </div>
-        <h3 class="text-base font-bold text-[#26251e] dark:text-white mb-2">
-          Drop or Paste Any Photo
-        </h3>
-        <p class="text-xs sm:text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
-          Upload selfies, pet portraits, product shots, or illustrations. Our WebAssembly neural engine isolates foreground subjects locally in under 3 seconds.
-        </p>
-      </div>
 
-      <div class="p-6 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs relative">
-        <div class="absolute -top-[1px] -left-[1px] w-2 h-2 rounded-tl-lg bg-[#E5A93C]"></div>
-        <div class="w-10 h-10 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 flex items-center justify-center text-[#E5A93C] font-bold text-sm mb-4">
-          02
+        <div class="p-6 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs relative flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-lg bg-[#E5A93C]/10 border border-[#E5A93C]/20 flex items-center justify-center text-[#b47818] dark:text-[#E5A93C] font-mono font-bold text-sm">
+              02
+            </div>
+            <h3 class="text-base font-bold text-zinc-900 dark:text-white">
+              2. Shape, White Border & Caption
+            </h3>
+            <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Choose your shape: <strong>Die-Cut</strong> (silhouetted contour hugging your subject), <strong>Circle badge</strong>, or <strong>Rounded frame</strong>. Adjust the white outline border slider (0–32px), customize outline colors, and type a humorous or expressive text caption with contrasting stroke borders.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-[11px] font-medium text-[#b47818] dark:text-[#E5A93C] flex items-center gap-1.5">
+            <span>✓</span> <span>Real-time HTML5 Canvas 2D</span>
+          </div>
         </div>
-        <h3 class="text-base font-bold text-[#26251e] dark:text-white mb-2">
-          Pick Shape, Border & Caption
-        </h3>
-        <p class="text-xs sm:text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
-          Switch between Die-Cut contour, Circular badge, or Rounded frames. Adjust outline thickness (0-32px), select swatch colors, and stamp anchored text captions.
-        </p>
-      </div>
 
-      <div class="p-6 rounded-lg bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs relative">
-        <div class="absolute -top-[1px] -left-[1px] w-2 h-2 rounded-tl-lg bg-[#E5A93C]"></div>
-        <div class="w-10 h-10 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 flex items-center justify-center text-[#E5A93C] font-bold text-sm mb-4">
-          03
+        <div class="p-6 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs relative flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-lg bg-[#E5A93C]/10 border border-[#E5A93C]/20 flex items-center justify-center text-[#b47818] dark:text-[#E5A93C] font-mono font-bold text-sm">
+              03
+            </div>
+            <h3 class="text-base font-bold text-zinc-900 dark:text-white">
+              3. 1-Click Download (512x512 / HD)
+            </h3>
+            <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Click the <strong>WhatsApp (512x512)</strong>, <strong>Telegram (512x512)</strong>, or <strong>Discord (128x128)</strong> preset chip to export an optimized WebP/PNG sticker with proper safety margins. Need vinyl prints? Click HD PNG for original resolution cutting files.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-[11px] font-medium text-[#25D366] flex items-center gap-1.5">
+            <span>✓</span> <span>Zero watermark, zero sign-up</span>
+          </div>
         </div>
-        <h3 class="text-base font-bold text-[#26251e] dark:text-white mb-2">
-          Download 512×512 or HD
-        </h3>
-        <p class="text-xs sm:text-sm text-[#5a5852] dark:text-[#a09c92] leading-relaxed">
-          One-click download as an official 512×512 WhatsApp sticker with 16px safety padding, or export the lossless Full HD PNG for vinyl cutting and high-res print.
-        </p>
       </div>
-    </div>
+    </section>
 
-    <!-- SPECS & WORKFLOW COMPARISON SECTION: Why Make Stickers Online vs Mobile Apps -->
-    <div class="max-w-3xl mx-auto text-center mb-8">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#25D366]/10 border border-[#25D366]/20 text-xs font-semibold text-[#128C7E] dark:text-[#25D366] font-mono mb-3">
+    <!-- SECTION 2: WhatsApp, Telegram & Discord Sticker Specifications Guide -->
+    <section class="space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#25D366]/10 border border-[#25D366]/20 text-xs font-semibold text-[#128C7E] dark:text-[#25D366] font-mono">
         <span class="w-1.5 h-1.5 rounded-full bg-[#25D366]"></span>
-        <span>The Smarter Way to Make Stickers</span>
+        <span>Platform Specifications & Technical Compliance</span>
       </div>
-      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-        Why Make Stickers Online vs Mobile Apps
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        WhatsApp, Telegram & Discord Sticker Specifications Guide
       </h2>
-      <p class="text-xs sm:text-sm text-zinc-500 dark:text-[#A7A7A7] mt-1.5">
-        See how fastbgremove.com delivers superior speed, privacy, and output quality compared to traditional Play Store & App Store sticker apps.
+      <p class="text-sm sm:text-base text-zinc-600 dark:text-[#A7A7A7] leading-relaxed">
+        Messaging platforms enforce strict technical constraints on custom sticker files. If your image resolution is off by even one pixel or the file size exceeds the threshold, the app will reject your upload or display clipped edges in chat bubbles. FastBgRemove's one-click platform presets guarantee 100% compliance with these official specifications:
       </p>
-    </div>
 
-    <div class="w-full overflow-x-auto rounded-lg border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] shadow-xs relative mb-16">
-      <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 rounded-tl-lg bg-[#E5A93C]"></div>
-      <table class="w-full text-left text-sm border-collapse font-sans">
-        <thead>
-          <tr class="border-b border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#121212]">
-            <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white w-1/3">Feature</th>
-            <th class="p-3.5 sm:p-4 font-bold text-[#26251e] dark:text-white bg-[#E5A93C]/10 dark:bg-[#E5A93C]/15 border-x border-[#e6e5e0] dark:border-[#2e2e33] w-1/3">
-              <div class="flex items-center gap-1.5">
-                <span>FastBgRemove (In-Browser)</span>
-                <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#E5A93C] text-black font-extrabold">Best</span>
-              </div>
-            </th>
-            <th class="p-3.5 sm:p-4 font-semibold text-[#807d72] dark:text-[#a09c92] w-1/3">Traditional Sticker Apps</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#e6e5e0] dark:divide-[#2e2e33]">
-          {appComparison.map((row) => (
-            <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
-              <td class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-[#ededed]">
-                {row.feature}
-              </td>
-              <td class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33]">
-                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
-                  <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  <span>{row.fastbg}</span>
-                </div>
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
-                <div class="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
-                  <svg class="w-4 h-4 shrink-0 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                  <span>{row.traditional}</span>
-                </div>
-              </td>
+      <!-- HTML Comparison Table: Resolution, Max File Size, and Transparency standards -->
+      <div class="w-full overflow-x-auto rounded-xl border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] shadow-xs">
+        <table class="w-full text-left text-xs sm:text-sm border-collapse font-sans">
+          <thead>
+            <tr class="border-b border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#121212]">
+              <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white">Platform / Target</th>
+              <th class="p-3.5 sm:p-4 font-bold text-[#26251e] dark:text-white bg-[#E5A93C]/10 dark:bg-[#E5A93C]/15 border-x border-[#e6e5e0] dark:border-[#2e2e33]">Resolution</th>
+              <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white">Max File Size</th>
+              <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white">Supported Formats</th>
+              <th class="p-3.5 sm:p-4 font-semibold text-[#807d72] dark:text-[#a09c92]">Transparency & Margins</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody class="divide-y divide-[#e6e5e0] dark:divide-[#2e2e33]">
+            {stickerDimensions.map((spec) => (
+              <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
+                <td class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-[#ededed]">
+                  <div class="flex items-center gap-2">
+                    <span>{spec.platform}</span>
+                    <span class={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${spec.badgeColor}`}>
+                      {spec.badge}
+                    </span>
+                  </div>
+                  <div class="text-[11px] text-[#807d72] dark:text-[#706e68] font-normal mt-1 leading-normal">
+                    {spec.useCase}
+                  </div>
+                </td>
+                <td class="p-3.5 sm:p-4 text-[#26251e] dark:text-[#ededed] bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33] font-mono font-semibold text-xs sm:text-sm">
+                  <div>{spec.resolution}</div>
+                  <div class="text-[10px] text-[#807d72] dark:text-[#706e68] font-sans font-normal mt-0.5">{spec.aspectRatio}</div>
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-600 dark:text-emerald-400 font-mono font-semibold text-xs">
+                  {spec.sizeLimit}
+                </td>
+                <td class="p-3.5 sm:p-4 text-[#5a5852] dark:text-[#a09c92] font-mono text-xs">
+                  {spec.format}
+                </td>
+                <td class="p-3.5 sm:p-4 text-[#5a5852] dark:text-[#a09c92] text-xs leading-relaxed max-w-xs">
+                  {spec.transparency}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    <!-- Official Sticker Dimension Specification Table -->
-    <div class="max-w-3xl mx-auto text-center mb-8">
-      <h3 class="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-        Official Sticker Dimension & Format Guide
-      </h3>
-      <p class="text-xs sm:text-sm text-zinc-500 dark:text-[#A7A7A7] mt-1.5">
-        Recommended canvas dimensions, file size limits, and safety padding rules for major messaging apps and print workflows.
+      <div class="p-4 rounded-xl bg-[#25D366]/5 dark:bg-[#25D366]/10 border border-[#25D366]/20 text-xs text-[#128C7E] dark:text-[#25D366] flex items-start gap-2.5">
+        <span class="text-base shrink-0">💡</span>
+        <div class="leading-relaxed">
+          <strong>Why the 16px WhatsApp safety margin matters:</strong> WhatsApp dynamically wraps stickers in round-cornered bubble overlays on iOS and Android. If your sticker extends to the canvas border, parts of the outline or subject's head will be cropped. FastBgRemove's WhatsApp preset automatically scales your artwork to fit safely inside the inner 480×480 zone.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Why FastBgRemove Beats Photoroom & Kapwing for Stickers -->
+    <section class="space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
+        <span>Zero-Friction Competitive Advantage</span>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        Why FastBgRemove Beats Photoroom & Kapwing for Stickers
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-600 dark:text-[#A7A7A7] leading-relaxed">
+        Mainstream sticker generators lure users with promises of "free online sticker making," only to trap them behind sign-up paywalls, aggressive credit-card trials, watermark stamps, and compressed low-resolution files. Here is how FastBgRemove delivers a radically superior experience:
       </p>
-    </div>
 
-    <div class="w-full overflow-x-auto rounded-lg border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] shadow-xs relative mb-16">
-      <div class="absolute -top-[1px] -left-[1px] w-2.5 h-2.5 rounded-tl-lg bg-[#E5A93C]"></div>
-      <table class="w-full text-left text-sm border-collapse font-sans">
-        <thead>
-          <tr class="border-b border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#121212]">
-            <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white">Platform / Target</th>
-            <th class="p-3.5 sm:p-4 font-bold text-[#26251e] dark:text-white bg-[#E5A93C]/10 dark:bg-[#E5A93C]/15 border-x border-[#e6e5e0] dark:border-[#2e2e33]">Resolution</th>
-            <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white">Format</th>
-            <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white">Size Limit</th>
-            <th class="p-3.5 sm:p-4 font-semibold text-[#807d72] dark:text-[#a09c92]">Safety Margin</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#e6e5e0] dark:divide-[#2e2e33]">
-          {stickerDimensions.map((spec) => (
-            <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
-              <td class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-[#ededed]">
-                <div>{spec.platform}</div>
-                <div class="text-[11px] text-[#807d72] dark:text-[#706e68] font-normal mt-0.5">{spec.useCase}</div>
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#26251e] dark:text-[#ededed] bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33] font-mono font-semibold text-xs sm:text-sm">
-                {spec.resolution}
-              </td>
-              <td class="p-3.5 sm:p-4 text-[#5a5852] dark:text-[#a09c92] font-mono text-xs">{spec.format}</td>
-              <td class="p-3.5 sm:p-4 text-[#5a5852] dark:text-[#a09c92] font-mono text-xs">{spec.sizeLimit}</td>
-              <td class="p-3.5 sm:p-4 text-[#5a5852] dark:text-[#a09c92] text-xs">{spec.safetyPadding}</td>
+      <!-- Key Competitive Advantages Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+            ⚡
+          </div>
+          <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Zero Login Friction</h3>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            No registration forms, no email verification, and no OAuth redirects. Open the page and make stickers instantly.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+            🚫
+          </div>
+          <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Zero Watermarks</h3>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Unlike Photoroom and Kapwing which stamp brand logos on free exports, your stickers are 100% clean and watermark-free.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+            ♾️
+          </div>
+          <h3 class="text-sm font-bold text-zinc-900 dark:text-white">No Export Limits</h3>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Export 10, 50, or 200 stickers with no daily download caps, countdown timers, or monthly quota restrictions.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white dark:bg-[#1c1c1f] border border-[#e6e5e0] dark:border-[#2e2e33] shadow-xs space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+            🔒
+          </div>
+          <h3 class="text-sm font-bold text-zinc-900 dark:text-white">100% Device Memory</h3>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            All AI cutout math and canvas rendering occur in local browser RAM. Your private photos never leave your device.
+          </p>
+        </div>
+      </div>
+
+      <!-- Feature Comparison Table -->
+      <div class="w-full overflow-x-auto rounded-xl border border-[#e6e5e0] dark:border-[#2e2e33] bg-white dark:bg-[#1c1c1f] shadow-xs mt-6">
+        <table class="w-full text-left text-xs sm:text-sm border-collapse font-sans">
+          <thead>
+            <tr class="border-b border-[#e6e5e0] dark:border-[#2e2e33] bg-[#f7f7f4] dark:bg-[#121212]">
+              <th class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white w-1/4">Comparison Factor</th>
+              <th class="p-3.5 sm:p-4 font-bold text-[#26251e] dark:text-white bg-[#E5A93C]/10 dark:bg-[#E5A93C]/15 border-x border-[#e6e5e0] dark:border-[#2e2e33] w-1/3">
+                <div class="flex items-center gap-1.5">
+                  <span>FastBgRemove Studio</span>
+                  <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#E5A93C] text-black font-extrabold">Winner</span>
+                </div>
+              </th>
+              <th class="p-3.5 sm:p-4 font-semibold text-[#807d72] dark:text-[#a09c92] w-1/5">Photoroom</th>
+              <th class="p-3.5 sm:p-4 font-semibold text-[#807d72] dark:text-[#a09c92] w-1/5">Kapwing</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody class="divide-y divide-[#e6e5e0] dark:divide-[#2e2e33]">
+            {competitorComparison.map((row) => (
+              <tr class="hover:bg-[#f7f7f4]/80 dark:hover:bg-[#242428]/40 transition-colors">
+                <td class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-[#ededed]">
+                  {row.feature}
+                </td>
+                <td class="p-3.5 sm:p-4 font-semibold text-[#26251e] dark:text-white bg-[#E5A93C]/5 dark:bg-[#E5A93C]/10 border-x border-[#e6e5e0] dark:border-[#2e2e33]">
+                  <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>{row.fastbg}</span>
+                  </div>
+                </td>
+                <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
+                  <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                    <svg class="w-3.5 h-3.5 shrink-0 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    <span>{row.photoroom}</span>
+                  </div>
+                </td>
+                <td class="p-3.5 sm:p-4 text-[#807d72] dark:text-[#a09c92]">
+                  <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                    <svg class="w-3.5 h-3.5 shrink-0 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    <span>{row.kapwing}</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-    <!-- Targeted FAQ Section with JSON-LD Schema -->
-    <div class="max-w-3xl mx-auto space-y-6 pt-4">
+    <!-- SECTION 4: Frequently Asked Questions (FAQ) -->
+    <section class="space-y-6 pt-4">
       <div class="text-center space-y-2 mb-8">
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-          Frequently Asked Questions
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-xs font-semibold text-[#b47818] dark:text-[#E5A93C] font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#E5A93C]"></span>
+          <span>Help & Instant Answers</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+          Frequently Asked Questions (FAQ)
         </h2>
-        <p class="text-sm text-zinc-600 dark:text-[#A7A7A7]">
-          Everything you need to know about creating custom cutout stickers and WhatsApp stickers online.
+        <p class="text-sm text-zinc-600 dark:text-[#A7A7A7] max-w-2xl mx-auto">
+          Everything you need to know about creating custom cutout stickers, WhatsApp chat stickers, and transparent PNGs directly in your browser.
         </p>
       </div>
 
       <FaqAccordion items={faqs} />
-    </div>
-  </section>
+    </section>
+  </article>
 </BaseLayout>
