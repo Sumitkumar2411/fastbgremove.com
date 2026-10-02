@@ -1600,6 +1600,7 @@ const isSticker = isStickerPage !== undefined
   const customBgPreviewImg = document.getElementById('custom-bg-preview-img') as HTMLImageElement;
   const previewCutoutImg = document.getElementById('preview-cutout-img') as HTMLImageElement;
   const previewOriginalImg = document.getElementById('preview-original-img') as HTMLImageElement;
+  const sliderCutoutLayer = (document.getElementById('slider-cutout-layer') || document.getElementById('sliderCutoutLayer')) as HTMLElement | null;
   const sliderDivider = document.getElementById('slider-divider') as HTMLElement;
   const sliderHandle = document.getElementById('slider-handle') as HTMLElement;
   const resetSliderBtn = document.getElementById('reset-slider-btn') as HTMLButtonElement;
@@ -2308,6 +2309,7 @@ const isSticker = isStickerPage !== undefined
       previewCutoutImg.classList.remove('opacity-0');
       previewCutoutImg.classList.add('opacity-100');
     }
+    if (sliderCutoutLayer) sliderCutoutLayer.classList.remove('hidden');
     if (stickerTextToggleCheckbox) stickerTextToggleCheckbox.checked = false;
     if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
     updateCanvasCursor();
@@ -3665,6 +3667,7 @@ const isSticker = isStickerPage !== undefined
       if (isCancelled) {
         isSegmenting = false;
         if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
+        if (sliderCutoutLayer) sliderCutoutLayer.classList.remove('hidden');
         if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
         if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
         if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
@@ -3712,6 +3715,7 @@ const isSticker = isStickerPage !== undefined
       if (isCancelled) {
         isSegmenting = false;
         if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
+        if (sliderCutoutLayer) sliderCutoutLayer.classList.remove('hidden');
         if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
         if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
         if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
@@ -3728,6 +3732,7 @@ const isSticker = isStickerPage !== undefined
       if (isCancelled) {
         isSegmenting = false;
         if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
+        if (sliderCutoutLayer) sliderCutoutLayer.classList.remove('hidden');
         if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
         if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
         if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
@@ -3795,8 +3800,10 @@ const isSticker = isStickerPage !== undefined
 
       updateResolutionBadge();
 
-      const mbSize = (resultBlob.size / (1024 * 1024)).toFixed(2);
-      metaSizeBadge.textContent = `${mbSize} MB PNG`;
+      if (metaSizeBadge && resultBlob && resultBlob.size) {
+        const mbSize = (resultBlob.size / (1024 * 1024)).toFixed(2);
+        metaSizeBadge.textContent = `${mbSize} MB PNG`;
+      }
 
       panX = 0;
       panY = 0;
@@ -3854,6 +3861,7 @@ const isSticker = isStickerPage !== undefined
       console.error('Background removal error:', err);
       isSegmenting = false;
       if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
+      if (sliderCutoutLayer) sliderCutoutLayer.classList.remove('hidden');
       if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
       if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
       if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
