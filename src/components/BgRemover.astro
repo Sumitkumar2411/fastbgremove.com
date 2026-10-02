@@ -282,7 +282,7 @@ const isSticker = isStickerPage !== undefined
             <img
               id="preview-original-img"
               alt="Original uploaded image preview"
-              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain pointer-events-none select-none"
+              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain pointer-events-none select-none transition-opacity duration-300"
             />
             <!-- Left Badge: Original -->
             <span
@@ -318,7 +318,7 @@ const isSticker = isStickerPage !== undefined
             <img
               id="preview-cutout-img"
               alt="Transparent background cutout preview"
-              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 pointer-events-none select-none drop-shadow-xs transition-none"
+              class="max-h-[420px] sm:max-h-[480px] w-auto max-w-full object-contain relative z-10 pointer-events-none select-none drop-shadow-xs transition-opacity duration-300"
               style="will-change: filter, transform; transform: translateZ(0);"
             />
 
@@ -355,19 +355,20 @@ const isSticker = isStickerPage !== undefined
             style="width: 25px; height: 25px;"
           ></div>
 
-          <!-- Sticker Studio Segmentation Loading Overlay -->
+          <!-- Sleek Floating Glassmorphic Status Overlay -->
           <div
-            id="sticker-segmentation-overlay"
-            class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none p-4"
+            id="processing-overlay"
+            class="hidden absolute inset-0 flex items-center justify-center pointer-events-none z-20 transition-opacity duration-300"
           >
-            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 dark:bg-[#1c1c1f]/95 border border-[#E5A93C]/30 shadow-lg backdrop-blur-md">
-              <svg class="w-4 h-4 text-[#E5A93C] animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-900/85 dark:bg-slate-950/90 backdrop-blur-md text-white text-xs font-semibold shadow-xl border border-white/10">
+              <svg class="animate-spin h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="none">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
               </svg>
-              <span class="text-xs font-semibold text-[#26251e] dark:text-[#ededed] font-sans">Segmenting foreground in browser RAM...</span>
+              <span id="processing-status-text">Removing background in browser RAM...</span>
             </div>
           </div>
+          <div id="sticker-segmentation-overlay" class="hidden"></div>
 
           <!-- CENTER DRAGGABLE DIVIDER -->
           <div
@@ -1641,6 +1642,8 @@ const isSticker = isStickerPage !== undefined
 
   // Sticker Outline, Shape & Caption Elements & State
   const stickerCanvas = document.getElementById('sticker-canvas') as HTMLCanvasElement;
+  const processingOverlay = document.getElementById('processing-overlay') as HTMLElement | null;
+  const processingStatusText = document.getElementById('processing-status-text') as HTMLElement | null;
   const stickerSegmentationOverlay = document.getElementById('sticker-segmentation-overlay') as HTMLElement | null;
   const bgTabBtnSticker = document.getElementById('bg-tab-btn-sticker') as HTMLButtonElement;
   const bgTabContentSticker = document.getElementById('bg-tab-content-sticker') as HTMLElement;
@@ -2299,6 +2302,12 @@ const isSticker = isStickerPage !== undefined
     isDraggingStickerText = false;
     isPointerOverStickerText = false;
     if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
+    if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
+    if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
+    if (previewCutoutImg) {
+      previewCutoutImg.classList.remove('opacity-0');
+      previewCutoutImg.classList.add('opacity-100');
+    }
     if (stickerTextToggleCheckbox) stickerTextToggleCheckbox.checked = false;
     if (stickerCaptionPanel) stickerCaptionPanel.classList.add('hidden');
     updateCanvasCursor();
@@ -3594,14 +3603,37 @@ const isSticker = isStickerPage !== undefined
       });
 
       const isStickerStudio = initialDefaultMode === 'sticker' || currentBgTab === 'sticker';
+
+      // 1. Immediately switch to result view so the dropzone never collapses into an empty blank card
+      isSegmenting = true;
+      switchView('result');
+
+      // Update resolution badge immediately
+      if (metaResBadge) {
+        metaResBadge.textContent = `${imageNaturalWidth} × ${imageNaturalHeight} px`;
+      }
+      if (metaSizeBadge && file.size) {
+        const initialMb = (file.size / (1024 * 1024)).toFixed(2);
+        metaSizeBadge.textContent = `${initialMb} MB`;
+      }
+
+      // Hide before/after split slider, badges, and cutout until mask is computed
+      if (sliderDivider) sliderDivider.classList.add('hidden');
+      if (originalBadge) originalBadge.classList.add('hidden');
+      if (cutoutBadge) cutoutBadge.classList.add('hidden');
+      if (sliderCutoutLayer) sliderCutoutLayer.classList.add('hidden');
+      if (previewCutoutImg) {
+        previewCutoutImg.classList.add('hidden', 'opacity-0');
+        previewCutoutImg.classList.remove('opacity-100');
+      }
+
+      // Immediately render source image into preview container at opacity-65 with pulsing shimmer
+      if (previewOriginalImg) {
+        previewOriginalImg.classList.add('opacity-65', 'animate-pulse');
+      }
+
       if (isStickerStudio) {
-        isSegmenting = true;
-        switchView('result');
         if (stageBgLayer) stageBgLayer.classList.add('bg-checkerboard');
-        if (sliderDivider) sliderDivider.classList.add('hidden');
-        if (originalBadge) originalBadge.classList.add('hidden');
-        if (cutoutBadge) cutoutBadge.classList.add('hidden');
-        if (previewCutoutImg) previewCutoutImg.classList.add('hidden');
         if (stickerCanvas && originalImageObj) {
           stickerCanvas.width = imageNaturalWidth;
           stickerCanvas.height = imageNaturalHeight;
@@ -3609,36 +3641,34 @@ const isSticker = isStickerPage !== undefined
           if (sCtx) {
             sCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
             sCtx.save();
-            sCtx.globalAlpha = 0.6;
+            sCtx.globalAlpha = 0.65;
             sCtx.drawImage(originalImageObj, 0, 0, imageNaturalWidth, imageNaturalHeight);
             sCtx.restore();
           }
           stickerCanvas.classList.remove('hidden');
           stickerCanvas.classList.add('animate-pulse');
         }
-        if (stickerSegmentationOverlay) {
-          stickerSegmentationOverlay.classList.remove('hidden');
+      }
+
+      // Show sleek floating glassmorphic status chip
+      if (processingOverlay) {
+        if (processingStatusText) {
+          processingStatusText.textContent = isStickerStudio
+            ? 'Segmenting foreground in browser RAM...'
+            : 'Removing background in browser RAM...';
         }
-      } else {
-        switchView('processing');
-        progressBarFill.style.width = '15%';
-        processingTitle.textContent = 'Initializing in-browser neural engine...';
-        processingSubtitle.textContent = 'Loading WebAssembly runtime...';
+        processingOverlay.classList.remove('hidden', 'opacity-0');
       }
 
       const { removeBackground } = await import('@imgly/background-removal');
 
       if (isCancelled) {
         isSegmenting = false;
+        if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
         if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+        if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
         if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
         return;
-      }
-
-      if (!isStickerStudio) {
-        progressBarFill.style.width = '35%';
-        processingTitle.textContent = 'Segmenting foreground...';
-        processingSubtitle.textContent = 'Calculating pixel contours in browser RAM...';
       }
 
       let rawBlob: Blob;
@@ -3646,14 +3676,16 @@ const isSticker = isStickerPage !== undefined
         rawBlob = await removeBackground(file, {
           progress: (key: string, current: number, total: number) => {
             if (isCancelled) return;
-            if (total > 0) {
+            if (total > 0 && progressBarFill) {
               const pct = Math.min(94, Math.round((current / total) * 100));
               progressBarFill.style.width = `${Math.max(35, pct)}%`;
             }
             if (key.includes('fetch')) {
-              processingSubtitle.textContent = 'Caching model weights locally in browser (~20MB)...';
+              if (processingSubtitle) processingSubtitle.textContent = 'Caching model weights locally in browser (~20MB)...';
+              if (processingStatusText) processingStatusText.textContent = 'Caching model weights (~20MB)...';
             } else if (key.includes('compute')) {
-              processingSubtitle.textContent = 'Executing inference via WebAssembly...';
+              if (processingSubtitle) processingSubtitle.textContent = 'Executing inference via WebAssembly...';
+              if (processingStatusText) processingStatusText.textContent = 'Removing background in browser RAM...';
             }
           },
           model: 'medium',
@@ -3679,20 +3711,25 @@ const isSticker = isStickerPage !== undefined
 
       if (isCancelled) {
         isSegmenting = false;
+        if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
         if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+        if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
         if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
         return;
       }
 
-      progressBarFill.style.width = '97%';
-      processingTitle.textContent = 'Refining alpha contours & edge feathering...';
-      processingSubtitle.textContent = 'Applying PhotoRoom-grade trimap thresholding & perimeter erosion...';
+      if (progressBarFill) progressBarFill.style.width = '97%';
+      if (processingTitle) processingTitle.textContent = 'Refining alpha contours & edge feathering...';
+      if (processingSubtitle) processingSubtitle.textContent = 'Applying PhotoRoom-grade trimap thresholding & perimeter erosion...';
+      if (processingStatusText) processingStatusText.textContent = 'Refining alpha contours & edges...';
 
       const resultBlob = await refineAlphaMask(rawBlob, file);
 
       if (isCancelled) {
         isSegmenting = false;
+        if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
         if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+        if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
         if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
         return;
       }
@@ -3767,33 +3804,58 @@ const isSticker = isStickerPage !== undefined
       startX = 0;
       startY = 0;
 
+      // Seamless reveal transition:
+      // 1. Fade out the glassmorphic status chip
+      if (processingOverlay) {
+        processingOverlay.classList.add('opacity-0');
+        setTimeout(() => {
+          processingOverlay.classList.add('hidden');
+        }, 250);
+      }
+      if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
+
+      // 2. Remove pulsing shimmer and opacity reduction from source image
+      if (previewOriginalImg) {
+        previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
+      }
+      if (stickerCanvas) {
+        stickerCanvas.classList.remove('animate-pulse');
+      }
+
+      // 3. Reveal cutout layer with smooth crossfade
+      if (sliderCutoutLayer) {
+        sliderCutoutLayer.classList.remove('hidden');
+      }
+      if (previewCutoutImg) {
+        previewCutoutImg.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          previewCutoutImg.classList.remove('opacity-0');
+          previewCutoutImg.classList.add('opacity-100');
+        });
+      }
+
+      isSegmenting = false;
+
       if (initialDefaultMode === 'sticker') {
         switchBgTab('sticker');
         setSliderPercentage(0);
+        renderLiveStickerPreview();
       } else {
+        if (sliderDivider) sliderDivider.classList.remove('hidden');
+        if (originalBadge) originalBadge.classList.remove('hidden');
+        if (cutoutBadge) cutoutBadge.classList.remove('hidden');
         applyBgToElements(currentBgColor);
         setSliderPercentage(50);
+        applyBlurEffect();
+        applyShadowEffect();
       }
-      applyBlurEffect();
-      applyShadowEffect();
-
-      isSegmenting = false;
-      if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
-      if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
-
-      setTimeout(() => {
-        if (!isCancelled) {
-          switchView('result');
-          if (initialDefaultMode === 'sticker') {
-            renderLiveStickerPreview();
-          }
-        }
-      }, 200);
 
     } catch (err: any) {
       console.error('Background removal error:', err);
       isSegmenting = false;
+      if (previewOriginalImg) previewOriginalImg.classList.remove('opacity-65', 'animate-pulse');
       if (stickerCanvas) stickerCanvas.classList.remove('animate-pulse');
+      if (processingOverlay) processingOverlay.classList.add('hidden', 'opacity-0');
       if (stickerSegmentationOverlay) stickerSegmentationOverlay.classList.add('hidden');
       if (!isCancelled) {
         switchView('upload');
@@ -4108,10 +4170,6 @@ const isSticker = isStickerPage !== undefined
       if (!sampleUrl) return;
 
       try {
-        switchView('processing');
-        if (processingTitle) processingTitle.textContent = 'Loading sample image...';
-        if (progressBarFill) progressBarFill.style.width = '10%';
-
         const response = await fetch(sampleUrl);
         if (!response.ok) throw new Error('Could not load sample');
         const blob = await response.blob();
