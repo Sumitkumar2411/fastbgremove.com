@@ -153,6 +153,9 @@ export async function refineAlphaMask(
     tAlpha[i] = targetAlpha;
   }
 
+  // Yield to the event loop to keep UI interactions (theme toggle, clicks) responsive
+  await new Promise((r) => setTimeout(r, 0));
+
   // 4. 1px Morphological Erosion on the outer perimeter to strip away bounding-box residue
   const erodedAlpha = new Uint8Array(total);
   for (let y = 0; y < targetHeight; y++) {
@@ -192,6 +195,9 @@ export async function refineAlphaMask(
       }
     }
   }
+
+  // Yield to the event loop before bilateral filter
+  await new Promise((r) => setTimeout(r, 0));
 
   // 5. Bilateral Edge Anti-Aliasing on transition boundaries
   const finalAlpha = new Uint8Array(total);
@@ -257,6 +263,9 @@ export async function refineAlphaMask(
       }
     }
   }
+
+  // Yield to the event loop before final pixel copy
+  await new Promise((r) => setTimeout(r, 0));
 
   // 6. Write refined alpha and clean transparent RGB pixels
   for (let i = 0; i < total; i++) {

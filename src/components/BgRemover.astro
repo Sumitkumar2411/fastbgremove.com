@@ -200,6 +200,30 @@ const isSticker = isStickerPage !== undefined
             </svg>
             <span>Replace Image</span>
           </button>
+
+          <!-- Tactile Undo / Redo Action Pills (Left Toolbar) -->
+          <div class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <button
+              type="button"
+              id="btn-undo"
+              title="Undo (Ctrl+Z)"
+              disabled
+              class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h10a5 5 0 015 5v2M3 10l6-6M3 10l6 6"></path></svg>
+              <span>Undo</span>
+            </button>
+            <button
+              type="button"
+              id="btn-redo"
+              title="Redo (Ctrl+Y)"
+              disabled
+              class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 10H11a5 5 0 00-5 5v2M21 10l-6-6M21 10l-6 6"></path></svg>
+              <span>Redo</span>
+            </button>
+          </div>
         </div>
 
         <!-- Right: Canvas Ratio Controls & 50% Split Reset -->
@@ -252,28 +276,6 @@ const isSticker = isStickerPage !== undefined
               50%
             </button>
           )}
-
-          <!-- Minimal Undo / Redo Controls (Above Canvas) -->
-          <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0">
-            <button
-              type="button"
-              id="btn-undo"
-              title="Undo (Ctrl+Z)"
-              disabled
-              class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2M3 10l6-6M3 10l6 6"></path></svg>
-            </button>
-            <button
-              type="button"
-              id="btn-redo"
-              title="Redo (Ctrl+Y)"
-              disabled
-              class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10H11a5 5 0 00-5 5v2M21 10l-6-6M21 10l-6 6"></path></svg>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -1775,10 +1777,10 @@ const isSticker = isStickerPage !== undefined
     y: number;
     w: number;
     h: number;
-    before: ImageData;
-    after: ImageData;
+    beforeCanvas: OffscreenCanvas | HTMLCanvasElement;
+    afterCanvas: OffscreenCanvas | HTMLCanvasElement;
   }
-  const MAX_HISTORY = 10;
+  const MAX_HISTORY = 5;
   let undoStack: HistoryPatch[] = [];
   let redoStack: HistoryPatch[] = [];
   let committedCanvas: OffscreenCanvas | HTMLCanvasElement | null = null;
@@ -2402,11 +2404,30 @@ const isSticker = isStickerPage !== undefined
       quickReplaceInput.click();
     });
 
-    quickReplaceInput.addEventListener('change', () => {
+    quickReplaceInput.addEventListener('change', async () => {
       if (quickReplaceInput.files && quickReplaceInput.files[0]) {
         const file = quickReplaceInput.files[0];
         quickReplaceInput.value = '';
-        processImage(file);
+
+        // 1. Terminate or reset active canvas states
+        resetWorkspace();
+
+        // 2. Clear undo/redo stacks completely
+        clearHistoryStacks();
+
+        // 3. Revoke previous Blob URLs to prevent memory leaks
+        if (originalImageUrl) {
+          URL.revokeObjectURL(originalImageUrl);
+          originalImageUrl = null;
+        }
+        if (cutoutUrl) {
+          URL.revokeObjectURL(cutoutUrl);
+          cutoutUrl = null;
+        }
+        cutoutBlob = null;
+
+        // 4. Re-mount new photo, trigger processing state with preview visible, and rerun background removal smoothly
+        await processImage(file);
       }
     });
   }
@@ -3721,17 +3742,19 @@ const isSticker = isStickerPage !== undefined
         rawBlob = await removeBackground(file, {
           progress: (key: string, current: number, total: number) => {
             if (isCancelled) return;
-            if (total > 0 && progressBarFill) {
-              const pct = Math.min(94, Math.round((current / total) * 100));
-              progressBarFill.style.width = `${Math.max(35, pct)}%`;
-            }
-            if (key.includes('fetch')) {
-              if (processingSubtitle) processingSubtitle.textContent = 'Caching model weights locally in browser (~20MB)...';
-              if (processingStatusText) processingStatusText.textContent = 'Caching model weights (~20MB)...';
-            } else if (key.includes('compute')) {
-              if (processingSubtitle) processingSubtitle.textContent = 'Executing inference via WebAssembly...';
-              if (processingStatusText) processingStatusText.textContent = 'Removing background in browser RAM...';
-            }
+            requestAnimationFrame(() => {
+              if (total > 0 && progressBarFill) {
+                const pct = Math.min(94, Math.round((current / total) * 100));
+                progressBarFill.style.width = `${Math.max(35, pct)}%`;
+              }
+              if (key.includes('fetch')) {
+                if (processingSubtitle) processingSubtitle.textContent = 'Caching model weights locally in browser (~20MB)...';
+                if (processingStatusText) processingStatusText.textContent = 'Caching model weights (~20MB)...';
+              } else if (key.includes('compute')) {
+                if (processingSubtitle) processingSubtitle.textContent = 'Executing inference via WebAssembly...';
+                if (processingStatusText) processingStatusText.textContent = 'Removing background in browser RAM...';
+              }
+            });
           },
           model: 'medium',
           output: {
@@ -3768,6 +3791,9 @@ const isSticker = isStickerPage !== undefined
       if (processingTitle) processingTitle.textContent = 'Refining alpha contours & edge feathering...';
       if (processingSubtitle) processingSubtitle.textContent = 'Applying PhotoRoom-grade trimap thresholding & perimeter erosion...';
       if (processingStatusText) processingStatusText.textContent = 'Refining alpha contours & edges...';
+
+      // Yield to the event loop so theme toggling, button clicks, and DOM repaints execute instantly
+      await new Promise((r) => setTimeout(r, 0));
 
       const resultBlob = await refineAlphaMask(rawBlob, file);
 
@@ -4250,9 +4276,36 @@ const isSticker = isStickerPage !== undefined
   // ERASE & RESTORE BRUSH TOOL ENGINE
   // ==========================================
 
+  function createPatchCanvas(w: number, h: number): OffscreenCanvas | HTMLCanvasElement {
+    if (typeof OffscreenCanvas !== 'undefined') {
+      return new OffscreenCanvas(w, h);
+    }
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    return c;
+  }
+
+  function disposePatch(step: HistoryPatch) {
+    try {
+      step.beforeCanvas.getContext('2d')?.clearRect(0, 0, step.w, step.h);
+      step.afterCanvas.getContext('2d')?.clearRect(0, 0, step.w, step.h);
+      step.beforeCanvas.width = 0;
+      step.beforeCanvas.height = 0;
+      step.afterCanvas.width = 0;
+      step.afterCanvas.height = 0;
+    } catch (_) {}
+  }
+
   function clearHistoryStacks() {
-    undoStack = [];
-    redoStack = [];
+    while (undoStack.length > 0) {
+      const step = undoStack.pop();
+      if (step) disposePatch(step);
+    }
+    while (redoStack.length > 0) {
+      const step = redoStack.pop();
+      if (step) disposePatch(step);
+    }
     updateHistoryBtnStates();
   }
 
@@ -4304,19 +4357,32 @@ const isSticker = isStickerPage !== undefined
     if (w <= 0 || h <= 0) return;
 
     try {
-      // Lightweight ImageData clone of ONLY the modified region (avoids full 4K frame memory)
-      const beforeData = committedCtx.getImageData(x, y, w, h);
-      const afterData = brushCtx.getImageData(x, y, w, h);
-
-      undoStack.push({ x, y, w, h, before: beforeData, after: afterData });
-
-      // Cap history strictly to MAX_HISTORY (10 steps)
-      if (undoStack.length > MAX_HISTORY) {
-        undoStack.shift();
+      // GPU-accelerated OffscreenCanvas buffers for the modified region only (never full 4K frame heap arrays)
+      const beforeCanvas = createPatchCanvas(w, h);
+      const bCtx = beforeCanvas.getContext('2d');
+      if (bCtx && committedCanvas) {
+        bCtx.drawImage(committedCanvas, x, y, w, h, 0, 0, w, h);
       }
 
-      // New action clears redo stack
-      redoStack = [];
+      const afterCanvas = createPatchCanvas(w, h);
+      const aCtx = afterCanvas.getContext('2d');
+      if (aCtx && brushCanvas) {
+        aCtx.drawImage(brushCanvas, x, y, w, h, 0, 0, w, h);
+      }
+
+      undoStack.push({ x, y, w, h, beforeCanvas, afterCanvas });
+
+      // Cap history strictly to MAX_HISTORY (5 steps) and explicitly dispose oldest buffer
+      if (undoStack.length > MAX_HISTORY) {
+        const oldest = undoStack.shift();
+        if (oldest) disposePatch(oldest);
+      }
+
+      // Any new action clears redo stack & disposes its buffers
+      while (redoStack.length > 0) {
+        const item = redoStack.pop();
+        if (item) disposePatch(item);
+      }
 
       // Update committed backing layer with modified patch
       committedCtx.drawImage(brushCanvas, x, y, w, h, x, y, w, h);
@@ -4333,15 +4399,22 @@ const isSticker = isStickerPage !== undefined
       const step = undoStack.pop()!;
       redoStack.push(step);
 
-      // Instant non-blocking restore directly to canvas & committed layer
-      brushCtx.putImageData(step.before, step.x, step.y);
-      committedCtx.putImageData(step.before, step.x, step.y);
-
       updateHistoryBtnStates();
-      debouncedSyncCanvasToBlob();
-      if (!isBrushModeActive) {
-        syncCanvasToBlobAndPreview();
-      }
+
+      // Wrap undo canvas redraw in requestAnimationFrame so the UI thread never freezes
+      requestAnimationFrame(() => {
+        if (!brushCtx || !committedCtx) return;
+        brushCtx.clearRect(step.x, step.y, step.w, step.h);
+        brushCtx.drawImage(step.beforeCanvas, step.x, step.y);
+
+        committedCtx.clearRect(step.x, step.y, step.w, step.h);
+        committedCtx.drawImage(step.beforeCanvas, step.x, step.y);
+
+        debouncedSyncCanvasToBlob();
+        if (!isBrushModeActive) {
+          syncCanvasToBlobAndPreview();
+        }
+      });
     } catch (e) {
       console.warn('Undo error:', e);
     }
@@ -4353,15 +4426,22 @@ const isSticker = isStickerPage !== undefined
       const step = redoStack.pop()!;
       undoStack.push(step);
 
-      // Instant non-blocking restore directly to canvas & committed layer
-      brushCtx.putImageData(step.after, step.x, step.y);
-      committedCtx.putImageData(step.after, step.x, step.y);
-
       updateHistoryBtnStates();
-      debouncedSyncCanvasToBlob();
-      if (!isBrushModeActive) {
-        syncCanvasToBlobAndPreview();
-      }
+
+      // Wrap redo canvas redraw in requestAnimationFrame so the UI thread never freezes
+      requestAnimationFrame(() => {
+        if (!brushCtx || !committedCtx) return;
+        brushCtx.clearRect(step.x, step.y, step.w, step.h);
+        brushCtx.drawImage(step.afterCanvas, step.x, step.y);
+
+        committedCtx.clearRect(step.x, step.y, step.w, step.h);
+        committedCtx.drawImage(step.afterCanvas, step.x, step.y);
+
+        debouncedSyncCanvasToBlob();
+        if (!isBrushModeActive) {
+          syncCanvasToBlobAndPreview();
+        }
+      });
     } catch (e) {
       console.warn('Redo error:', e);
     }
@@ -4373,23 +4453,39 @@ const isSticker = isStickerPage !== undefined
       const w = brushCanvas.width;
       const h = brushCanvas.height;
 
-      // Make Reset fully undoable by capturing current state as an undo patch
-      const beforeData = committedCtx.getImageData(0, 0, w, h);
+      // Save current state into beforeCanvas
+      const beforeCanvas = createPatchCanvas(w, h);
+      const bCtx = beforeCanvas.getContext('2d');
+      if (bCtx) {
+        bCtx.drawImage(brushCanvas, 0, 0);
+      }
 
       brushCtx.clearRect(0, 0, w, h);
       brushCtx.drawImage(initialCutoutBitmap, 0, 0);
 
-      const afterData = brushCtx.getImageData(0, 0, w, h);
-      committedCtx.putImageData(afterData, 0, 0);
-
-      undoStack.push({ x: 0, y: 0, w, h, before: beforeData, after: afterData });
-      if (undoStack.length > MAX_HISTORY) {
-        undoStack.shift();
+      const afterCanvas = createPatchCanvas(w, h);
+      const aCtx = afterCanvas.getContext('2d');
+      if (aCtx) {
+        aCtx.drawImage(initialCutoutBitmap, 0, 0);
       }
-      redoStack = [];
+      committedCtx.clearRect(0, 0, w, h);
+      committedCtx.drawImage(initialCutoutBitmap, 0, 0);
+
+      undoStack.push({ x: 0, y: 0, w, h, beforeCanvas, afterCanvas });
+      if (undoStack.length > MAX_HISTORY) {
+        const oldest = undoStack.shift();
+        if (oldest) disposePatch(oldest);
+      }
+      while (redoStack.length > 0) {
+        const item = redoStack.pop();
+        if (item) disposePatch(item);
+      }
 
       updateHistoryBtnStates();
       debouncedSyncCanvasToBlob();
+      if (!isBrushModeActive) {
+        syncCanvasToBlobAndPreview();
+      }
       showToast('Reset to original AI cutout (Undo available)');
     } catch (e) {
       console.warn('Reset error:', e);
