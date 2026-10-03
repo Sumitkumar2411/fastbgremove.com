@@ -252,6 +252,28 @@ const isSticker = isStickerPage !== undefined
               50%
             </button>
           )}
+
+          <!-- Minimal Undo / Redo Controls (Above Canvas) -->
+          <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0">
+            <button
+              type="button"
+              id="btn-undo"
+              title="Undo (Ctrl+Z)"
+              disabled
+              class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2M3 10l6-6M3 10l6 6"></path></svg>
+            </button>
+            <button
+              type="button"
+              id="btn-redo"
+              title="Redo (Ctrl+Y)"
+              disabled
+              class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10H11a5 5 0 00-5 5v2M21 10l-6-6M21 10l-6 6"></path></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1740,15 +1762,29 @@ const isSticker = isStickerPage !== undefined
   const brushUndoBtn = document.getElementById('brush-undo-btn') as HTMLButtonElement;
   const brushRedoBtn = document.getElementById('brush-redo-btn') as HTMLButtonElement;
   const brushResetBtn = document.getElementById('brush-reset-btn') as HTMLButtonElement;
+  const btnUndo = document.getElementById('btn-undo') as HTMLButtonElement | null;
+  const btnRedo = document.getElementById('btn-redo') as HTMLButtonElement | null;
 
   let isBrushModeActive: boolean = false;
   let currentBrushMode: 'erase' | 'restore' = 'erase';
   let brushSize: number = 25;
   let isDrawing: boolean = false;
   let strokePoints: { x: number; y: number }[] = [];
-  let undoStack: ImageBitmap[] = [];
-  let redoStack: ImageBitmap[] = [];
+  interface HistoryPatch {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    before: ImageData;
+    after: ImageData;
+  }
   const MAX_HISTORY = 10;
+  let undoStack: HistoryPatch[] = [];
+  let redoStack: HistoryPatch[] = [];
+  let committedCanvas: OffscreenCanvas | HTMLCanvasElement | null = null;
+  let committedCtx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D | null = null;
+  let currentStrokeBBox = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+  let syncBlobTimeout: any = null;
   let initialCutoutBitmap: ImageBitmap | null = null;
   let offscreenOriginalCanvas: HTMLCanvasElement | null = null;
   let originalPattern: CanvasPattern | null = null;
@@ -2262,6 +2298,12 @@ const isSticker = isStickerPage !== undefined
       stageBox.classList.add('cursor-ew-resize');
     }
     clearHistoryStacks();
+    if (syncBlobTimeout) {
+      clearTimeout(syncBlobTimeout);
+      syncBlobTimeout = null;
+    }
+    committedCanvas = null;
+    committedCtx = null;
     if (initialCutoutBitmap) {
       try { initialCutoutBitmap.close(); } catch (_) {}
       initialCutoutBitmap = null;
@@ -3795,6 +3837,21 @@ const isSticker = isStickerPage !== undefined
           }
         }
 
+        // Initialize or resize committed backing canvas (OffscreenCanvas with fallback)
+        if (typeof OffscreenCanvas !== 'undefined') {
+          committedCanvas = new OffscreenCanvas(imageNaturalWidth, imageNaturalHeight);
+          committedCtx = committedCanvas.getContext('2d', { willReadFrequently: true }) as OffscreenCanvasRenderingContext2D;
+        } else {
+          committedCanvas = document.createElement('canvas');
+          committedCanvas.width = imageNaturalWidth;
+          committedCanvas.height = imageNaturalHeight;
+          committedCtx = committedCanvas.getContext('2d', { willReadFrequently: true });
+        }
+        if (committedCtx && brushCanvas) {
+          committedCtx.clearRect(0, 0, imageNaturalWidth, imageNaturalHeight);
+          committedCtx.drawImage(brushCanvas, 0, 0);
+        }
+
         clearHistoryStacks();
       }
 
@@ -4194,20 +4251,16 @@ const isSticker = isStickerPage !== undefined
   // ==========================================
 
   function clearHistoryStacks() {
-    while (undoStack.length > 0) {
-      const snap = undoStack.pop();
-      try { snap?.close(); } catch (_) {}
-    }
-    while (redoStack.length > 0) {
-      const snap = redoStack.pop();
-      try { snap?.close(); } catch (_) {}
-    }
+    undoStack = [];
+    redoStack = [];
     updateHistoryBtnStates();
   }
 
   function updateHistoryBtnStates() {
     if (brushUndoBtn) brushUndoBtn.disabled = undoStack.length === 0;
     if (brushRedoBtn) brushRedoBtn.disabled = redoStack.length === 0;
+    if (btnUndo) btnUndo.disabled = undoStack.length === 0;
+    if (btnRedo) btnRedo.disabled = redoStack.length === 0;
   }
 
   function getCanvasCoords(clientX: number, clientY: number) {
@@ -4237,70 +4290,107 @@ const isSticker = isStickerPage !== undefined
     }
   }
 
-  async function pushUndoState() {
-    if (!brushCanvas || !window.createImageBitmap) return;
+  function commitStrokeToHistory() {
+    if (!brushCanvas || !brushCtx || !committedCanvas || !committedCtx) return;
+
+    // Clamp dirty bounding box to canvas boundaries
+    const x = Math.max(0, Math.floor(currentStrokeBBox.minX));
+    const y = Math.max(0, Math.floor(currentStrokeBBox.minY));
+    const maxX = Math.min(brushCanvas.width, Math.ceil(currentStrokeBBox.maxX));
+    const maxY = Math.min(brushCanvas.height, Math.ceil(currentStrokeBBox.maxY));
+    const w = maxX - x;
+    const h = maxY - y;
+
+    if (w <= 0 || h <= 0) return;
+
     try {
-      const snapshot = await createImageBitmap(brushCanvas);
-      undoStack.push(snapshot);
+      // Lightweight ImageData clone of ONLY the modified region (avoids full 4K frame memory)
+      const beforeData = committedCtx.getImageData(x, y, w, h);
+      const afterData = brushCtx.getImageData(x, y, w, h);
+
+      undoStack.push({ x, y, w, h, before: beforeData, after: afterData });
+
+      // Cap history strictly to MAX_HISTORY (10 steps)
       if (undoStack.length > MAX_HISTORY) {
-        const oldest = undoStack.shift();
-        try { oldest?.close(); } catch (_) {}
+        undoStack.shift();
       }
-      while (redoStack.length > 0) {
-        const snap = redoStack.pop();
-        try { snap?.close(); } catch (_) {}
-      }
+
+      // New action clears redo stack
+      redoStack = [];
+
+      // Update committed backing layer with modified patch
+      committedCtx.drawImage(brushCanvas, x, y, w, h, x, y, w, h);
+
       updateHistoryBtnStates();
-    } catch (e) {
-      console.warn('Snapshot creation error:', e);
+    } catch (err) {
+      console.warn('Failed to commit stroke to history:', err);
     }
   }
 
-  async function handleUndo() {
-    if (undoStack.length === 0 || !brushCtx || !brushCanvas) return;
+  function handleUndo() {
+    if (undoStack.length === 0 || !brushCtx || !brushCanvas || !committedCtx) return;
     try {
-      if (window.createImageBitmap) {
-        const currentState = await createImageBitmap(brushCanvas);
-        redoStack.push(currentState);
-      }
-      const prevState = undoStack.pop()!;
-      brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
-      brushCtx.drawImage(prevState, 0, 0);
-      try { prevState.close(); } catch (_) {}
+      const step = undoStack.pop()!;
+      redoStack.push(step);
+
+      // Instant non-blocking restore directly to canvas & committed layer
+      brushCtx.putImageData(step.before, step.x, step.y);
+      committedCtx.putImageData(step.before, step.x, step.y);
+
       updateHistoryBtnStates();
-      await syncCanvasToBlobAndPreview();
+      debouncedSyncCanvasToBlob();
+      if (!isBrushModeActive) {
+        syncCanvasToBlobAndPreview();
+      }
     } catch (e) {
       console.warn('Undo error:', e);
     }
   }
 
-  async function handleRedo() {
-    if (redoStack.length === 0 || !brushCtx || !brushCanvas) return;
+  function handleRedo() {
+    if (redoStack.length === 0 || !brushCtx || !brushCanvas || !committedCtx) return;
     try {
-      if (window.createImageBitmap) {
-        const currentState = await createImageBitmap(brushCanvas);
-        undoStack.push(currentState);
-      }
-      const nextState = redoStack.pop()!;
-      brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
-      brushCtx.drawImage(nextState, 0, 0);
-      try { nextState.close(); } catch (_) {}
+      const step = redoStack.pop()!;
+      undoStack.push(step);
+
+      // Instant non-blocking restore directly to canvas & committed layer
+      brushCtx.putImageData(step.after, step.x, step.y);
+      committedCtx.putImageData(step.after, step.x, step.y);
+
       updateHistoryBtnStates();
-      await syncCanvasToBlobAndPreview();
+      debouncedSyncCanvasToBlob();
+      if (!isBrushModeActive) {
+        syncCanvasToBlobAndPreview();
+      }
     } catch (e) {
       console.warn('Redo error:', e);
     }
   }
 
-  async function handleReset() {
-    if (!initialCutoutBitmap || !brushCtx || !brushCanvas) return;
+  function handleReset() {
+    if (!initialCutoutBitmap || !brushCtx || !brushCanvas || !committedCtx) return;
     try {
-      await pushUndoState();
-      brushCtx.clearRect(0, 0, brushCanvas.width, brushCanvas.height);
+      const w = brushCanvas.width;
+      const h = brushCanvas.height;
+
+      // Make Reset fully undoable by capturing current state as an undo patch
+      const beforeData = committedCtx.getImageData(0, 0, w, h);
+
+      brushCtx.clearRect(0, 0, w, h);
       brushCtx.drawImage(initialCutoutBitmap, 0, 0);
+
+      const afterData = brushCtx.getImageData(0, 0, w, h);
+      committedCtx.putImageData(afterData, 0, 0);
+
+      undoStack.push({ x: 0, y: 0, w, h, before: beforeData, after: afterData });
+      if (undoStack.length > MAX_HISTORY) {
+        undoStack.shift();
+      }
+      redoStack = [];
+
       updateHistoryBtnStates();
-      await syncCanvasToBlobAndPreview();
-      showToast('Reset to original AI cutout');
+      debouncedSyncCanvasToBlob();
+      showToast('Reset to original AI cutout (Undo available)');
     } catch (e) {
       console.warn('Reset error:', e);
     }
@@ -4375,7 +4465,18 @@ const isSticker = isStickerPage !== undefined
     brushCtx.restore();
   }
 
+  function debouncedSyncCanvasToBlob(delay = 180) {
+    if (syncBlobTimeout) clearTimeout(syncBlobTimeout);
+    syncBlobTimeout = setTimeout(() => {
+      syncCanvasToBlobAndPreview();
+    }, delay);
+  }
+
   function syncCanvasToBlobAndPreview(): Promise<Blob | null> {
+    if (syncBlobTimeout) {
+      clearTimeout(syncBlobTimeout);
+      syncBlobTimeout = null;
+    }
     return new Promise((resolve) => {
       if (!brushCanvas) return resolve(null);
       brushCanvas.toBlob((blob) => {
@@ -4421,6 +4522,8 @@ const isSticker = isStickerPage !== undefined
           stageBox.classList.remove('cursor-none');
           stageBox.classList.add('cursor-ew-resize');
         }
+        // Ensure latest edits are synced to previewCutoutImg immediately upon exiting brush mode
+        syncCanvasToBlobAndPreview();
       }
     });
   }
@@ -4471,16 +4574,24 @@ const isSticker = isStickerPage !== undefined
   if (brushUndoBtn) brushUndoBtn.addEventListener('click', handleUndo);
   if (brushRedoBtn) brushRedoBtn.addEventListener('click', handleRedo);
   if (brushResetBtn) brushResetBtn.addEventListener('click', handleReset);
+  if (btnUndo) btnUndo.addEventListener('click', handleUndo);
+  if (btnRedo) btnRedo.addEventListener('click', handleRedo);
 
   // Keyboard Shortcuts for Undo/Redo
   window.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (!isBrushModeActive) return;
+    const targetTag = (e.target as HTMLElement)?.tagName;
+    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA') return;
+
     if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
-      e.preventDefault();
-      handleUndo();
+      if (undoStack.length > 0) {
+        e.preventDefault();
+        handleUndo();
+      }
     } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y' || ((e.key === 'z' || e.key === 'Z') && e.shiftKey))) {
-      e.preventDefault();
-      handleRedo();
+      if (redoStack.length > 0) {
+        e.preventDefault();
+        handleRedo();
+      }
     }
   });
 
@@ -4495,22 +4606,29 @@ const isSticker = isStickerPage !== undefined
     brushCanvas.addEventListener('pointerleave', () => {
       if (brushCursorIndicator) brushCursorIndicator.classList.add('hidden');
       if (isDrawing) {
-        isDrawing = false;
-        strokePoints = [];
-        syncCanvasToBlobAndPreview();
+        endDrawing();
       }
     });
 
-    brushCanvas.addEventListener('pointerdown', async (e: PointerEvent) => {
+    brushCanvas.addEventListener('pointerdown', (e: PointerEvent) => {
       if (!isBrushModeActive || e.button !== 0) return;
       try {
         brushCanvas.setPointerCapture(e.pointerId);
       } catch (_) {}
 
-      await pushUndoState();
       isDrawing = true;
       const pt = getCanvasCoords(e.clientX, e.clientY);
       strokePoints = [pt];
+
+      // Track bounding box of the active stroke
+      const radius = Math.max(1, (brushSize * pt.scale) / 2) + 4;
+      currentStrokeBBox = {
+        minX: pt.x - radius,
+        minY: pt.y - radius,
+        maxX: pt.x + radius,
+        maxY: pt.y + radius
+      };
+
       drawDot(pt, pt.scale);
       updateCursorIndicator(e.clientX, e.clientY);
     });
@@ -4522,6 +4640,12 @@ const isSticker = isStickerPage !== undefined
       if (!isDrawing) return;
       const pt = getCanvasCoords(e.clientX, e.clientY);
       strokePoints.push(pt);
+
+      const radius = Math.max(1, (brushSize * pt.scale) / 2) + 4;
+      currentStrokeBBox.minX = Math.min(currentStrokeBBox.minX, pt.x - radius);
+      currentStrokeBBox.minY = Math.min(currentStrokeBBox.minY, pt.y - radius);
+      currentStrokeBBox.maxX = Math.max(currentStrokeBBox.maxX, pt.x + radius);
+      currentStrokeBBox.maxY = Math.max(currentStrokeBBox.maxY, pt.y + radius);
 
       if (strokePoints.length === 2) {
         drawSmoothLine(strokePoints[0], strokePoints[1], pt.scale);
@@ -4535,12 +4659,14 @@ const isSticker = isStickerPage !== undefined
       }
     });
 
-    const endDrawing = (e: PointerEvent) => {
+    const endDrawing = (e?: PointerEvent) => {
       if (!isDrawing) return;
       isDrawing = false;
-      try {
-        brushCanvas.releasePointerCapture(e.pointerId);
-      } catch (_) {}
+      if (e && brushCanvas) {
+        try {
+          brushCanvas.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }
 
       if (strokePoints.length >= 2) {
         const lastPt = strokePoints[strokePoints.length - 1];
@@ -4549,7 +4675,10 @@ const isSticker = isStickerPage !== undefined
         drawSmoothLine(mid, lastPt, lastPt.scale);
       }
       strokePoints = [];
-      syncCanvasToBlobAndPreview();
+
+      // Commit dirty region to history and trigger debounced sync
+      commitStrokeToHistory();
+      debouncedSyncCanvasToBlob();
     };
 
     brushCanvas.addEventListener('pointerup', endDrawing);
